@@ -9047,7 +9047,7 @@ window.VALVONDOR_AUTH_CONFIG = {
 (function(){
   const URL=window.VALVONDOR_SUPABASE_URL;
   const KEY=window.VALVONDOR_SUPABASE_ANON_KEY;
-  let client=null,user=null,username='Player',channel=null,started=false;
+  let client=null,user=null,username='Player',channel=null,started=false,pollTimer=null,lastSeenCreatedAt=null;
   const seen=new Set();
 
   function ui(){ return window.ValvondorChatUI; }
@@ -9075,6 +9075,7 @@ window.VALVONDOR_AUTH_CONFIG = {
     const id=String(row.id??'');
     if(id && seen.has(id))return;
     if(id)seen.add(id);
+    if(row.created_at && (!lastSeenCreatedAt || row.created_at>lastSeenCreatedAt)) lastSeenCreatedAt=row.created_at;
     ui()?.addMessage({
       id:row.id,
       user_id:row.user_id,
@@ -9089,6 +9090,7 @@ window.VALVONDOR_AUTH_CONFIG = {
       try{ await client.removeChannel(channel); }catch(e){}
     }
     channel=null;started=false;
+    if(pollTimer){clearInterval(pollTimer);pollTimer=null;}
     ui()?.setConnection('Offline',false);
   }
 
@@ -9103,6 +9105,10 @@ window.VALVONDOR_AUTH_CONFIG = {
     const {data:sessionData,error:sessionError}=await client.auth.getSession();
     if(sessionError)throw sessionError;
     user=sessionData?.session?.user||null;
+    const accessToken=sessionData?.session?.access_token||null;
+    if(accessToken && client.realtime?.setAuth){
+      try{await client.realtime.setAuth(accessToken);}catch(e){console.warn('Realtime auth handoff failed',e);}
+    }
 
     if(!user){
       ui()?.setUser(null);
@@ -9123,6 +9129,25 @@ window.VALVONDOR_AUTH_CONFIG = {
     if(recentError)throw recentError;
     (recent||[]).slice().reverse().forEach(add);
 
+    // Reliable live fallback: fetch only messages newer than the newest one already shown.
+    async function pollNewMessages(){
+      if(!client||!user)return;
+      try{
+        let q=client.from('chat_messages')
+          .select('id,created_at,user_id,username,message')
+          .order('created_at',{ascending:true})
+          .limit(50);
+        if(lastSeenCreatedAt)q=q.gt('created_at',lastSeenCreatedAt);
+        const {data,error}=await q;
+        if(error)throw error;
+        (data||[]).forEach(add);
+      }catch(e){
+        console.warn('Chat live fallback poll',e);
+      }
+    }
+    if(pollTimer)clearInterval(pollTimer);
+    pollTimer=setInterval(pollNewMessages,1200);
+
     channel=client
       .channel('valvondor-global-chat')
       .on('postgres_changes',{
@@ -9136,7 +9161,8 @@ window.VALVONDOR_AUTH_CONFIG = {
           ui()?.setConnection('Live · Global',true);
           ui()?.systemMessage('Connected to Valvondor Global Chat.');
         }else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED'){
-          ui()?.setConnection('Reconnecting…',false);
+          // Polling remains active, so messages still arrive without a page refresh.
+          ui()?.setConnection('Live · Sync',true);
         }
       });
 
@@ -9154,12 +9180,13 @@ window.VALVONDOR_AUTH_CONFIG = {
     if(!clean)return;
     if(clean.length>240)throw new Error('Message too long');
 
-    const {error}=await client.from('chat_messages').insert({
+    const {data,error}=await client.from('chat_messages').insert({
       user_id:user.id,
       username,
       message:clean
-    });
+    }).select('id,created_at,user_id,username,message').single();
     if(error)throw error;
+    if(data)add(data);
   }
 
   window.ValvondorChatBackend={start,stop,send};
