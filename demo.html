@@ -9101,20 +9101,20 @@ window.VALVONDOR_AUTH_CONFIG = {
       return;
     }
 
-    client=window.supabase.createClient(URL,KEY);
-    const {data:sessionData,error:sessionError}=await client.auth.getSession();
-    if(sessionError)throw sessionError;
-    user=sessionData?.session?.user||null;
-    const accessToken=sessionData?.session?.access_token||null;
-    if(accessToken && client.realtime?.setAuth){
-      try{await client.realtime.setAuth(accessToken);}catch(e){console.warn('Realtime auth handoff failed',e);}
+    client=window.ValvondorSupabaseClient||null;
+    user=window.ValvondorSupabaseUser||null;
+
+    // The game owns authentication. Chat waits for that exact authenticated client/user.
+    if(!client || !user){
+      ui()?.setConnection('Waiting for account…',false);
+      return false;
     }
 
-    if(!user){
-      ui()?.setUser(null);
-      ui()?.setConnection('Sign in to chat',false);
-      return;
-    }
+    try{
+      const {data:sessionData}=await client.auth.getSession();
+      const accessToken=sessionData?.session?.access_token||null;
+      if(accessToken && client.realtime?.setAuth) await client.realtime.setAuth(accessToken);
+    }catch(e){console.warn('Realtime auth handoff failed',e);}
 
     username=await resolveUsername();
     ui()?.setUser({id:user.id,username,email:user.email});
@@ -9166,12 +9166,8 @@ window.VALVONDOR_AUTH_CONFIG = {
         }
       });
 
-    client.auth.onAuthStateChange((_event,session)=>{
-      if(!session){
-        ui()?.setUser(null);
-        stop();
-      }
-    });
+    // Auth lifecycle is owned by the game/cloud-save layer.
+    return true;
   }
 
   async function send(message){
@@ -9342,16 +9338,30 @@ window.VALVONDOR_AUTH_CONFIG = {
 </script>
 
 <script id="liveGlobalChatBoot">
-(function bootChat(){
-  if(window.ValvondorChatBackend?.start && window.ValvondorChatUI){
-    window.ValvondorChatBackend.start().catch(err=>{
-      console.error('Global chat start failed',err);
-      window.ValvondorChatUI?.setConnection('Chat setup required',false);
-      window.ValvondorChatUI?.systemMessage('Global chat is not connected yet. Run chat_setup.sql in Supabase.');
-    });
-  }else{
-    setTimeout(bootChat,100);
-  }
+(function(){
+ let starting=false;
+ async function tryStart(){
+   if(starting)return;
+   if(!window.ValvondorChatBackend?.start || !window.ValvondorChatUI)return;
+   if(!window.ValvondorSupabaseClient || !window.ValvondorSupabaseUser){
+     window.ValvondorChatUI.setConnection('Waiting for account…',false);
+     return;
+   }
+   starting=true;
+   try{
+     const ok=await window.ValvondorChatBackend.start();
+     if(ok===false) starting=false;
+   }catch(err){
+     starting=false;
+     console.error('Global chat start failed',err);
+     window.ValvondorChatUI?.setConnection('Chat connection error',false);
+   }
+ }
+ window.addEventListener('valvondor-auth-ready',()=>setTimeout(tryStart,50));
+ const timer=setInterval(()=>{
+   tryStart();
+   if(window.ValvondorSupabaseUser && window.ValvondorChatBackend) clearInterval(timer);
+ },250);
 })();
 </script>
 <script>if(window.VALVONDOR_LOCAL_TEST)document.body.classList.add('localTest');</script>
@@ -9469,6 +9479,7 @@ console.log('Oakhaven Editor Plus v2 ready');
  const OWNER_NAME='wally';
  const OWNER_ITEMS=['owner_ring','owner_aegis','owner_blade','owner_boots','owner_crown','owner_plate'];
  const gate=document.getElementById('cloudSaveGate'),client=(window.supabase&&URL&&KEY)?window.supabase.createClient(URL,KEY):null;let user=null,lastUploaded='';
+ window.ValvondorSupabaseClient=client;
  const hide=()=>{if(gate)gate.style.display='none'};
  function clearLocal(){[GAME_KEY,CHAR_KEY,'valvondor-character-v1','valvondor_boar_quest'].forEach(k=>localStorage.removeItem(k));}
  function sanitizeNonOwner(data){
@@ -9507,6 +9518,8 @@ console.log('Oakhaven Editor Plus v2 ready');
  async function boot(){
    if(!client){location.replace('login.html');return}
    const sr=await client.auth.getSession();user=sr.data&&sr.data.session&&sr.data.session.user;if(!user){location.replace('login.html');return}
+   window.ValvondorSupabaseUser=user;
+   window.dispatchEvent(new CustomEvent('valvondor-auth-ready',{detail:{user}}));
    const marker='valvondor-cloud-hydrated:'+user.id;
    const activeUser=localStorage.getItem(ACTIVE_USER_KEY);
    const mustHydrate=activeUser!==user.id || sessionStorage.getItem(marker)!=='1';
@@ -9526,6 +9539,7 @@ console.log('Oakhaven Editor Plus v2 ready');
        localStorage.removeItem(ACTIVE_USER_KEY);
        clearLocal();
        const {error}=await client.auth.signOut();if(error)throw error;
+       window.ValvondorSupabaseUser=null;
        location.replace('login.html');
      }catch(e){console.error(e);logoutBtn.disabled=false;logoutBtn.textContent='🚪 Log Out';if(typeof toast==='function')toast('Could not log out. Please try again.');}
    });
