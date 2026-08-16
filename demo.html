@@ -3859,7 +3859,7 @@ function switchArea(area,spawn,announce=true){
     world=shopWorld;W=1000;H=700;collision=shopCollision.map(r=>[...r]);
     shopWorld.classList.add('active');document.body.classList.add('shopMode');
     shopWorld.appendChild(playerWrap);
-    pos={x:500,y:525};
+    pos={...(spawn||SHOP_SPAWN)};
     dead=false;locked=false;moveTarget=null;
     mining=false;chopping=false;fishing=false;
     Object.keys(keys).forEach(k=>keys[k]=false);
@@ -4181,25 +4181,41 @@ function interact(){
  }
 }
 function save(show=true){
-  // Never move the live player during an autosave. Use a fallback only for corrupted coordinates.
-  const savedPos=(currentArea==='mine'||currentArea==='shop')?{...(currentArea==='shop'?SHOP_RETURN:MINE_RETURN)}:(isSafeSpawn(pos.x,pos.y)?{x:pos.x,y:pos.y}:{...SAFE_SPAWN});
+  // Save the player's exact area and coordinates.
+  const savedPos=(Number.isFinite(pos.x)&&Number.isFinite(pos.y))
+    ? {x:pos.x,y:pos.y}
+    : {...SAFE_SPAWN};
   localStorage.setItem('oakhaven-goblin-forest-v2',JSON.stringify({pos:savedPos,quest,inventory,hp,inventoryData,equipment,bankData,playerXP,playerLevel,xpToNext,woodcuttingLevel,woodcuttingXP,woodcuttingNext,depletedTrees,dailyQuestState,miningLevel,miningXP,miningNext,fishingLevel,fishingXP,fishingNext,smithQuest,boarQuestState,characterData,tutorialState,currentArea,mapVersion:MAP_VERSION}));
-  if(show)toast('Game saved.');
+  if(show)toast('Game saved at your current location.');
 }
 function load(){
   let recovered=false;
+  let savedArea='town';
+  let savedPos={...SAFE_SPAWN};
   try{
     const s=JSON.parse(localStorage.getItem('oakhaven-goblin-forest-v2'));
     if(s){
-      if(s.mapVersion!==MAP_VERSION){ pos={...SAFE_SPAWN}; recovered=true; }
-      else if(s.pos && isSafeSpawn(Number(s.pos.x),Number(s.pos.y))){
-        pos={x:Number(s.pos.x),y:Number(s.pos.y)};
+      const allowedAreas=['town','forest','mine','shop','chieftainDungeon'];
+      savedArea=allowedAreas.includes(s.currentArea)?s.currentArea:'town';
+
+      if(s.mapVersion!==MAP_VERSION){
+        savedArea='town';
+        savedPos={...SAFE_SPAWN};
+        recovered=true;
+      }else if(s.pos && Number.isFinite(Number(s.pos.x)) && Number.isFinite(Number(s.pos.y))){
+        savedPos={x:Number(s.pos.x),y:Number(s.pos.y)};
       }else{
-        pos={...SAFE_SPAWN};
+        savedArea='town';
+        savedPos={...SAFE_SPAWN};
         recovered=true;
       }
+
       quest=s.quest||0;
-      inventory=Array.isArray(s.inventory)?s.inventory:inventory;if(s.inventoryData)inventoryData={...inventoryData,...s.inventoryData};inventoryData.goblin_fang_ring=Math.max(1,inventoryData.goblin_fang_ring||0);if(s.equipment)equipment={...equipment,...s.equipment};if(s.bankData){bankData={gold:Number(s.bankData.gold)||0,items:{...(s.bankData.items||{})}};}
+      inventory=Array.isArray(s.inventory)?s.inventory:inventory;
+      if(s.inventoryData)inventoryData={...inventoryData,...s.inventoryData};
+      inventoryData.goblin_fang_ring=Math.max(1,inventoryData.goblin_fang_ring||0);
+      if(s.equipment)equipment={...equipment,...s.equipment};
+      if(s.bankData){bankData={gold:Number(s.bankData.gold)||0,items:{...(s.bankData.items||{})}};}
       hp=Number.isFinite(s.hp)?Math.max(1,Math.min(playerMaxHP(),s.hp)):playerMaxHP();
       playerLevel=Number(s.playerLevel)||1;playerXP=Number(s.playerXP)||0;xpToNext=Number(s.xpToNext)||100;
       woodcuttingLevel=Number(s.woodcuttingLevel)||1;woodcuttingXP=Number(s.woodcuttingXP)||0;woodcuttingNext=Number(s.woodcuttingNext)||100;
@@ -4207,30 +4223,54 @@ function load(){
       fishingLevel=Number(s.fishingLevel)||1;fishingXP=Number(s.fishingXP)||0;fishingNext=Number(s.fishingNext)||100;
       if(s.smithQuest&&typeof s.smithQuest==='object')smithQuest={...smithQuest,...s.smithQuest};
       if(s.tutorialState&&typeof s.tutorialState==='object')tutorialState={...tutorialState,...s.tutorialState};
-      if(s.characterData&&typeof s.characterData==='object'){characterData={...characterData,...s.characterData};localStorage.setItem(CHARACTER_KEY,JSON.stringify(characterData));}
+      if(s.characterData&&typeof s.characterData==='object'){
+        characterData={...characterData,...s.characterData};
+        localStorage.setItem(CHARACTER_KEY,JSON.stringify(characterData));
+      }
       if(s.depletedTrees&&typeof s.depletedTrees==='object')Object.assign(depletedTrees,s.depletedTrees);
       if(s.dailyQuestState&&typeof s.dailyQuestState==='object')dailyQuestState=s.dailyQuestState;
       if(s.boarQuestState&&typeof s.boarQuestState==='object')boarQuestState=Object.assign({accepted:false,kills:0,claimed:false},s.boarQuestState);
       refreshDailyQuests();updateBoarQuestMarker();
     }
   }catch(e){
-    pos={...SAFE_SPAWN};
+    savedArea='town';
+    savedPos={...SAFE_SPAWN};
     recovered=true;
   }
-  currentArea="town";
+
+  // Establish Oakhaven as the base world first.
+  currentArea='town';
   world=townWorld;
-  W=3600;
+  W=4700;
   H=2100;
   collision=townCollision.map(r=>[...r]);
-  townWorld.style.display="block";
-  forestWorld.classList.remove("active");
-  shopWorld.classList.remove("active");
-  mineWorld.classList.remove("active");
-  document.body.classList.remove("mineMode","forestMode");
+  townWorld.style.display='block';
+  forestWorld.classList.remove('active');
+  shopWorld.classList.remove('active');
+  mineWorld.classList.remove('active');
+  if(chieftainDungeonWorld)chieftainDungeonWorld.classList.remove('active');
+  document.body.classList.remove('mineMode','forestMode','shopMode');
 
-  // Hard movement recovery for v5.8.
-  pos={...SAFE_SPAWN};
-  townPosition={...SAFE_SPAWN};
+  // Restore the actual saved area and exact saved location.
+  if(savedArea==='town'){
+    if(isSafeSpawn(savedPos.x,savedPos.y)) pos={...savedPos};
+    else {pos={...SAFE_SPAWN};recovered=true;}
+    townWorld.appendChild(playerWrap);
+    townPosition={...pos};
+  }else{
+    switchArea(savedArea,savedPos,false);
+    // Validate after the correct world's dimensions/collision are active.
+    if(!isSafeSpawn(pos.x,pos.y)){
+      const fallback=savedArea==='forest'?FOREST_SPAWN:
+                     savedArea==='mine'?MINE_SPAWN:
+                     savedArea==='shop'?SHOP_SPAWN:
+                     savedArea==='chieftainDungeon'?CHIEFTAIN_DUNGEON_SPAWN:
+                     SAFE_SPAWN;
+      pos={...fallback};
+      recovered=true;
+    }
+  }
+
   moveTarget=null;
   locked=false;
   dead=false;
@@ -4238,13 +4278,15 @@ function load(){
   chopping=false;
   fishing=false;
   Object.keys(keys).forEach(k=>keys[k]=false);
-  recovered=true;
 
   hp=Math.max(1,hp||100);
-  hpBar.style.width=hp+'%';
+  hpBar.style.width=(hp/playerMaxHP()*100)+'%';
   updateQuest();
-  if(recovered) setTimeout(()=>toast('Your character was moved to a safe spawn point.'),500);
+  try{camera()}catch(e){}
+  if(recovered) setTimeout(()=>toast('Saved area loaded; an unsafe position was moved to the nearest safe spawn.'),500);
+  else setTimeout(()=>toast('Saved location restored.'),350);
 }
+
 addEventListener('keydown',e=>{
  if(document.getElementById('characterCreator').classList.contains('open')){if(e.code==='Enter'){e.preventDefault();saveCharacterFromCreator()}return}
  keys[e.code]=true;keys[e.key]=true;
