@@ -1,23 +1,261 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Valvondor Account</title>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Valvondor — Account Login</title>
+<meta name="theme-color" content="#080b0d">
 <style>
-:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:radial-gradient(circle at top,#273426,#0c100d 58%);color:#eee;display:grid;place-items:center;padding:20px}.card{width:min(430px,100%);background:#151a16;border:1px solid #3e4a3e;border-radius:18px;padding:26px;box-shadow:0 25px 70px #0009}.brand{text-align:center;font-size:2rem;font-weight:900;letter-spacing:.08em}.sub{text-align:center;color:#b9c4b8;margin:8px 0 22px}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}.tabs button,.primary,.secondary{border:0;border-radius:10px;padding:12px;font-weight:800;cursor:pointer}.tabs button{background:#252d26;color:#ddd}.tabs button.active{background:#60795e;color:#fff}label{display:block;margin:13px 0 6px;font-size:.9rem;color:#c7d0c6}input{width:100%;padding:13px;border-radius:10px;border:1px solid #465246;background:#0e120f;color:#fff}.primary{width:100%;margin-top:18px;background:#6f8c69;color:#fff}.secondary{width:100%;margin-top:10px;background:#2b332c;color:#fff}.msg{min-height:22px;margin-top:14px;color:#d8c58f}.hidden{display:none}.back{display:block;text-align:center;margin-top:18px;color:#bac8b7;text-decoration:none}
-</style></head><body><main class="card"><div class="brand">VALVONDOR</div><div class="sub">Your adventure starts here.</div>
-<div id="setupWarning" class="msg hidden">Account backend still needs the Supabase URL and anon key.</div>
-<div id="signedOut"><div class="tabs"><button id="loginTab" class="active">LOGIN</button><button id="signupTab">SIGN UP</button></div>
-<form id="authForm"><label>Email</label><input id="email" type="email" autocomplete="email" required><label>Password</label><input id="password" type="password" minlength="6" autocomplete="current-password" required><button class="primary" id="submitBtn" type="submit">LOGIN</button></form><div id="message" class="msg"></div></div>
-<div id="signedIn" class="hidden"><p>Logged in as <strong id="userEmail"></strong></p><a class="primary" style="display:block;text-align:center;text-decoration:none" href="demo.html">▶ PLAY DEMO</a><button id="logoutBtn" class="secondary">LOG OUT</button></div><a class="back" href="index.html">← Back to Valvondor</a></main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script>
-<script>
-const configured=window.VALVONDOR_SUPABASE_URL&&!window.VALVONDOR_SUPABASE_URL.startsWith('PASTE_')&&window.VALVONDOR_SUPABASE_ANON_KEY&&!window.VALVONDOR_SUPABASE_ANON_KEY.startsWith('PASTE_');
-const warning=document.getElementById('setupWarning'), out=document.getElementById('signedOut'), inn=document.getElementById('signedIn'), msg=document.getElementById('message');
-if(!configured){warning.classList.remove('hidden');document.getElementById('authForm').querySelectorAll('input,button').forEach(x=>x.disabled=true)}
-else{
- const client=supabase.createClient(window.VALVONDOR_SUPABASE_URL,window.VALVONDOR_SUPABASE_ANON_KEY); let mode='login';
- const loginTab=document.getElementById('loginTab'),signupTab=document.getElementById('signupTab'),submitBtn=document.getElementById('submitBtn');
- function setMode(m){mode=m;loginTab.classList.toggle('active',m==='login');signupTab.classList.toggle('active',m==='signup');submitBtn.textContent=m==='login'?'LOGIN':'CREATE ACCOUNT';msg.textContent=''}
- loginTab.onclick=()=>setMode('login');signupTab.onclick=()=>setMode('signup');
- async function refresh(){const {data}=await client.auth.getSession();const u=data?.session?.user;out.classList.toggle('hidden',!!u);inn.classList.toggle('hidden',!u);if(u)document.getElementById('userEmail').textContent=u.email||'player'}
- document.getElementById('authForm').onsubmit=async e=>{e.preventDefault();msg.textContent='';const email=document.getElementById('email').value.trim(),password=document.getElementById('password').value;submitBtn.disabled=true;let r;if(mode==='login')r=await client.auth.signInWithPassword({email,password});else r=await client.auth.signUp({email,password});submitBtn.disabled=false;if(r.error){msg.textContent=r.error.message;return}msg.textContent=mode==='signup'?'Account created. Check your email if confirmation is enabled.':'Logged in.';await refresh()};
- document.getElementById('logoutBtn').onclick=async()=>{await client.auth.signOut();await refresh()};client.auth.onAuthStateChange(refresh);refresh();
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#050709;color:#efe3c8;font-family:Georgia,"Times New Roman",serif}
+body{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  overflow-x:hidden;
+  background:
+    radial-gradient(circle at 50% 15%,#15212a 0,#07090c 50%,#020303 100%);
 }
-</script></body></html>
+.stage{
+  position:relative;
+  width:min(100vw,1024px);
+  aspect-ratio:2/3;
+  min-height:100vh;
+  background:url("login-background.png") top center/100% 100% no-repeat;
+  box-shadow:0 0 90px #000;
+}
+.control{
+  position:absolute;
+  left:22.7%;
+  width:54.8%;
+  height:4.9%;
+  border:1px solid transparent;
+  background:transparent;
+  color:#eee6d5;
+  outline:none;
+  padding:0 7.5%;
+  font:400 clamp(15px,2.15vw,25px)/1 Arial,sans-serif;
+  border-radius:2px;
+}
+.control:focus{
+  border-color:#c9a45eaa;
+  box-shadow:inset 0 0 0 1px #c9a45e66,0 0 16px #c69a4133;
+  background:#06101699;
+}
+#email{top:42.15%}
+#password{top:48.25%;padding-right:13%}
+#eyeBtn{
+  position:absolute;top:48.25%;right:22.7%;width:8.5%;height:4.9%;
+  border:0;background:transparent;color:#b4aa94;cursor:pointer;
+  font-size:clamp(18px,2.6vw,30px);
+}
+#forgotBtn{
+  position:absolute;top:53.25%;right:22.7%;
+  border:0;background:transparent;color:#e4be71;cursor:pointer;
+  font:400 clamp(12px,1.65vw,20px) Georgia,serif;
+  padding:.35em .1em;
+}
+.action{
+  position:absolute;left:22.7%;width:54.8%;height:5.95%;
+  border:0;background:transparent;color:transparent;cursor:pointer;
+  border-radius:4px;
+}
+.action:focus-visible{outline:2px solid #f0cf85;outline-offset:2px}
+#loginBtn{top:57.55%}
+#createBtn{top:68.05%}
+#enterLink{
+  position:absolute;left:25%;right:25%;top:92.5%;height:4%;
+  cursor:pointer;text-decoration:none;color:transparent;
+}
+#message{
+  position:absolute;
+  top:63.35%;
+  left:22.7%;
+  width:54.8%;
+  min-height:2.5%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:0 8px;
+  color:#f4d891;
+  font:700 clamp(10px,1.35vw,15px)/1.3 Arial,sans-serif;
+  text-shadow:0 2px 4px #000;
+  pointer-events:none;
+}
+#message.error{color:#ff9f8f}
+#busy{
+  position:absolute;inset:0;background:#020406b8;display:none;
+  align-items:center;justify-content:center;z-index:20;
+  font:700 clamp(18px,3vw,30px) Georgia,serif;color:#e9d29a;
+  backdrop-filter:blur(2px);
+}
+#busy.show{display:flex}
+#setupWarning{
+  position:absolute;left:20%;right:20%;top:38.5%;z-index:12;
+  background:#2c120fee;border:1px solid #a85d45;border-radius:8px;
+  padding:12px;text-align:center;color:#ffd7c8;font:700 13px Arial,sans-serif;
+}
+.hidden{display:none!important}
+@media(max-aspect-ratio:2/3){
+  .stage{width:100vw;min-height:auto}
+}
+@media(min-aspect-ratio:2/3){
+  body{align-items:flex-start}
+  .stage{height:100vh;width:auto;max-width:1024px;aspect-ratio:2/3}
+}
+</style>
+</head>
+<body>
+<main class="stage" aria-label="Valvondor login">
+  <div id="setupWarning" class="hidden">Supabase is not configured. Check supabase-config.js.</div>
+
+  <label for="email" style="position:absolute;left:-9999px">Email address</label>
+  <input class="control" id="email" type="email" autocomplete="email" placeholder="" required>
+
+  <label for="password" style="position:absolute;left:-9999px">Password</label>
+  <input class="control" id="password" type="password" autocomplete="current-password" minlength="6" placeholder="" required>
+
+  <button id="eyeBtn" type="button" aria-label="Show password">◉</button>
+  <button id="forgotBtn" type="button">Forgot Password?</button>
+
+  <button id="loginBtn" class="action" type="button" aria-label="Login">Login</button>
+  <button id="createBtn" class="action" type="button" aria-label="Create Account">Create Account</button>
+  <a id="enterLink" href="index.html" aria-label="Back to Valvondor">Enter Valvondor</a>
+
+  <div id="message" role="status" aria-live="polite"></div>
+  <div id="busy">Entering Valvondor…</div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+(function(){
+  const email=document.getElementById('email');
+  const password=document.getElementById('password');
+  const loginBtn=document.getElementById('loginBtn');
+  const createBtn=document.getElementById('createBtn');
+  const forgotBtn=document.getElementById('forgotBtn');
+  const eyeBtn=document.getElementById('eyeBtn');
+  const message=document.getElementById('message');
+  const busy=document.getElementById('busy');
+  const warning=document.getElementById('setupWarning');
+
+  function say(text,isError=false){
+    message.textContent=text||'';
+    message.classList.toggle('error',!!isError);
+  }
+  function setBusy(on,text='Entering Valvondor…'){
+    busy.textContent=text;
+    busy.classList.toggle('show',!!on);
+    loginBtn.disabled=on;createBtn.disabled=on;
+  }
+  function credentials(){
+    const e=email.value.trim();
+    const p=password.value;
+    if(!e){say('Enter your email address.',true);email.focus();return null}
+    if(!p){say('Enter your password.',true);password.focus();return null}
+    if(p.length<6){say('Password must be at least 6 characters.',true);password.focus();return null}
+    return {email:e,password:p};
+  }
+
+  const configured=
+    !!window.supabase &&
+    !!window.VALVONDOR_SUPABASE_URL &&
+    !!window.VALVONDOR_SUPABASE_ANON_KEY &&
+    !String(window.VALVONDOR_SUPABASE_URL).startsWith('PASTE_') &&
+    !String(window.VALVONDOR_SUPABASE_ANON_KEY).startsWith('PASTE_');
+
+  if(!configured){
+    warning.classList.remove('hidden');
+    [email,password,loginBtn,createBtn,forgotBtn].forEach(el=>el.disabled=true);
+    return;
+  }
+
+  const client=window.supabase.createClient(
+    window.VALVONDOR_SUPABASE_URL,
+    window.VALVONDOR_SUPABASE_ANON_KEY
+  );
+
+  async function enterIfSignedIn(){
+    const {data}=await client.auth.getSession();
+    if(data?.session?.user){
+      window.location.replace('demo.html');
+      return true;
+    }
+    return false;
+  }
+
+  async function login(){
+    const c=credentials(); if(!c)return;
+    say('');setBusy(true,'Opening the gates…');
+    const {data,error}=await client.auth.signInWithPassword(c);
+    if(error){
+      setBusy(false);
+      say(error.message,true);
+      return;
+    }
+    if(data?.session){
+      window.location.replace('demo.html');
+    }else{
+      setBusy(false);
+      say('Login succeeded, but no session was returned. Please try again.',true);
+    }
+  }
+
+  async function createAccount(){
+    const c=credentials(); if(!c)return;
+    say('');setBusy(true,'Creating your account…');
+
+    const redirectTo=new URL('login.html',window.location.href).href;
+    const {data,error}=await client.auth.signUp({
+      email:c.email,
+      password:c.password,
+      options:{emailRedirectTo:redirectTo}
+    });
+
+    if(error){
+      setBusy(false);
+      say(error.message,true);
+      return;
+    }
+
+    if(data?.session){
+      window.location.replace('demo.html');
+      return;
+    }
+
+    setBusy(false);
+    say('Account created. If email confirmation is enabled, check your inbox.');
+  }
+
+  async function forgotPassword(){
+    const e=email.value.trim();
+    if(!e){say('Enter your email first, then click Forgot Password.',true);email.focus();return}
+    say('');setBusy(true,'Sending reset email…');
+    const redirectTo=new URL('login.html',window.location.href).href;
+    const {error}=await client.auth.resetPasswordForEmail(e,{redirectTo});
+    setBusy(false);
+    if(error){say(error.message,true);return}
+    say('Password reset email sent.');
+  }
+
+  eyeBtn.addEventListener('click',()=>{
+    const show=password.type==='password';
+    password.type=show?'text':'password';
+    eyeBtn.textContent=show?'◉':'◉';
+    eyeBtn.setAttribute('aria-label',show?'Hide password':'Show password');
+  });
+  loginBtn.addEventListener('click',login);
+  createBtn.addEventListener('click',createAccount);
+  forgotBtn.addEventListener('click',forgotPassword);
+  password.addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+  email.addEventListener('keydown',e=>{if(e.key==='Enter')password.focus()});
+
+  enterIfSignedIn();
+})();
+</script>
+</body>
+</html>
