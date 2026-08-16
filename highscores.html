@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Valvondor Highscores</title>
+<meta name="description" content="Valvondor public player highscores.">
+<style>
+:root{--bg:#080a08;--panel:#111711;--panel2:#172017;--gold:#d9b36a;--gold2:#f3d99b;--ink:#f5eedf;--muted:#aaa696;--line:#4b503f;--green:#7e9b72}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% -10%,#273527 0,transparent 34%),linear-gradient(#0b0e0b,#070907);color:var(--ink);font-family:Inter,system-ui,Segoe UI,Arial,sans-serif}
+a{color:inherit}.top{border-bottom:1px solid #ffffff16;background:#090c09ee;position:sticky;top:0;z-index:10;backdrop-filter:blur(10px)}
+.nav{width:min(1180px,92%);height:72px;margin:auto;display:flex;align-items:center;gap:18px}
+.brand{font-family:Georgia,serif;font-weight:900;letter-spacing:2px;text-decoration:none;font-size:22px}.wolf{font-size:25px}.navlinks{margin-left:auto;display:flex;gap:12px;align-items:center}
+.navlinks a{text-decoration:none;padding:9px 12px;border-radius:9px;color:#d9d3c7;font-size:13px;font-weight:900}.navlinks a:hover{background:#1a2119;color:var(--gold2)}
+.hero{text-align:center;padding:76px 20px 38px}.eyebrow{font-size:11px;font-weight:950;letter-spacing:3px;color:var(--gold)}
+h1{font:900 clamp(42px,7vw,76px)/1 Georgia,serif;margin:10px 0 12px;letter-spacing:2px}.hero p{color:var(--muted);max-width:650px;margin:0 auto;line-height:1.7}
+.wrap{width:min(1120px,94%);margin:auto;padding-bottom:70px}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0}
+.stat{background:linear-gradient(145deg,#192118,#101510);border:1px solid #4b543f;border-radius:14px;padding:18px;text-align:center}
+.stat strong{display:block;color:var(--gold2);font:900 30px Georgia,serif}.stat span{font-size:11px;color:#a9ad9f;letter-spacing:1px}
+.board{border:1px solid #625333;border-radius:17px;overflow:hidden;box-shadow:0 25px 70px #0009;background:#101510}
+.boardHead{padding:20px 22px;background:linear-gradient(90deg,#211c12,#121712);border-bottom:1px solid #625333;display:flex;gap:16px;align-items:center}
+.boardHead h2{font:900 27px Georgia,serif;margin:0}.refresh{margin-left:auto;border:1px solid #715d37;background:#1c211a;color:#f1dfb8;border-radius:9px;padding:9px 13px;font-weight:900;cursor:pointer}
+table{width:100%;border-collapse:collapse}th{background:#151b15;color:#c7ad73;font-size:11px;letter-spacing:1px;text-align:center;padding:13px 9px;border-bottom:1px solid #30372e}
+td{text-align:center;padding:15px 9px;border-bottom:1px solid #272d25;color:#dad5ca;font-weight:700}.name{text-align:left;font-family:Georgia,serif;font-size:18px;color:#f4e6c1}
+tbody tr:hover{background:#182018}.rank{font:900 20px Georgia,serif;color:#c5b17d}.top1 .rank{color:#ffd76a}.top2 .rank{color:#dedede}.top3 .rank{color:#d89c68}
+.total{font-weight:950;color:var(--gold2)}.empty{padding:60px 20px;text-align:center;color:#aaa}.error{color:#f0bd79}
+.note{margin:16px 4px 0;color:#858b80;font-size:12px;text-align:center}.back{display:inline-flex;margin-top:25px;text-decoration:none;border:1px solid #665738;border-radius:9px;padding:11px 16px;font-weight:900;color:#ead8ad}
+@media(max-width:780px){.hideSm{display:none}.summary{grid-template-columns:1fr}.navlinks a:not(:last-child){display:none}th,td{padding:12px 5px;font-size:12px}.name{font-size:15px}.board{overflow-x:auto}table{min-width:700px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="nav">
+<a class="brand" href="index.html"><span class="wolf">🐺</span> VALVONDOR</a>
+<nav class="navlinks"><a href="index.html">HOME</a><a href="login.html">PLAY</a></nav>
+</div></header>
+
+<section class="hero">
+<div class="eyebrow">HALL OF LEGENDS</div>
+<h1>HIGHSCORES</h1>
+<p>Adventurers are ranked by their combined skill levels. Owner and developer characters are excluded from the public rankings.</p>
+</section>
+
+<main class="wrap">
+<div class="summary">
+<div class="stat"><strong id="playerCount">—</strong><span>RANKED ADVENTURERS</span></div>
+<div class="stat"><strong id="topName">—</strong><span>CURRENT #1</span></div>
+<div class="stat"><strong id="topTotal">—</strong><span>TOP TOTAL LEVEL</span></div>
+</div>
+
+<section class="board">
+<div class="boardHead"><h2>🏆 Valvondor Rankings</h2><button class="refresh" id="refresh">Refresh</button></div>
+<div id="tableWrap">
+<table>
+<thead><tr>
+<th>RANK</th><th style="text-align:left">CHARACTER</th><th>COMBAT</th><th>WOODCUTTING</th><th>MINING</th><th>FISHING</th><th class="hideSm">GLYPHCRAFT</th><th class="hideSm">HERBLORE</th><th>TOTAL</th>
+</tr></thead>
+<tbody id="rows"></tbody>
+</table>
+<div id="status" class="empty">Loading the Hall of Legends…</div>
+</div>
+</section>
+<p class="note">Only character names and game levels are shown publicly. Account emails and user IDs are never displayed.</p>
+<a class="back" href="index.html">← Back to Valvondor</a>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+(function(){
+const rows=document.getElementById('rows'),status=document.getElementById('status');
+const count=document.getElementById('playerCount'),topName=document.getElementById('topName'),topTotal=document.getElementById('topTotal');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function setError(msg){status.style.display='block';status.className='empty error';status.textContent=msg;rows.innerHTML=''}
+async function load(){
+ status.style.display='block';status.className='empty';status.textContent='Loading the Hall of Legends…';rows.innerHTML='';
+ const URL=window.VALVONDOR_SUPABASE_URL,KEY=window.VALVONDOR_SUPABASE_ANON_KEY;
+ if(!window.supabase||!URL||!KEY){setError('Highscores are not connected yet.');return}
+ const client=window.supabase.createClient(URL,KEY);
+ const {data,error}=await client.rpc('public_highscores');
+ if(error){console.error(error);setError('Highscores are not available yet. Run the leaderboard setup in Supabase first.');return}
+ const list=Array.isArray(data)?data:[];
+ count.textContent=list.length;
+ topName.textContent=list[0]?.character_name||'—';
+ topTotal.textContent=list[0]?.total_level??'—';
+ if(!list.length){status.textContent='No ranked adventurers yet.';return}
+ status.style.display='none';
+ rows.innerHTML=list.map((p,i)=>`<tr class="${i===0?'top1':i===1?'top2':i===2?'top3':''}">
+ <td class="rank">${i+1}</td><td class="name">${esc(p.character_name)}</td>
+ <td>${p.combat_level}</td><td>${p.woodcutting_level}</td><td>${p.mining_level}</td><td>${p.fishing_level}</td>
+ <td class="hideSm">${p.glyphcraft_level}</td><td class="hideSm">${p.herblore_level}</td><td class="total">${p.total_level}</td></tr>`).join('');
+}
+document.getElementById('refresh').onclick=load;
+load();
+})();
+</script>
+</body></html>
