@@ -2349,21 +2349,12 @@ body.mineMode #editorPanel,body.mineMode #roadSnapPanel,body.mineMode #mapEditor
   pointer-events:none!important;
 }
 </style>
+
+<style id="publicAccountGateRemoval">
+#accountGate,#accountBar{display:none!important}
+</style>
 </head>
 <body>
-
-
-<div id="accountGate" class="accountGate open" aria-modal="true" role="dialog">
-  <div class="accountCard">
-    <div class="accountBrand"><div class="accountWolf">🐺</div><h1>VALVONDOR</h1><p>Account Access</p><span id="accountBackendBadge">BACKEND NOT CONNECTED</span></div>
-    <div class="accountTabs"><button id="showLoginTab" class="active" type="button">LOG IN</button><button id="showRegisterTab" type="button">CREATE ACCOUNT</button></div>
-    <form id="loginForm" class="accountForm active"><label>Email</label><input id="loginEmail" type="email" autocomplete="email" placeholder="you@example.com" required><label>Password</label><input id="loginPassword" type="password" autocomplete="current-password" minlength="6" placeholder="Password" required><button class="accountPrimary" type="submit">ENTER VALVONDOR</button></form>
-    <form id="registerForm" class="accountForm"><label>Email</label><input id="registerEmail" type="email" autocomplete="email" placeholder="you@example.com" required><label>Password</label><input id="registerPassword" type="password" autocomplete="new-password" minlength="6" placeholder="At least 6 characters" required><label>Valvondor Username</label><input id="registerUsername" type="text" maxlength="16" autocomplete="off" placeholder="Wolf name" required><button class="accountPrimary" type="submit">CREATE ACCOUNT</button></form>
-    <div id="accountStatus" class="accountStatus">Supabase still needs to be connected before real accounts can sign in.</div>
-  </div>
-</div>
-<div id="accountBar" class="accountBar" hidden><span id="accountName">Not signed in</span><button id="accountLogoutBtn" type="button">LOG OUT</button></div>
-
 <div id="characterCreator" aria-modal="true" role="dialog">
   <div class="creatorCard">
     <div class="creatorHeader"><h1>CREATE YOUR WOLF</h1><p>Choose your wolf style, fur, and name.</p></div>
@@ -9465,22 +9456,7 @@ window.VALVONDOR_AUTH_CONFIG = {
 })();
 
 </script>
-<script>
-(function(){
- const cfg=window.VALVONDOR_AUTH_CONFIG||{};const gate=document.getElementById('accountGate'),status=document.getElementById('accountStatus'),badge=document.getElementById('accountBackendBadge'),bar=document.getElementById('accountBar'),name=document.getElementById('accountName');
- const ready=!!(cfg.supabaseUrl&&cfg.supabaseAnonKey);
- function setStatus(msg,good=false){if(status){status.textContent=msg;status.style.color=good?'#bfe1af':'#b8ad9a'}}
- if(ready){badge.textContent='SUPABASE CONFIGURED';badge.style.color='#bfe1af';setStatus('Supabase credentials are present. The connection code is ready to be enabled.')}
- function showTab(which){document.getElementById('showLoginTab').classList.toggle('active',which==='login');document.getElementById('showRegisterTab').classList.toggle('active',which==='register');document.getElementById('loginForm').classList.toggle('active',which==='login');document.getElementById('registerForm').classList.toggle('active',which==='register')}
- document.getElementById('showLoginTab')?.addEventListener('click',()=>showTab('login'));document.getElementById('showRegisterTab')?.addEventListener('click',()=>showTab('register'));
- function need(){if(!ready){setStatus('Real accounts are prepared, but Supabase is not connected yet. Add the project URL and anon key in js/auth_config.js.');return false}return true}
- document.getElementById('loginForm')?.addEventListener('submit',e=>{e.preventDefault();if(!need())return;setStatus('Supabase login will activate after we add the Supabase client library and database policies.')});
- document.getElementById('registerForm')?.addEventListener('submit',e=>{e.preventDefault();if(!need())return;const u=(document.getElementById('registerUsername')?.value||'').trim();if(u.length<3){setStatus('Username must be at least 3 characters.');return}setStatus('Supabase registration will activate after we add the Supabase client library and database policies.')});
- document.getElementById('accountLogoutBtn')?.addEventListener('click',()=>{bar.hidden=true;gate?.classList.add('open');setStatus('Logged out. Real session logout will be wired to Supabase.')});
- window.ValvondorAccount={config:cfg,backendReady:ready,openGate(){gate?.classList.add('open')},closeGate(){gate?.classList.remove('open')},setSignedIn(username){gate?.classList.remove('open');bar.hidden=false;name.textContent=username||'Player'},setStatus};
-})();
 
-</script>
 <script>if(window.VALVONDOR_LOCAL_TEST)document.body.classList.add('localTest');</script>
 <script>
 /* Oakhaven Editor Plus v2 — self-contained fallback/editor. */
