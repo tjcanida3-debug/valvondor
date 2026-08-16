@@ -4668,25 +4668,35 @@ function unequipSlot(slot){
   equipment[slot]=null;
   hp=Math.min(hp,playerMaxHP());
   if(hpBar)hpBar.style.width=(hp/playerMaxHP()*100)+'%';
-  updateEquipmentVisual();
-  renderInventory();
-  save(false);
-  toast((item?item.name:'Item')+' unequipped.');
+  try{updateEquipmentVisual();}catch(e){console.error('Equipment visual refresh failed',e);}
+  try{renderInventory();}catch(e){console.error('Inventory refresh failed',e);}
+  try{save(false);}catch(e){console.error('Equipment save failed',e);}
+  try{toast((item?item.name:'Item')+' unequipped.');}catch(e){}
 }
 function equipItem(id){
   const item=ITEM_DB[id];
-  if(!item||!item.equip||inventoryData[id]<=0) return;
-  if(item.combatReq && playerLevel<item.combatReq){toast('Combat level '+item.combatReq+' required to equip '+item.name+'.');return}
+  if(!item){try{toast('That item is not available.');}catch(e){} return false;}
+  if(!item.equip){try{toast(item.name+' is not equippable.');}catch(e){} return false;}
+  if((inventoryData[id]||0)<=0){try{toast('You do not own '+item.name+'.');}catch(e){} return false;}
+  if(item.combatReq && playerLevel<item.combatReq){
+    try{toast('Combat level '+item.combatReq+' required to equip '+item.name+'.');}catch(e){}
+    return false;
+  }
+
+  const slot=item.equip;
   const beforeMax=playerMaxHP();
-  equipment[item.equip]=id;
+  equipment[slot]=id;
   selectedItem=id;
   const afterMax=playerMaxHP();
   if(afterMax>beforeMax)hp=Math.min(afterMax,hp+(afterMax-beforeMax));
-  if(hpBar)hpBar.style.width=(hp/afterMax*100)+'%';
-  updateEquipmentVisual();
-  renderInventory();
-  save(false);
-  toast(item.name+' equipped and now visible.');
+  if(hpBar)hpBar.style.width=(hp/Math.max(1,afterMax)*100)+'%';
+
+  // Equipping must succeed even if an optional visual layer is broken/missing.
+  try{updateEquipmentVisual();}catch(e){console.error('Equipment visual refresh failed',e);}
+  try{save(false);}catch(e){console.error('Equipment save failed',e);}
+  try{renderInventory();}catch(e){console.error('Inventory refresh failed',e);}
+  try{toast('✓ '+item.name+' equipped.');}catch(e){}
+  return equipment[slot]===id;
 }
 function useItem(id){
   const item=ITEM_DB[id];
@@ -4740,6 +4750,7 @@ function walletMarkup(){
 }
 
 function renderInventory(){
+ panel.dataset.type='inventory';
  panel.classList.remove('forgePanel','bankPanel','mapPanel','shopPanel','skillsPanel');panel.classList.add('inventoryPanel');
  const items=filteredItems(),usedSlots=Object.keys(inventoryData).filter(id=>inventoryData[id]>0&&id!=='gold').length;
  const slots=items.map(id=>{const item=ITEM_DB[id];return `<div class="invGridSlot ${selectedItem===id?'selected':''}" data-item="${id}"><div><div class="icon">${itemArt(item,'invItemArt')}</div><small>${item.name}</small></div><span class="count">x${inventoryData[id]}</span></div>`}).join('');
@@ -9344,4 +9355,25 @@ console.log('Oakhaven Editor Plus v2 ready');
  },true);
 })();
 </script>
+
+<script id="equipmentClickFallback">
+(function(){
+ document.addEventListener('click',function(e){
+   const btn=e.target.closest('#useItemBtn,#quickEquipBtn');
+   if(!btn)return;
+   const panel=document.getElementById('panel');
+   if(!panel || panel.dataset.type!=='inventory')return;
+   try{
+     const id=selectedItem;
+     const item=id&&ITEM_DB[id];
+     if(!item||!item.equip)return;
+     e.preventDefault();
+     e.stopPropagation();
+     if(equipment[item.equip]===id)unequipSlot(item.equip);
+     else equipItem(id);
+   }catch(err){console.error('Equipment fallback click failed',err);}
+ },true);
+})();
+</script>
+
 </body></html>
