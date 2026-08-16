@@ -1,0 +1,23 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Valvondor Account</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,sans-serif;background:radial-gradient(circle at top,#273426,#0c100d 58%);color:#eee;display:grid;place-items:center;padding:20px}.card{width:min(430px,100%);background:#151a16;border:1px solid #3e4a3e;border-radius:18px;padding:26px;box-shadow:0 25px 70px #0009}.brand{text-align:center;font-size:2rem;font-weight:900;letter-spacing:.08em}.sub{text-align:center;color:#b9c4b8;margin:8px 0 22px}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}.tabs button,.primary,.secondary{border:0;border-radius:10px;padding:12px;font-weight:800;cursor:pointer}.tabs button{background:#252d26;color:#ddd}.tabs button.active{background:#60795e;color:#fff}label{display:block;margin:13px 0 6px;font-size:.9rem;color:#c7d0c6}input{width:100%;padding:13px;border-radius:10px;border:1px solid #465246;background:#0e120f;color:#fff}.primary{width:100%;margin-top:18px;background:#6f8c69;color:#fff}.secondary{width:100%;margin-top:10px;background:#2b332c;color:#fff}.msg{min-height:22px;margin-top:14px;color:#d8c58f}.hidden{display:none}.back{display:block;text-align:center;margin-top:18px;color:#bac8b7;text-decoration:none}
+</style></head><body><main class="card"><div class="brand">VALVONDOR</div><div class="sub">Your adventure starts here.</div>
+<div id="setupWarning" class="msg hidden">Account backend still needs the Supabase URL and anon key.</div>
+<div id="signedOut"><div class="tabs"><button id="loginTab" class="active">LOGIN</button><button id="signupTab">SIGN UP</button></div>
+<form id="authForm"><label>Email</label><input id="email" type="email" autocomplete="email" required><label>Password</label><input id="password" type="password" minlength="6" autocomplete="current-password" required><button class="primary" id="submitBtn" type="submit">LOGIN</button></form><div id="message" class="msg"></div></div>
+<div id="signedIn" class="hidden"><p>Logged in as <strong id="userEmail"></strong></p><a class="primary" style="display:block;text-align:center;text-decoration:none" href="index.html">▶ PLAY DEMO</a><button id="logoutBtn" class="secondary">LOG OUT</button></div><a class="back" href="index.html">← Back to Valvondor</a></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script>
+<script>
+const configured=window.VALVONDOR_SUPABASE_URL&&!window.VALVONDOR_SUPABASE_URL.startsWith('PASTE_')&&window.VALVONDOR_SUPABASE_ANON_KEY&&!window.VALVONDOR_SUPABASE_ANON_KEY.startsWith('PASTE_');
+const warning=document.getElementById('setupWarning'), out=document.getElementById('signedOut'), inn=document.getElementById('signedIn'), msg=document.getElementById('message');
+if(!configured){warning.classList.remove('hidden');document.getElementById('authForm').querySelectorAll('input,button').forEach(x=>x.disabled=true)}
+else{
+ const client=supabase.createClient(window.VALVONDOR_SUPABASE_URL,window.VALVONDOR_SUPABASE_ANON_KEY); let mode='login';
+ const loginTab=document.getElementById('loginTab'),signupTab=document.getElementById('signupTab'),submitBtn=document.getElementById('submitBtn');
+ function setMode(m){mode=m;loginTab.classList.toggle('active',m==='login');signupTab.classList.toggle('active',m==='signup');submitBtn.textContent=m==='login'?'LOGIN':'CREATE ACCOUNT';msg.textContent=''}
+ loginTab.onclick=()=>setMode('login');signupTab.onclick=()=>setMode('signup');
+ async function refresh(){const {data}=await client.auth.getSession();const u=data?.session?.user;out.classList.toggle('hidden',!!u);inn.classList.toggle('hidden',!u);if(u)document.getElementById('userEmail').textContent=u.email||'player'}
+ document.getElementById('authForm').onsubmit=async e=>{e.preventDefault();msg.textContent='';const email=document.getElementById('email').value.trim(),password=document.getElementById('password').value;submitBtn.disabled=true;let r;if(mode==='login')r=await client.auth.signInWithPassword({email,password});else r=await client.auth.signUp({email,password});submitBtn.disabled=false;if(r.error){msg.textContent=r.error.message;return}msg.textContent=mode==='signup'?'Account created. Check your email if confirmation is enabled.':'Logged in.';await refresh()};
+ document.getElementById('logoutBtn').onclick=async()=>{await client.auth.signOut();await refresh()};client.auth.onAuthStateChange(refresh);refresh();
+}
+</script></body></html>
