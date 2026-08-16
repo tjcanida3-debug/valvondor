@@ -1,0 +1,24 @@
+/* Valvondor v9.18 main-game approved asset integration */
+#world .starterQuestNpc{position:absolute;z-index:12;width:88px;height:138px;display:flex;align-items:flex-end;justify-content:center;cursor:pointer}
+#world .starterQuestNpc img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 7px 4px #0009)}
+#world .starterQuestNpc span{position:absolute;left:50%;bottom:-23px;transform:translateX(-50%);white-space:nowrap;background:#101611e8;border:1px solid #8b6a35;border-radius:7px;padding:3px 7px;color:#f3e0b4;font:bold 12px Georgia,serif}
+#world .starterMob{position:absolute;z-index:9;width:86px;height:72px;cursor:pointer;display:flex;align-items:flex-end;justify-content:center}
+#world .starterMob img{max-width:100%;max-height:100%;object-fit:contain;image-rendering:auto;filter:drop-shadow(0 5px 3px #0008)}
+#world .starterMob .starterMobName{position:absolute;left:50%;bottom:-18px;transform:translateX(-50%);font:bold 10px Arial;color:#f5e3bc;background:#111b;border-radius:5px;padding:2px 5px;white-space:nowrap}
+#world .starterMob .starterHp{position:absolute;left:10%;right:10%;top:-8px;height:5px;background:#2b1111;border:1px solid #000;border-radius:4px;overflow:hidden}
+#world .starterMob .starterHp i{display:block;height:100%;width:100%;background:#b43b2d}
+#world .starterMob.defeated{display:none}
+#pestsQuestTracker{position:fixed;left:12px;top:150px;z-index:5000;display:none;min-width:230px;padding:9px 11px;background:#09100ce8;border:1px solid #ad8644;border-radius:9px;color:#f3e2b8;box-shadow:0 6px 20px #0007;font:13px Arial}
+#pestsQuestTracker b{font-family:Georgia,serif;color:#e5bd72}
+#pestsQuestDialog{position:fixed;inset:0;z-index:60000;display:none;align-items:center;justify-content:center;background:#0008;padding:18px}
+#pestsQuestDialog.open{display:flex}
+#pestsQuestCard{width:min(680px,94vw);background:linear-gradient(145deg,#17140f,#090b09);border:2px solid #b78b45;border-radius:14px;box-shadow:0 18px 55px #000c;color:#f3e2be;padding:14px;display:grid;grid-template-columns:150px 1fr;gap:15px}
+#pestsQuestPortrait{width:150px;height:180px;object-fit:cover;object-position:center top;border:1px solid #73572d;border-radius:9px}
+#pestsQuestCard h2{margin:0 0 3px;color:#e7bd70;font-family:Georgia,serif}.pestsSub{color:#9bc6a7;font-size:12px;margin-bottom:10px}.pestsText{line-height:1.5;min-height:92px}
+#pestsQuestButtons{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}#pestsQuestButtons button{padding:9px 13px;border:1px solid #b78b45;border-radius:8px;background:#18251d;color:#f5e7c8;font-weight:bold;cursor:pointer}
+@media(max-width:650px){#pestsQuestTracker{top:118px;left:6px;min-width:195px;font-size:11px}#pestsQuestCard{grid-template-columns:92px 1fr;padding:10px;gap:10px}#pestsQuestPortrait{width:92px;height:130px}#pestsQuestCard h2{font-size:19px}.pestsText{font-size:13px}}
+
+/* v9.19: make Mara impossible to miss at the south-road starter position. */
+#world #maraThornfieldNpc{z-index:40!important;width:92px;height:144px!important;filter:none!important}
+#world #maraThornfieldNpc img{width:92px!important;height:136px!important;object-fit:contain!important}
+#world .starterQuestMark{position:absolute;z-index:3;left:50%;top:-34px;transform:translateX(-50%);width:26px;height:26px;border-radius:50%;background:#f1c84a;color:#241600;border:2px solid #fff1a5;box-shadow:0 2px 8px #000a;text-align:center;font:bold 20px/26px Arial}

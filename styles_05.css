@@ -1,0 +1,72 @@
+
+/* === v7.58 TRUE PHONE INVENTORY === */
+.invMobileTabs{display:none}
+@media (max-width:760px){
+  #panel.inventoryPanel{
+    inset:0!important;width:100%!important;height:100%!important;
+    max-width:none!important;right:auto!important;overflow:hidden!important;
+  }
+  .inventoryScene{grid-template-rows:58px 42px minmax(0,1fr) 50px!important;height:100dvh!important}
+  .inventoryHeaderNew{
+    grid-template-columns:1fr auto!important;
+    padding:5px 8px!important;gap:6px!important;
+  }
+  .invBrand{gap:7px!important}
+  .invBrandMark{width:38px!important;height:38px!important;font-size:22px!important}
+  .invBrand h2{font-size:15px!important;letter-spacing:1px!important}
+  .invBrand small,.invTitleNew{display:none!important}
+  .invWallet{gap:6px!important}
+  .invGoldNew{padding:6px 9px!important;font-size:15px!important}
+  .invCloseNew{width:36px!important;height:36px!important;font-size:18px!important}
+
+  .invMobileTabs{
+    display:grid!important;grid-template-columns:repeat(3,1fr);gap:4px;
+    padding:4px 6px;background:#0b1117;border-bottom:1px solid #72542c;
+  }
+  .invMobileTab{
+    min-width:0;padding:7px 4px;border:1px solid #5d4a31;border-radius:5px;
+    background:#151e25;color:#c8bdab;font:700 11px Georgia;cursor:pointer;
+  }
+  .invMobileTab.active{background:#4d361c;border-color:#c89b4b;color:#ffe09a}
+
+  .invBodyNew{
+    display:block!important;padding:6px!important;min-height:0!important;overflow:hidden!important;
+  }
+  .invBodyNew>.invPane{display:none!important;height:100%!important;width:100%!important}
+  .invBodyNew>.invPane.mobileActive{display:grid!important}
+  .invBodyNew>.invPane:first-child.mobileActive{display:block!important;overflow:auto!important}
+
+  .invPaneTitle{padding:7px 9px!important;font-size:14px!important}
+  .invEquipmentBody{
+    height:auto!important;min-height:calc(100% - 35px)!important;
+    grid-template-rows:minmax(150px,1fr) auto auto!important;padding:7px!important;
+  }
+  .invCharacterStage{min-height:150px!important}
+  .invCharacterPortrait{width:auto!important;height:92%!important;max-width:92%!important;object-fit:contain!important}
+  .invEquipGrid{grid-template-columns:repeat(4,1fr)!important;gap:5px!important;margin-top:6px!important}
+  .invEquipSlot{min-height:55px!important}
+  .invEquipSlot .icon{font-size:22px!important}
+  .invStatsNew{gap:4px!important;margin-top:6px!important}
+  .invStatNew{padding:5px!important}.invStatNew b{font-size:16px!important}.invStatNew span{font-size:9px!important}
+
+  .invBackpackPane{grid-template-rows:auto auto minmax(0,1fr) auto!important}
+  .invFiltersNew{padding:5px!important;gap:4px!important}
+  .invFilterNew{padding:6px 8px!important;font-size:10px!important}
+  .invGridNew{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:5px!important;padding:6px!important;overflow-y:auto!important;overflow-x:hidden!important;
+  }
+  .invGridSlot{min-width:0!important;aspect-ratio:1!important;padding:2px!important}
+  .invGridSlot .icon{font-size:24px!important}.invGridSlot small{font-size:8px!important}
+  .invCapacity{margin:0 6px 6px!important;padding:7px 9px!important;font-size:12px!important}
+
+  .invDetailPane{grid-template-rows:auto 115px minmax(0,1fr) auto!important}
+  .invPreviewNew{margin:6px!important;font-size:54px!important}
+  .invDetailText{padding:0 9px!important}
+  .invDetailText h3{font-size:19px!important;margin:5px 0!important}
+  .invDetailText p{font-size:12px!important;margin:4px 0 8px!important}
+  .invActionsNew{padding:7px!important}.invAction{padding:9px!important;font-size:12px!important}
+
+  .invFooterNew{gap:4px!important;padding:3px 5px!important;overflow:hidden!important}
+  .invFooterNew button{min-width:0!important;flex:1!important;padding:7px 3px!important;font-size:9px!important}
+}

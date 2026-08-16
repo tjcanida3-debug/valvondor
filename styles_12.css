@@ -1,0 +1,7 @@
+
+#shopWorld{
+  left:0!important;
+  top:0!important;
+  box-sizing:border-box!important;
+}
+#shopWorld.active{display:block!important}

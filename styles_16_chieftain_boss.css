@@ -1,0 +1,635 @@
+#chieftainDungeonWorld{display:none;position:absolute;width:1200px;height:800px;overflow:hidden;background:radial-gradient(circle at 74% 42%,#3a1711 0 19%,transparent 20%),linear-gradient(#191514,#0c0b0a);border:18px solid #292421;box-sizing:border-box;color:#f4ddb0}
+#chieftainDungeonWorld.active{display:block}
+#chieftainDungeonWorld:before{content:"";position:absolute;inset:0;opacity:.24;background:repeating-linear-gradient(0deg,transparent 0 47px,#61493a 48px 50px),repeating-linear-gradient(90deg,transparent 0 47px,#4e3a30 48px 50px)}
+.cd-room{position:absolute;width:220px;height:170px;border:12px solid #40372f;background:linear-gradient(135deg,#2c2722,#171411);box-shadow:inset 0 0 35px #000,0 0 0 4px #0c0b0a;text-align:center;z-index:2}.cd-room b{display:block;margin-top:16px;color:#d89d4a;font:800 18px Georgia}.cd-room span{display:block;color:#a99172;font:14px Georgia;margin-top:3px}.r1{left:55px;top:500px}.r2{left:55px;top:210px}.r3{left:355px;top:70px}.r4{left:655px;top:210px}.cd-hall{position:absolute;background:#241f1b;border:7px solid #40372f;box-shadow:inset 0 0 20px #000;z-index:1}.h1{left:145px;top:385px;width:46px;height:125px}.h2{left:255px;top:273px;width:120px;height:45px}.h3{left:555px;top:135px;width:120px;height:45px}.h4{left:755px;top:370px;width:45px;height:115px}
+.cd-rune{position:absolute;width:70px;height:70px;border-radius:50%;border:5px solid #6f522c;background:radial-gradient(circle,#342b21,#100d0a);color:#ffd46f;font-size:34px;z-index:12;cursor:pointer;box-shadow:0 0 18px #000}.cd-rune.active{box-shadow:0 0 28px #ffc64f,0 0 6px #fff inset;border-color:#f1c86b;transform:scale(1.08)}.cd-rune.wrong{animation:wrongRune .35s 2}@keyframes wrongRune{50%{transform:translateX(8px);border-color:#d33}}.moon{left:130px;top:565px}.flame{left:130px;top:275px}.skull{left:430px;top:125px}
+#chieftainPuzzleHud{position:absolute;left:325px;bottom:25px;width:520px;padding:10px 16px;background:#0c0908dd;border:2px solid #79562c;text-align:center;z-index:30;font:700 14px Georgia;letter-spacing:.5px}#chieftainPuzzleHud strong{color:#ffc25b}#chieftainPuzzleHud small{display:block;color:#cbb99a;margin-top:4px;font-weight:400}
+#chieftainBossGate{position:absolute;left:721px;top:449px;width:112px;height:72px;background:linear-gradient(#392016,#120b08);border:8px solid #564334;z-index:15;text-align:center;box-shadow:0 0 22px #000;transition:.5s}#chieftainBossGate span{font-size:24px;display:block;line-height:24px}#chieftainBossGate b{font-size:10px;display:block}#chieftainBossGate small{font-size:9px;color:#e86e52}#chieftainBossGate.open{opacity:.18;transform:translateY(-55px);pointer-events:none}#chieftainBossGate.open small{color:#9be28f}
+#chieftainArena{position:absolute;left:830px;top:80px;width:315px;height:560px;border:11px solid #4a3025;background:radial-gradient(circle,#42140e,#170c09 66%);box-shadow:inset 0 0 45px #000;z-index:3;overflow:hidden}.arena-ring{position:absolute;left:38px;top:120px;width:220px;height:220px;border:6px solid #6e261d;border-radius:50%;box-shadow:0 0 24px #8c2317,inset 0 0 24px #8c2317}.boss-banner{text-align:center;color:#f5b24e;font:900 17px Georgia;padding:12px;background:#130b09;border-bottom:2px solid #59301f}
+#chieftainBoss{position:absolute;left:68px;top:115px;width:175px;height:250px;z-index:8;filter:drop-shadow(0 10px 10px #000);cursor:crosshair;transition:transform .12s}#chieftainBoss img{width:100%;height:100%;object-fit:cover;object-position:left top;border-radius:45%;mix-blend-mode:screen}#chieftainBoss span{position:absolute;bottom:-19px;left:-10px;width:195px;text-align:center;font:700 14px Georgia;color:#ffd6a0;text-shadow:2px 2px #000}#chieftainBoss.hurt{transform:translateX(8px);filter:drop-shadow(0 0 14px #ff3a22)}#chieftainBoss.dead{transform:rotate(88deg) translate(70px,-20px);opacity:.55;pointer-events:none}
+#chieftainBossHp{position:absolute;left:16px;right:16px;bottom:55px;height:58px;background:#0c0908e8;border:2px solid #8b5f37;display:none;align-items:center;padding:5px;z-index:20}#chieftainBossHp.show{display:flex}.portrait{width:50px;height:50px;overflow:hidden;border:2px solid #8b5f37}.portrait img{width:100%;height:100%;object-fit:cover}.portrait+section{flex:1;padding-left:8px}.portrait+section b{font:800 12px Georgia;color:#ffc466}.bar{height:12px;border:2px solid #4e321f;background:#100908;margin:3px 0}.bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#7c130e,#d74428);transition:width .18s}#chieftainBossHp small{font-size:9px;color:#d9c5aa}
+#chieftainBossMessage{position:absolute;left:18px;right:18px;top:405px;min-height:38px;color:#ffd8ae;text-align:center;font:700 12px Georgia;text-shadow:1px 1px #000;z-index:20}.chieftain-add{position:absolute;width:50px;height:50px;border-radius:50%;background:#27351c;border:3px solid #7f9d4e;color:#d9ffab;text-align:center;line-height:45px;font-size:25px;z-index:12}.chieftain-add.a1{left:30px;top:355px}.chieftain-add.a2{right:30px;top:355px}
+#chieftainLoot{position:absolute;left:43px;right:43px;top:190px;padding:18px;background:#171009ef;border:3px solid #bb8138;text-align:center;z-index:25;color:#ffd276;font-size:24px}#chieftainLoot b,#chieftainLoot small{display:block}#chieftainLoot small{font-size:11px;color:#e5d2b6;margin-top:6px}
+#chieftainDungeonExit{position:absolute;left:55px;bottom:25px;padding:12px 18px;background:#17100c;border:3px solid #70543a;z-index:30;cursor:pointer;font:700 12px Georgia}.cd-help{position:absolute;right:30px;bottom:8px;color:#8e7f6b;font-size:10px;z-index:30}.dungeonTorch{position:absolute;font-size:28px;filter:drop-shadow(0 0 9px #ff9a22);z-index:10}.dungeonTorch.t1{left:300px;top:590px}.dungeonTorch.t2{left:300px;top:230px}.dungeonTorch.t3{left:610px;top:95px}.dungeonTorch.t4{left:795px;top:300px}
+
+/* v8.03 visual polish: use the recovered dungeon art instead of flat placeholder rooms. */
+.cd-room{background-size:cover;background-position:center;background-repeat:no-repeat;overflow:hidden}
+.cd-room:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0003,#0008);z-index:-1;pointer-events:none}
+.cd-room.r1{background-image:linear-gradient(#0002,#0007),url('../assets/dungeon/recovered/rooms/room_entrance.png')}
+.cd-room.r2{background-image:linear-gradient(#0002,#0007),url('../assets/dungeon/recovered/rooms/room_orc_camp.png')}
+.cd-room.r3{background-image:linear-gradient(#0002,#0007),url('../assets/dungeon/recovered/rooms/room_ritual.png')}
+.cd-room.r4{background-image:linear-gradient(#0002,#0007),url('../assets/dungeon/recovered/rooms/room_entrance.png')}
+.cd-room b,.cd-room span{position:relative;z-index:3;text-shadow:0 2px 4px #000,0 0 7px #000}.cd-room b{color:#ffd384}.cd-room span{color:#ead4ae}
+#chieftainArena{background-image:linear-gradient(#18070588,#090403aa),url('../assets/dungeon/recovered/rooms/room_chieftain_lair.png');background-size:cover;background-position:center}
+#chieftainBoss{left:65px;top:105px;width:185px;height:270px}
+#chieftainBoss img{width:100%;height:100%;object-fit:contain;object-position:center top;border-radius:0;mix-blend-mode:normal;filter:drop-shadow(0 7px 7px #000)}
+#chieftainBoss span{bottom:-10px;text-shadow:0 2px 4px #000,0 0 6px #000}
+.arena-ring{opacity:.58}
+
+/* v8.04 — continuous top-down Chieftain dungeon */
+#chieftainDungeonWorld{background:#0b0b0c!important;border:0!important;box-shadow:inset 0 0 90px #000}
+#chieftainDungeonWorld:before{display:none}
+.dungeon-floor-grid{position:absolute;inset:18px;background:
+ radial-gradient(circle at 20% 80%,#33271d66,transparent 18%),
+ radial-gradient(circle at 77% 28%,#5b1b1266,transparent 24%),
+ repeating-linear-gradient(0deg,#181818 0 31px,#222 32px 34px),
+ repeating-linear-gradient(90deg,transparent 0 47px,#0d0d0d 48px 50px);
+ border:14px solid #39332e;box-shadow:inset 0 0 80px #000,0 0 0 5px #080808}
+.dungeon-room{position:absolute;z-index:2;border:10px solid #51483e;background:
+ radial-gradient(circle at 50% 50%,#30291f,#161412 70%);box-shadow:inset 0 0 40px #000,0 0 0 4px #090807;color:#d8b675;text-align:center}
+.dungeon-room:before{content:"";position:absolute;inset:8px;border:2px solid #30291f;pointer-events:none}
+.dungeon-room b{display:block;margin-top:12px;font:800 13px Georgia;letter-spacing:1.5px}.dungeon-room span{font:11px Georgia;color:#8f806e}
+.entrance-room{left:70px;top:565px;width:245px;height:150px}.moon-room{left:70px;top:295px;width:245px;height:170px}
+.flame-room{left:370px;top:120px;width:250px;height:190px}.skull-room{left:680px;top:285px;width:230px;height:180px}
+.dungeon-corridor{position:absolute;z-index:1;background:repeating-linear-gradient(90deg,#292520 0 30px,#201d1a 31px 33px);border:7px solid #4b433b;box-shadow:inset 0 0 18px #000}
+.c1{left:164px;top:455px;width:55px;height:120px}.c2{left:305px;top:355px;width:75px;height:55px}.c3{left:610px;top:190px;width:80px;height:55px}.c4{left:790px;top:455px;width:55px;height:115px}
+.cd-rune{z-index:14;width:58px;height:58px;font-size:27px;border-width:4px}
+.cd-rune.moon{left:164px;top:350px}.cd-rune.flame{left:465px;top:185px}.cd-rune.skull{left:765px;top:350px}
+#chieftainBossGate{left:757px;top:525px;width:120px;height:62px;z-index:16;background:repeating-linear-gradient(90deg,#241915 0 10px,#604637 11px 14px);border-color:#80634d}
+#chieftainArena{left:905px;top:75px;width:255px;height:590px;border:12px solid #5a3c2d;background:
+ radial-gradient(circle at 50% 45%,#4b1710 0 8%,#25100d 35%,#100a08 72%);box-shadow:inset 0 0 60px #000,0 0 0 5px #090605}
+#chieftainArena:before{content:"";position:absolute;inset:48px 18px 70px;border:3px solid #6c2d21;background:
+ repeating-linear-gradient(45deg,transparent 0 28px,#3c1814 29px 31px);opacity:.55}
+.arena-ring{left:30px;top:155px;width:180px;height:180px;border-color:#9d3526;box-shadow:0 0 30px #7c1b14,inset 0 0 25px #7c1b14}
+#chieftainBoss{left:43px;top:130px;width:170px;height:265px}
+#chieftainPuzzleHud{left:330px;bottom:24px;width:500px}
+#chieftainDungeonExit{left:82px;bottom:39px}
+.cd-help{right:34px;bottom:12px}
+.dungeon-prop{position:absolute;z-index:7;text-shadow:0 3px 5px #000;filter:drop-shadow(0 0 6px #000)}
+.bones{font-size:25px;color:#b9ad94}.b1{left:110px;top:515px;transform:rotate(-18deg)}.b2{left:710px;top:235px;transform:rotate(21deg)}
+.crate{font-size:31px;color:#74543a}.p1{left:270px;top:615px}.p2{left:600px;top:330px}
+.brazier{font-size:25px;filter:drop-shadow(0 0 10px #ff8a1c)}.z1{left:90px;top:330px}.z2{left:585px;top:150px}.z3{left:690px;top:410px}.z4{left:875px;top:520px}
+
+/* v8.05 FIX: dungeon entrance is a real Westwood world object, above rebuilt forest layers. */
+body.forestMode #chieftainDungeonEntrance{display:block!important;z-index:120!important;pointer-events:auto!important;filter:drop-shadow(0 10px 10px #000)!important}
+body.forestMode #chieftainDungeonEntrance span{background:#150b08f2!important;border:3px solid #d69b3d!important;color:#ffe19a!important;font-size:14px!important;box-shadow:0 0 14px #000!important}
+
+/* v8.07 separate-room dungeon */
+#chieftainDungeonWorld{background:#090a0b!important;overflow:hidden!important}
+#chieftainDungeonWorld.active{display:block!important}
+#chieftainDungeonWorld .dungeon-floor-grid{position:absolute;inset:55px 70px 65px!important;border:22px solid #17191b!important;background:repeating-linear-gradient(0deg,#292b2c 0 31px,#1d1f20 32px 35px),repeating-linear-gradient(90deg,transparent 0 47px,#17191a 48px 51px)!important;box-shadow:inset 0 0 120px #000,0 0 0 5px #050505!important}
+#chieftainDungeonWorld .dungeon-floor-grid:before{content:"";position:absolute;inset:18px;border:3px solid #3c3d3b;box-shadow:inset 0 0 70px #000;pointer-events:none}
+#cdRoomTitle{position:absolute;z-index:20;top:88px;left:90px;color:#f3c86d;font:700 28px Georgia,serif;text-shadow:0 3px #000}
+#cdRoomGoal{position:absolute;z-index:20;top:124px;left:92px;color:#ddd;font:15px Arial}
+#cdDoor{position:absolute;z-index:30;left:1010px;top:315px;width:82px;height:155px;border:7px solid #50483d;background:repeating-linear-gradient(90deg,#241b16 0 12px,#573b28 13px 23px);box-shadow:0 10px 20px #000,inset 0 0 20px #000;text-align:center;color:#d6b16a;padding-top:20px;box-sizing:border-box}
+#cdDoor span{display:block;font-size:25px}#cdDoor b{display:block;font-size:11px;margin-top:8px}#cdDoor small{display:block;font-size:9px;margin-top:5px;color:#aaa}
+#cdDoor.open{filter:brightness(1.5);border-color:#b68b42;cursor:pointer}#cdDoor.open span{display:none}#cdDoor.open small{color:#9fda78}
+.cdEnemy{position:absolute;z-index:25;width:105px;height:125px;transform:translate(-50%,-50%);filter:drop-shadow(0 8px 7px #000)}
+.cdEnemy.brute{width:150px;height:165px}.cdEnemy.boss{width:175px;height:195px}
+.cdEnemy img{width:100%;height:100%;object-fit:contain}.cdEnemy .name{position:absolute;left:50%;top:-18px;transform:translateX(-50%);white-space:nowrap;color:#f4d990;font:bold 12px Arial;text-shadow:0 2px #000}
+.cdEnemy .ehp{position:absolute;left:8%;right:8%;top:-5px;height:7px;background:#301010;border:1px solid #111}.cdEnemy .ehp i{display:block;height:100%;background:#b72d2d;width:100%}
+.cdEnemy.dead{opacity:0;transition:opacity .6s;pointer-events:none}.cdEnemy.hurt{filter:brightness(1.7) drop-shadow(0 8px 7px #000)}
+#chieftainBossHp{display:none!important;left:390px!important;right:390px!important;bottom:72px!important;top:auto!important}#chieftainBossHp.show{display:flex!important}
+#chieftainBossMessage{position:absolute!important;z-index:40;left:300px!important;right:300px!important;bottom:25px!important;top:auto!important;text-align:center;color:#f1d89c}
+#chieftainLoot{position:absolute!important;z-index:45;left:420px!important;top:330px!important;width:360px!important}
+#chieftainDungeonExit{z-index:50!important}
+#cdFade{position:absolute;z-index:100;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .35s}#cdFade.on{opacity:1}
+
+/* v8.08 — decorated separate-room dungeon + visible enemy sprite fixes */
+#chieftainDungeonWorld .dungeon-floor-grid{
+  inset:52px 68px 62px!important;
+  background-size:cover!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+  image-rendering:pixelated;
+  border:20px solid #161313!important;
+  box-shadow:inset 0 0 95px #000,0 0 0 6px #050505!important;
+}
+#chieftainDungeonWorld .dungeon-floor-grid:before{
+  inset:8px!important;border:4px solid #4d4032!important;
+  box-shadow:inset 0 0 75px #000!important;
+}
+#chieftainDungeonWorld.room1 .dungeon-floor-grid{
+  background-image:linear-gradient(#0002,#0005),url('../assets/dungeon/recovered/rooms/room_entrance.png')!important;
+}
+#chieftainDungeonWorld.room2 .dungeon-floor-grid{
+  background-image:linear-gradient(#0001,#0004),url('../assets/dungeon/recovered/rooms/room_orc_camp.png')!important;
+}
+#chieftainDungeonWorld.room3 .dungeon-floor-grid{
+  background-image:linear-gradient(#0001,#0004),url('../assets/dungeon/recovered/rooms/room_ritual.png')!important;
+}
+#chieftainDungeonWorld.room4 .dungeon-floor-grid{
+  background-image:linear-gradient(#16000022,#0005),url('../assets/dungeon/recovered/rooms/room_chieftain_lair.png')!important;
+}
+/* Enemy sprites sit cleanly on the room art. */
+.cdEnemy{width:118px!important;height:138px!important;z-index:35!important}
+.cdEnemy.brute{width:158px!important;height:180px!important}
+.cdEnemy.boss{width:190px!important;height:215px!important}
+.cdEnemy img{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;image-rendering:auto!important}
+.cdEnemy .name{top:-22px!important;background:#0b0907cc;border:1px solid #72552e;padding:2px 6px;border-radius:5px}
+.cdEnemy .ehp{top:-8px!important;height:8px!important;border:2px solid #17100d!important}
+/* Make title/goal readable without covering room decoration. */
+#cdRoomTitle{top:70px!important;left:92px!important;background:#0b0908d9;border:2px solid #6e512f;padding:5px 11px;border-radius:6px}
+#cdRoomGoal{top:116px!important;left:92px!important;background:#090909c9;padding:4px 9px;border-radius:5px}
+#cdDoor{right:80px!important;left:auto!important;top:325px!important}
+/* Environmental accents layered over each room. */
+#chieftainDungeonWorld.room1:after,
+#chieftainDungeonWorld.room2:after,
+#chieftainDungeonWorld.room3:after,
+#chieftainDungeonWorld.room4:after{
+  position:absolute;z-index:18;pointer-events:none;color:#ffb13c;font-size:31px;filter:drop-shadow(0 0 10px #ff6a00);text-shadow:0 3px #000;
+}
+#chieftainDungeonWorld.room1:after{content:'🔥     🦴                         🕯️';left:135px;top:610px;letter-spacing:65px}
+#chieftainDungeonWorld.room2:after{content:'🔥   🛢️       ☠️       🛢️   🔥';left:130px;top:600px;letter-spacing:35px}
+#chieftainDungeonWorld.room3:after{content:'🕯️       ☠️       🔥       ☠️       🕯️';left:130px;top:600px;letter-spacing:27px}
+#chieftainDungeonWorld.room4:after{content:'🔥      ☠️          ⚑          ☠️      🔥';left:120px;top:600px;letter-spacing:25px}
+
+/* v8.09 CRISP TILE DUNGEON — no stretched 335px room art */
+#chieftainDungeonWorld .dungeon-floor-grid{
+  background-image:
+    radial-gradient(circle at 18% 20%,rgba(255,145,45,.07),transparent 14%),
+    radial-gradient(circle at 78% 70%,rgba(255,100,25,.05),transparent 16%),
+    repeating-linear-gradient(0deg,transparent 0 46px,rgba(0,0,0,.38) 47px 50px),
+    repeating-linear-gradient(90deg,#27292a 0 46px,#17191a 47px 50px)!important;
+  background-size:auto!important;background-position:0 0!important;
+  image-rendering:auto!important;border:24px solid #121415!important;
+  box-shadow:inset 0 0 0 5px #45413a,inset 0 0 90px #000,0 0 0 6px #050505!important;
+}
+#chieftainDungeonWorld.room1 .dungeon-floor-grid,
+#chieftainDungeonWorld.room2 .dungeon-floor-grid,
+#chieftainDungeonWorld.room3 .dungeon-floor-grid,
+#chieftainDungeonWorld.room4 .dungeon-floor-grid{background-image:
+  radial-gradient(circle at 18% 20%,rgba(255,145,45,.07),transparent 14%),
+  radial-gradient(circle at 78% 70%,rgba(255,100,25,.05),transparent 16%),
+  repeating-linear-gradient(0deg,transparent 0 46px,rgba(0,0,0,.38) 47px 50px),
+  repeating-linear-gradient(90deg,#27292a 0 46px,#17191a 47px 50px)!important}
+/* crisp stone blocks around the chamber */
+#chieftainDungeonWorld .dungeon-floor-grid:after{content:"";position:absolute;inset:22px;border:18px solid transparent;box-shadow:inset 0 0 0 3px #5b554b,inset 0 0 0 18px #202223;pointer-events:none}
+.cdEnemy img{image-rendering:pixelated!important;background:transparent!important;mix-blend-mode:normal!important}
+.cdEnemy{background:transparent!important}
+/* environmental props are CSS/emoji overlays at native render size, never stretched */
+.cdCrispProp{position:absolute;z-index:19;pointer-events:none;text-shadow:0 3px 4px #000;filter:drop-shadow(0 0 5px #000);font-size:30px}
+.cdCrispProp.fire{filter:drop-shadow(0 0 9px #ff7b18);animation:cdFlicker .45s infinite alternate}
+.cdCrispProp.rubble{font-size:24px;opacity:.82}.cdCrispProp.big{font-size:40px}
+#chieftainDungeonWorld:after{display:none!important}
+
+/* v8.10 finished dungeon art rebuild using recovered asset sheet */
+#chieftainDungeonWorld{background:#090909!important;overflow:hidden}
+#chieftainDungeonWorld .dungeon-floor-grid{inset:70px 95px 70px 95px!important;border:0!important;border-radius:3px!important;background-color:#292929!important;background-image:linear-gradient(rgba(0,0,0,.16),rgba(0,0,0,.16)),url('../assets/dungeon/v810/floor_stone.png')!important;background-size:auto,90px 75px!important;box-shadow:0 0 0 22px #121212,0 0 0 30px #333,inset 0 0 100px #000!important}
+#chieftainDungeonWorld .dungeon-floor-grid:before{content:"";position:absolute;inset:-28px;background-image:url('../assets/dungeon/v810/wall_block.png');background-size:80px 85px;z-index:-1;filter:brightness(.78)}
+#chieftainDungeonWorld .dungeon-floor-grid:after{content:"";position:absolute;inset:20px;border:3px solid #47423a!important;box-shadow:inset 0 0 65px #000!important}
+#chieftainDungeonWorld.room2 .dungeon-floor-grid{background-image:linear-gradient(rgba(25,8,0,.14),rgba(0,0,0,.2)),url('../assets/dungeon/v810/floor_cracked.png')!important;background-size:auto,85px 75px!important}
+#chieftainDungeonWorld.room3 .dungeon-floor-grid{filter:brightness(.82)}
+#chieftainDungeonWorld.room4 .dungeon-floor-grid{box-shadow:0 0 0 22px #120a09,0 0 0 30px #4a211b,inset 0 0 110px #000!important}
+.v810prop{position:absolute;z-index:12;height:auto;object-fit:contain;pointer-events:none;filter:drop-shadow(0 7px 7px #000);image-rendering:auto}
+.cdCrispProp{display:none!important}
+#cdRoomTitle{top:82px!important;left:115px!important;font-size:21px!important;background:#080808dd!important}
+#cdRoomGoal{top:126px!important;left:115px!important}
+#cdDoor{right:100px!important;top:315px!important;width:110px!important;height:165px!important;background:#17110d url('../assets/dungeon/v810/door.png') center/contain no-repeat!important;border:0!important;color:#f4ce7a!important;text-shadow:0 2px 3px #000!important}
+#cdDoor.open{filter:brightness(1.25) drop-shadow(0 0 12px #e1a43b)}
+#cdDoor span{display:none!important}#cdDoor b,#cdDoor small{background:#080808d9;padding:3px 5px;border-radius:4px}
+.cdEnemy{z-index:30!important}.cdEnemy img{width:96px!important;height:96px!important;object-fit:contain!important;background:transparent!important;filter:drop-shadow(0 7px 5px #000);image-rendering:pixelated!important}.cdEnemy.brute img,.cdEnemy.boss img{width:132px!important;height:132px!important}
+#chieftainDungeonExit{z-index:35!important}
+
+/* v8.11 — use the recovered floor/wall art as actual room construction */
+#chieftainDungeonWorld .dungeon-floor-grid{
+  inset:105px 125px 95px 125px!important;
+  background-color:#17191a!important;
+  background-image:url('../assets/dungeon/v810/floor_stone.png')!important;
+  background-repeat:repeat!important;
+  background-size:96px 96px!important;
+  border:0!important;
+  box-shadow:inset 0 0 85px #000!important;
+  overflow:hidden!important;
+}
+#chieftainDungeonWorld.room2 .dungeon-floor-grid{
+  background-image:url('../assets/dungeon/v810/floor_cracked.png')!important;
+  background-size:96px 96px!important;
+}
+#chieftainDungeonWorld.room3 .dungeon-floor-grid,
+#chieftainDungeonWorld.room4 .dungeon-floor-grid{
+  background-image:url('../assets/dungeon/v810/floor_stone.png')!important;
+  background-size:96px 96px!important;
+}
+#chieftainDungeonWorld .dungeon-floor-grid:before,
+#chieftainDungeonWorld .dungeon-floor-grid:after{display:none!important}
+
+/* Four real wall strips, tiled from the recovered wall block. */
+.cdWallStrip{position:absolute;z-index:16;pointer-events:none;
+ background-image:url('../assets/dungeon/v810/wall_block.png');
+ background-repeat:repeat;image-rendering:pixelated;
+ filter:brightness(.86);box-shadow:0 7px 12px #000}
+.cdWallStrip.top{left:95px;right:95px;top:65px;height:92px;background-size:86px 92px}
+.cdWallStrip.bottom{left:95px;right:95px;bottom:45px;height:92px;background-size:86px 92px;transform:rotate(180deg)}
+.cdWallStrip.left{left:55px;top:112px;bottom:90px;width:92px;background-size:92px 86px;transform:rotate(-90deg)}
+.cdWallStrip.right{right:55px;top:112px;bottom:90px;width:92px;background-size:92px 86px;transform:rotate(90deg)}
+.cdCorner{position:absolute;z-index:17;width:105px;height:105px;background:url('../assets/dungeon/v810/wall_block.png') center/105px 105px no-repeat;filter:brightness(.82);pointer-events:none}
+.cdCorner.tl{left:63px;top:63px}.cdCorner.tr{right:63px;top:63px;transform:scaleX(-1)}
+.cdCorner.bl{left:63px;bottom:43px;transform:scaleY(-1)}.cdCorner.br{right:63px;bottom:43px;transform:scale(-1)}
+#cdDoor{right:72px!important;top:300px!important;z-index:40!important}
+.v810prop{z-index:22!important}
+.cdEnemy{z-index:32!important}
+
+/* v8.12 Room 1 — rebuilt with the new Valvondor dungeon asset sheet */
+#chieftainDungeonWorld.room1 .cdWallStrip,
+#chieftainDungeonWorld.room1 .cdCorner{display:none!important}
+#chieftainDungeonWorld.room1 .dungeon-floor-grid{
+ left:92px!important;right:120px!important;top:118px!important;bottom:92px!important;
+ background:#17191b url('../assets/dungeon/v812/floor_1.png') repeat!important;
+ background-size:48px 48px!important;
+ border:0!important;box-shadow:inset 0 0 70px #000!important
+}
+.v812room1{position:absolute;inset:0;z-index:14;pointer-events:none}
+.v812wall{position:absolute;image-rendering:pixelated;background-image:url('../assets/dungeon/v812/wall_1.png');background-repeat:repeat}
+.v812wall.top{left:70px;right:95px;top:70px;height:78px;background-size:58px 78px}
+.v812wall.bottom{left:70px;right:95px;bottom:48px;height:78px;background-size:58px 78px;transform:rotate(180deg)}
+.v812wall.left{left:31px;top:115px;bottom:90px;width:78px;background-size:58px 78px;transform:rotate(-90deg)}
+.v812wall.right{right:55px;top:115px;bottom:90px;width:78px;background-size:58px 78px;transform:rotate(90deg)}
+.v812decor{position:absolute;image-rendering:pixelated;filter:drop-shadow(0 5px 4px #000)}
+#chieftainDungeonWorld.room1 #cdDoor{right:62px!important;top:325px!important;z-index:45!important}
+#chieftainDungeonWorld.room1 .cdEnemy img{image-rendering:pixelated}
+
+/* v8.13 Room 1 cleanup */
+#chieftainDungeonWorld.room1 .v810prop{display:none!important}
+#chieftainDungeonWorld.room1 .v812wall.left{
+ left:72px!important;top:125px!important;bottom:100px!important;width:72px!important;
+ transform:none!important;background-size:72px 72px!important
+}
+#chieftainDungeonWorld.room1 .v812wall.right{
+ right:92px!important;top:125px!important;bottom:100px!important;width:72px!important;
+ transform:none!important;background-size:72px 72px!important
+}
+#chieftainDungeonWorld.room1 #cdDoor{
+ right:82px!important;top:320px!important;width:112px!important;z-index:46!important;
+ border:8px solid #252a31!important;border-radius:4px!important;
+ box-shadow:0 0 0 3px #090b0d,0 10px 20px #000!important
+}
+#chieftainDungeonWorld.room1 .cdEnemy img{
+ object-fit:contain!important;background:transparent!important;
+ filter:drop-shadow(0 5px 4px #000)!important
+}
+#chieftainDungeonWorld.room1 .cdEnemy{overflow:visible!important}
+
+/* v8.14 — Approved Chieftain's Den concept direction */
+#chieftainDungeonWorld.room1 .v812wall{display:none!important}
+#chieftainDungeonWorld.room1 .dungeon-floor-grid{
+ left:105px!important;right:125px!important;top:135px!important;bottom:105px!important;
+ background-color:#242629!important;
+ background-image:
+   linear-gradient(rgba(0,0,0,.20) 2px,transparent 2px),
+   linear-gradient(90deg,rgba(0,0,0,.20) 2px,transparent 2px),
+   url('../assets/dungeon/v812/floor_1.png')!important;
+ background-size:48px 48px,48px 48px,48px 48px!important;
+ box-shadow:inset 0 0 90px #050505!important
+}
+.v814room1{position:absolute;inset:0;z-index:15;pointer-events:none}
+.v814stone{position:absolute;background:url('../assets/dungeon/v812/wall_2.png') repeat;image-rendering:pixelated;filter:brightness(.68) saturate(.55)}
+.v814stone.top{left:72px;right:92px;top:72px;height:82px;background-size:64px 82px}
+.v814stone.bottom{left:72px;right:92px;bottom:50px;height:82px;background-size:64px 82px}
+.v814stone.left{left:70px;top:130px;bottom:105px;width:64px;background-size:64px 82px}
+.v814stone.right{right:90px;top:130px;bottom:105px;width:64px;background-size:64px 82px}
+.v814prop{position:absolute;z-index:23;image-rendering:pixelated;filter:drop-shadow(0 5px 5px #000)}
+.v814banner{position:absolute;z-index:24;width:34px;height:86px;background:linear-gradient(#571517,#29090b);border:2px solid #160506;box-shadow:0 4px 8px #000}
+.v814banner:after{content:'◆';display:block;color:#0d0d0d;font-size:23px;text-align:center;margin-top:23px}
+.v814torch{position:absolute;z-index:25;font-size:37px;filter:drop-shadow(0 0 12px #c56a16)}
+.v814blood{position:absolute;z-index:18;width:74px;height:30px;background:radial-gradient(ellipse,#5d0c10 0,#3b090c 45%,transparent 72%);transform:rotate(-14deg);opacity:.78}
+#chieftainDungeonWorld.room1 #cdDoor{
+ right:76px!important;top:282px!important;width:125px!important;
+ border:10px solid #35383c!important;background:#111!important;
+ box-shadow:0 0 0 4px #080808,0 10px 25px #000!important
+}
+
+/* v8.15 — actual art only for room lighting */
+#chieftainDungeonWorld.room1 .v814torch{display:none!important}
+.v814torchimg{position:absolute;z-index:25;width:34px;height:auto;image-rendering:pixelated;filter:drop-shadow(0 0 10px rgba(230,120,35,.8))}
+#chieftainDungeonWorld.room1 .v814banner{
+ background:#4a1114!important;border:3px solid #211114!important;
+}
+
+/* v8.16 — fully asset-based Room 1, matching approved concept */
+#chieftainDungeonWorld.room1 .v814room1,
+#chieftainDungeonWorld.room1 .v812room1,
+#chieftainDungeonWorld.room1 .cdWallStrip,
+#chieftainDungeonWorld.room1 .cdCorner{display:none!important}
+
+#chieftainDungeonWorld.room1 .dungeon-floor-grid{
+ left:100px!important;right:120px!important;top:138px!important;bottom:105px!important;
+ background:#222426 url('../assets/dungeon/v812/floor_1.png') repeat!important;
+ background-size:48px 48px!important;
+ box-shadow:inset 0 0 100px #050505!important;
+}
+
+.v816room1{position:absolute;inset:0;z-index:15;pointer-events:none}
+.v816wall{position:absolute;z-index:16;image-rendering:pixelated;
+ background-image:url('../assets/dungeon/v816/plain_wall.png');background-repeat:repeat;
+ filter:brightness(.72) saturate(.55);}
+
+.v816wall.top{left:72px;right:92px;top:72px;height:80px;background-size:56px 80px}
+.v816wall.bottom{left:72px;right:92px;bottom:50px;height:80px;background-size:56px 80px}
+.v816wall.left{left:70px;top:135px;bottom:106px;width:58px;background-size:58px 80px}
+.v816wall.right{right:90px;top:135px;bottom:106px;width:58px;background-size:58px 80px}
+
+.v816art{position:absolute;z-index:24;image-rendering:pixelated;filter:drop-shadow(0 5px 4px #000)}
+.v816torch{width:32px}
+.v816banner{width:34px}
+.v816pillar{width:48px}
+.v816barrel{width:44px}
+.v816crate{width:42px}
+.v816bones{width:52px}
+.v816rubble{width:58px}
+
+#chieftainDungeonWorld.room1 #cdDoor{
+ right:72px!important;top:310px!important;width:100px!important;height:120px!important;
+ border:0!important;background:transparent!important;box-shadow:none!important;
+ z-index:50!important;
+}
+#chieftainDungeonWorld.room1 #cdDoor::before{
+ content:"";position:absolute;inset:0;background:url('../assets/dungeon/v816/door.png') center/contain no-repeat;
+ image-rendering:pixelated;filter:drop-shadow(0 7px 7px #000)
+}
+#chieftainDungeonWorld.room1 #cdDoor span,
+#chieftainDungeonWorld.room1 #cdDoor b,
+#chieftainDungeonWorld.room1 #cdDoor small{
+ position:relative;z-index:2;background:#090909c7;padding:2px 5px;border-radius:3px
+}
+
+/* v8.17 denser concept decoration */
+.v817room1{position:absolute;inset:0;z-index:20;pointer-events:none}
+.v817art{position:absolute;z-index:25;image-rendering:pixelated;filter:drop-shadow(0 4px 4px #000)}
+.v817floor{position:absolute;z-index:17;image-rendering:pixelated;opacity:.78}
+.v817blood{position:absolute;z-index:18;width:70px;height:34px;border-radius:50%;
+ background:radial-gradient(ellipse,#651015 0%,#41090d 43%,rgba(35,0,3,.5) 62%,transparent 75%);
+ transform:rotate(-12deg);opacity:.82}
+.v817rack{position:absolute;z-index:24;width:76px;height:62px;border:5px solid #34261e;
+ background:repeating-linear-gradient(90deg,#171719 0 9px,#2b211d 10px 14px);
+ box-shadow:inset 0 0 0 3px #090909,0 6px 7px #000}
+.v817rack:before{content:'⚔  ⚔  ⚔';position:absolute;left:4px;top:14px;color:#aaa;font-size:20px;letter-spacing:1px}
+#chieftainDungeonWorld.room1 #cdDoor:after{
+ content:"";position:absolute;left:-17px;right:-17px;top:-22px;height:42px;
+ border:9px solid #373a3e;border-bottom:0;border-radius:50% 50% 0 0;
+ box-shadow:0 -3px 0 #111;z-index:-1}
+
+/* v8.19 — make Room 1 feel ancient, irregular and occupied */
+.v819room1{position:absolute;inset:0;z-index:19;pointer-events:none}
+.v819art{position:absolute;z-index:24;image-rendering:pixelated;filter:drop-shadow(0 4px 4px #000)}
+.v819crack{position:absolute;z-index:18;width:88px;height:52px;opacity:.72;
+ background:
+ linear-gradient(28deg,transparent 45%,#090a0b 46% 49%,transparent 50%) 0 0/35px 35px,
+ linear-gradient(-35deg,transparent 45%,#111214 46% 49%,transparent 50%) 8px 9px/42px 42px}
+.v819blood{position:absolute;z-index:19;background:#520b10;border-radius:50%;opacity:.72;
+ box-shadow:18px 8px 0 -5px #3a070b,-16px 12px 0 -8px #6b1116}
+.v819chain{position:absolute;z-index:23;width:3px;background:repeating-linear-gradient(#777 0 5px,#222 6px 10px);
+ box-shadow:2px 0 2px #000}
+.v819brokenwall{position:absolute;z-index:21;height:45px;
+ background:url('../assets/dungeon/v816/plain_wall.png') repeat-x;background-size:52px 72px;
+ filter:brightness(.62);clip-path:polygon(0 0,100% 0,100% 65%,92% 80%,83% 58%,73% 88%,61% 62%,48% 83%,35% 60%,20% 86%,8% 62%,0 78%)}
+#chieftainDungeonWorld.room1 #cdDoor{
+ right:64px!important;top:292px!important;width:118px!important;height:145px!important
+}
+#chieftainDungeonWorld.room1 #cdDoor:after{
+ left:-30px!important;right:-30px!important;top:-28px!important;height:58px!important;
+ border-width:12px!important;border-color:#42464b!important
+}
+
+/* v8.20 — Room 2 uses locked dungeon style with its own layout */
+#chieftainDungeonWorld.room2 .v812room1,
+#chieftainDungeonWorld.room2 .v814room1,
+#chieftainDungeonWorld.room2 .v816room1,
+#chieftainDungeonWorld.room2 .v817room1,
+#chieftainDungeonWorld.room2 .v819room1{display:none!important}
+
+#chieftainDungeonWorld.room2 .dungeon-floor-grid{
+ left:100px!important;right:120px!important;top:138px!important;bottom:105px!important;
+ background:#222426 url('../assets/dungeon/v812/floor_1.png') repeat!important;
+ background-size:48px 48px!important;box-shadow:inset 0 0 100px #050505!important
+}
+.v820room2{position:absolute;inset:0;z-index:15;pointer-events:none}
+.v820wall{position:absolute;z-index:16;image-rendering:pixelated;background:url('../assets/dungeon/v816/plain_wall.png') repeat;filter:brightness(.72) saturate(.55)}
+.v820wall.top{left:72px;right:92px;top:72px;height:80px;background-size:56px 80px}
+.v820wall.bottom{left:72px;right:92px;bottom:50px;height:80px;background-size:56px 80px}
+.v820wall.left{left:70px;top:135px;bottom:106px;width:58px;background-size:58px 80px}
+.v820wall.right{right:90px;top:135px;bottom:106px;width:58px;background-size:58px 80px}
+.v820art{position:absolute;z-index:24;image-rendering:pixelated;filter:drop-shadow(0 4px 4px #000)}
+.v820blood{position:absolute;z-index:18;background:#520b10;border-radius:50%;opacity:.68;box-shadow:14px 7px 0 -5px #39070a}
+.v820barricade{position:absolute;z-index:22;width:135px;height:34px;background:repeating-linear-gradient(160deg,#39251a 0 10px,#17100c 11px 16px);border:3px solid #15100c;transform:rotate(-8deg);box-shadow:0 5px 6px #000}
+#chieftainDungeonWorld.room2 #cdDoor{right:64px!important;top:292px!important;width:118px!important;height:145px!important}
+
+/* v8.21 — Room 2 legacy-art purge. Keep only v8.20 approved layer + gameplay. */
+#chieftainDungeonWorld.room2 .cdWallStrip,
+#chieftainDungeonWorld.room2 .cdCorner,
+#chieftainDungeonWorld.room2 .v810prop,
+#chieftainDungeonWorld.room2 .v811wall,
+#chieftainDungeonWorld.room2 .v811decor,
+#chieftainDungeonWorld.room2 .v812wall,
+#chieftainDungeonWorld.room2 .v812decor,
+#chieftainDungeonWorld.room2 .v814room1,
+#chieftainDungeonWorld.room2 .v816room1,
+#chieftainDungeonWorld.room2 .v817room1,
+#chieftainDungeonWorld.room2 .v819room1{display:none!important}
+
+/* neutralize old lava wall backgrounds in Room 2 only */
+#chieftainDungeonWorld.room2 [class*="lava"],
+#chieftainDungeonWorld.room2 [class*="oldWall"],
+#chieftainDungeonWorld.room2 [class*="wallStrip"]{display:none!important}
+
+/* v8.20 layer must stay visible */
+#chieftainDungeonWorld.room2 .v820room2{display:block!important}
+#chieftainDungeonWorld.room2 .v820wall{display:block!important}
+
+/* v8.22 — Room 3 Scout + Brute, tougher/damaged gray-red dungeon */
+#chieftainDungeonWorld.room3 .v812room1,
+#chieftainDungeonWorld.room3 .v814room1,
+#chieftainDungeonWorld.room3 .v816room1,
+#chieftainDungeonWorld.room3 .v817room1,
+#chieftainDungeonWorld.room3 .v819room1,
+#chieftainDungeonWorld.room3 .v820room2,
+#chieftainDungeonWorld.room3 .cdWallStrip,
+#chieftainDungeonWorld.room3 .cdCorner,
+#chieftainDungeonWorld.room3 .v810prop,
+#chieftainDungeonWorld.room3 .v811wall,
+#chieftainDungeonWorld.room3 .v811decor,
+#chieftainDungeonWorld.room3 .v812wall,
+#chieftainDungeonWorld.room3 .v812decor{display:none!important}
+
+#chieftainDungeonWorld.room3 .dungeon-floor-grid{
+ left:100px!important;right:120px!important;top:138px!important;bottom:105px!important;
+ background:#1e2022 url('../assets/dungeon/v812/floor_1.png') repeat!important;
+ background-size:48px 48px!important;
+ box-shadow:inset 0 0 115px #020303!important
+}
+.v822room3{position:absolute;inset:0;z-index:15;pointer-events:none}
+.v822wall{position:absolute;z-index:16;image-rendering:pixelated;background:url('../assets/dungeon/v816/plain_wall.png') repeat;filter:brightness(.62) saturate(.48)}
+.v822wall.top{left:72px;right:92px;top:72px;height:80px;background-size:56px 80px}
+.v822wall.bottom{left:72px;right:92px;bottom:50px;height:80px;background-size:56px 80px}
+.v822wall.left{left:70px;top:135px;bottom:106px;width:58px;background-size:58px 80px}
+.v822wall.right{right:90px;top:135px;bottom:106px;width:58px;background-size:58px 80px}
+.v822art{position:absolute;z-index:24;image-rendering:pixelated;filter:drop-shadow(0 4px 5px #000)}
+.v822blood{position:absolute;z-index:18;background:#5d0b10;border-radius:50%;opacity:.74;box-shadow:16px 8px 0 -6px #350609,-13px 10px 0 -7px #6d1318}
+.v822crack{position:absolute;z-index:17;width:95px;height:60px;opacity:.78;background:
+linear-gradient(31deg,transparent 45%,#08090a 46% 49%,transparent 50%) 0 0/38px 38px,
+linear-gradient(-33deg,transparent 45%,#101112 46% 49%,transparent 50%) 12px 10px/44px 44px}
+.v822barricade{position:absolute;z-index:22;width:150px;height:38px;background:repeating-linear-gradient(155deg,#3d2418 0 11px,#160e0b 12px 17px);border:3px solid #120d0a;box-shadow:0 5px 7px #000}
+#chieftainDungeonWorld.room3 #cdDoor{right:64px!important;top:292px!important;width:118px!important;height:145px!important}
+
+/* v8.23 — Brute movement/animation correction */
+#chieftainDungeonWorld .cdEnemy.brute{width:128px!important;height:145px!important}
+#chieftainDungeonWorld .cdEnemy.brute img{
+ width:128px!important;height:128px!important;object-fit:contain!important;
+ image-rendering:pixelated!important;transform:none!important;
+}
+#chieftainDungeonWorld .cdEnemy.brute .name{min-width:145px;left:-8px}
+#chieftainDungeonWorld .cdEnemy.brute .ehp{width:145px;left:-8px}
+
+/* v8.24 cleaned brute frames */
+#chieftainDungeonWorld .cdEnemy.brute img{
+ width:118px!important;height:118px!important;object-fit:contain!important;
+ transform:none!important;overflow:visible!important;
+}
+#chieftainDungeonWorld .cdEnemy.brute{width:118px!important;height:138px!important}
+
+/* v8.26 — manually rebuilt complete Brute source frames */
+#chieftainDungeonWorld .cdEnemy.brute{
+ width:132px!important;height:148px!important;overflow:visible!important;
+}
+#chieftainDungeonWorld .cdEnemy.brute img{
+ width:132px!important;height:132px!important;object-fit:contain!important;
+ overflow:visible!important;transform:none!important;image-rendering:pixelated!important;
+}
+
+/* v8.27 combat balance: no visual dungeon changes */
+
+/* v8.31 boss dialogue + manual loot cache */
+#chieftainLoot{
+ cursor:pointer;
+ transition:transform .18s ease,filter .18s ease;
+}
+#chieftainLoot.ready{
+ display:flex!important;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:4px;
+ min-width:190px;
+ min-height:92px;
+ padding:14px 18px!important;
+ border:2px solid #d6a548!important;
+ background:
+   radial-gradient(circle at 50% 35%,rgba(255,205,85,.25),transparent 55%),
+   linear-gradient(#2a1b0d,#110b06)!important;
+ box-shadow:0 0 22px rgba(222,164,62,.45),0 10px 22px #000!important;
+ color:#f7d78f!important;
+ border-radius:10px!important;
+}
+#chieftainLoot.ready:before{content:'🧰';font-size:36px;line-height:1}
+#chieftainLoot.ready:hover{transform:scale(1.04);filter:brightness(1.08)}
+#chieftainLoot.claimed{opacity:.75}
+#chieftainLoot small{display:block;color:#f1dfb1;margin-top:2px}
+
+/* v8.36 Beginner's Path */
+#tutorialGuide{position:fixed;left:50%;top:18px;transform:translateX(-50%) translateY(-15px);z-index:850000;width:min(470px,88vw);padding:12px 16px;border:1px solid #8b6936;border-radius:10px;background:linear-gradient(180deg,rgba(28,21,13,.96),rgba(10,8,6,.96));box-shadow:0 8px 24px #000;color:#ead8ae;opacity:0;pointer-events:none;transition:.25s}
+#tutorialGuide.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#tutorialGuide .tgTop{display:flex;justify-content:space-between;color:#d5a84d;font:700 11px system-ui;letter-spacing:.7px}
+#tutorialGuide h3{margin:5px 0 3px;font:700 17px Georgia,serif;color:#f1d99d}
+#tutorialGuide p{margin:0;font:13px/1.35 system-ui;color:#ddd0b5}
+
+/* v8.37 Oakhaven edit mode */
+#townEditBtn{
+ position:fixed;right:12px;top:86px;z-index:900000;
+ border:1px solid #8f6c38;border-radius:8px;padding:8px 11px;
+ background:#17110b;color:#efd49b;font:800 11px system-ui;box-shadow:0 3px 10px #0008;
+}
+#townEditPanel{
+ position:fixed;right:12px;top:128px;z-index:900001;width:min(340px,88vw);
+ padding:11px;border:1px solid #8f6c38;border-radius:10px;
+ background:rgba(19,14,9,.96);color:#ecd7a8;box-shadow:0 6px 20px #000;
+ display:none;font:12px system-ui;
+}
+#townEditPanel.show{display:block}
+#townEditPanel b{display:block;color:#e0b45d;letter-spacing:.6px;margin-bottom:4px}
+#townEditHint{display:block;color:#cfc3aa;margin-bottom:8px}
+.townEditRow{display:flex;gap:5px;flex-wrap:wrap}
+.townEditRow button{
+ border:1px solid #71552d;border-radius:7px;padding:7px 8px;
+ background:#241a10;color:#edd6a5;font:700 10px system-ui
+}
+body.townEditMode #world .townEditable{
+ outline:2px dashed rgba(226,178,77,.55);outline-offset:2px;cursor:grab;
+}
+body.townEditMode #world .townEditable.townSelected{
+ outline:3px solid #ffd66d!important;filter:drop-shadow(0 0 6px rgba(255,205,85,.9));
+}
+body.townEditMode #world .townEditable.townDragging{cursor:grabbing;z-index:99999!important}
+body.townEditMode #playerWrap{pointer-events:none}
+@media(max-width:650px){
+ #townEditBtn{right:6px;top:72px;padding:7px 8px;font-size:10px}
+ #townEditPanel{right:6px;top:108px}
+}
+
+/* v8.38 natural road painter */
+#townRoadLayer{position:absolute;left:0;top:0;width:100%;height:100%;z-index:3;pointer-events:none;overflow:visible}
+#townRoadLayer path{fill:none;stroke:#8b7354;stroke-width:58;stroke-linecap:round;stroke-linejoin:round;filter:url(#roadRough)}
+#townRoadLayer .roadEdge{stroke:#5f513d;stroke-width:72;opacity:.72}
+#townRoadLayer .roadDust{stroke:#a38a67;stroke-width:42;opacity:.72}
+body.townRoadMode #world{cursor:crosshair}
+#townRoadBtn.active{background:#5b4322;color:#fff0bd;box-shadow:inset 0 0 0 1px #d6aa58}
+/* Oakhaven Editor Plus */
+#townEditPanel{max-width:min(980px,calc(100vw - 24px));max-height:42vh;overflow:auto}
+#townEditPanel .townEditRow{display:flex;flex-wrap:wrap;gap:6px}
+#townEditPanel .townEditRow button{min-height:34px}
+#townEditPanel .townEditRefs{margin-top:7px;padding-top:7px;border-top:1px solid #9b763a66}
+body.townEditMode #world .townEditorAdded{outline:2px dashed #61d7ff;outline-offset:3px}
+#innDoor{position:absolute;left:1088px;top:1050px;width:110px;height:90px;z-index:80;cursor:pointer}
+body.townEditMode #innDoor{outline:2px dashed #ffd56b;background:#ffd56b18}
+
+
+/* v9.33 Oakhaven asset browser */
+#townEditPanel{width:min(980px,calc(100vw - 20px));max-height:74vh;overflow:auto;}
+.townAssetBrowser{margin-top:9px;padding-top:9px;border-top:2px solid #9b763a88;}
+.townAssetHeader{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:7px;color:#e8c985;}
+.townAssetHeader span{font-size:11px;color:#d7c7a0;}
+.townAssetFilters{display:flex;gap:6px;margin-bottom:6px;}
+#townAssetSearch,#townAssetCategory{background:#15110c;color:#f1ddb1;border:1px solid #8e6b32;border-radius:6px;padding:7px 9px;min-height:34px;}
+#townAssetSearch{flex:1;min-width:160px;}
+.townAssetCount{font-size:11px;color:#cdbb94;margin:3px 0 7px;}
+.townAssetGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:7px;}
+.townAssetCard{appearance:none;background:#1b160f;border:1px solid #74572c;border-radius:8px;color:#f2ddb0;padding:6px;min-height:116px;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:4px;}
+.townAssetCard:hover{border-color:#e0b45d;box-shadow:0 0 0 1px #e0b45d55 inset;background:#241c12;}
+.townAssetThumb{height:70px;width:96px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:5px;background:#0c0a07;}
+.townAssetThumb img{max-width:94px;max-height:68px;object-fit:contain;image-rendering:auto;}
+.townAssetEmoji{font-size:38px;line-height:68px;}
+.townAssetName{font-size:11px;font-weight:700;line-height:1.15;}
+.townAssetCat{font-size:9px;color:#ac9364;text-transform:uppercase;}
+@media(max-width:700px){#townEditPanel{top:72px;right:4px;left:4px;width:auto;max-height:80vh}.townAssetGrid{grid-template-columns:repeat(3,minmax(92px,1fr));}.townAssetCard{min-height:105px}.townAssetThumb{width:82px;height:60px}.townAssetThumb img{max-width:80px;max-height:58px}}
+
+
+/* v9.35 COMPACT EDIT-OAKHAVEN MENU ONLY — game HUD unchanged */
+#townEditPanel{
+  width:min(430px,calc(100vw - 16px))!important;
+  max-height:68vh!important;
+  padding:8px!important;
+  font-size:12px!important;
+}
+#townEditPanel .townEditTitle{font-size:14px!important}
+#townEditPanel button{font-size:11px!important;padding:5px 7px!important;min-height:28px!important}
+.townAssetBrowser{margin-top:6px!important;padding-top:6px!important}
+.townAssetHeader{margin-bottom:4px!important}
+.townAssetFilters{gap:4px!important;margin-bottom:4px!important}
+#townAssetSearch,#townAssetCategory{
+  padding:4px 6px!important;
+  min-height:27px!important;
+  font-size:11px!important;
+}
+#townAssetSearch{min-width:100px!important}
+.townAssetCount{font-size:9px!important;margin:2px 0 4px!important}
+.townAssetGrid{
+  grid-template-columns:repeat(4,minmax(76px,1fr))!important;
+  gap:4px!important;
+}
+.townAssetCard{
+  padding:3px!important;
+  min-height:82px!important;
+  border-radius:6px!important;
+  gap:2px!important;
+}
+.townAssetThumb{width:68px!important;height:46px!important}
+.townAssetThumb img{max-width:66px!important;max-height:44px!important}
+.townAssetEmoji{font-size:27px!important;line-height:44px!important}
+.townAssetName{font-size:8.5px!important;line-height:1.05!important}
+.townAssetCat{font-size:7px!important}
+@media(max-width:700px){
+ #townEditPanel{top:68px!important;right:6px!important;left:auto!important;width:min(330px,calc(100vw - 12px))!important;max-height:66vh!important}
+ .townAssetGrid{grid-template-columns:repeat(3,minmax(72px,1fr))!important}
+ .townAssetCard{min-height:78px!important}
+ .townAssetThumb{width:64px!important;height:43px!important}
+ .townAssetThumb img{max-width:62px!important;max-height:41px!important}
+}

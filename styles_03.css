@@ -1,0 +1,23 @@
+
+/* v7.55 Goblin Camp polish */
+body.forestMode #westwoodV738 .gcamp754{left:210px!important;top:185px!important;width:640px!important;height:500px!important}
+body.forestMode #westwoodV738 .gcamp754 .cg{left:45px!important;top:55px!important;width:550px!important;height:375px!important;background:radial-gradient(ellipse,rgba(79,61,35,.50),rgba(70,55,32,.20) 62%,transparent 76%)!important}
+body.forestMode #westwoodV738 .gcamp754 .t1{left:62px!important;top:62px!important;width:205px!important}
+body.forestMode #westwoodV738 .gcamp754 .t2{right:48px!important;top:68px!important;width:195px!important}
+body.forestMode #westwoodV738 .gcamp754 .crates{left:82px!important;top:305px!important;width:125px!important}
+body.forestMode #westwoodV738 .gcamp754 .crate{right:150px!important;top:330px!important;width:72px!important}
+body.forestMode #westwoodV738 .gcamp754 .barrel{right:82px!important;top:306px!important;width:70px!important}
+body.forestMode #westwoodV738 .gcamp754 .stump{left:270px!important;top:305px!important;width:78px!important}
+body.forestMode #westwoodV738 .gcamp754 .log{left:238px!important;top:382px!important;width:150px!important}
+body.forestMode #westwoodV738 .gcamp754 .rocks{left:22px!important;top:270px!important;width:110px!important}
+body.forestMode #westwoodV738 .gcamp754 .rock{right:15px!important;top:270px!important;width:92px!important}
+body.forestMode #westwoodV738 .gcamp754 .name{left:245px!important;top:2px!important}
+body.forestMode #westwoodV738 .gcamp754 .campfire755{position:absolute;left:284px;top:220px;width:72px;height:62px;z-index:4}
+body.forestMode #westwoodV738 .gcamp754 .campfire755:before,
+body.forestMode #westwoodV738 .gcamp754 .campfire755:after{content:"";position:absolute}
+body.forestMode #westwoodV738 .gcamp754 .campfire755:before{left:5px;bottom:4px;width:62px;height:20px;border-radius:50%;background:radial-gradient(ellipse,#403128 0 30%,#66503c 32% 55%,transparent 58%);box-shadow:-23px 2px 0 -6px #66503c,23px 2px 0 -6px #66503c}
+body.forestMode #westwoodV738 .gcamp754 .campfire755:after{left:19px;bottom:13px;width:36px;height:48px;border-radius:52% 48% 48% 52% / 68% 68% 32% 32%;background:radial-gradient(ellipse at 50% 75%,#fff0a0 0 18%,#e89b39 20% 48%,#a94d2e 52% 72%,transparent 74%);filter:drop-shadow(0 0 8px rgba(236,151,55,.72))}
+body.forestMode #westwoodV738 .gcamp754 .combat-ring755{position:absolute;left:202px;top:165px;width:235px;height:180px;border:2px dashed rgba(91,64,37,.24);border-radius:50%;z-index:1}
+
+/* v8.57 local-test auth bypass */
+body.localTest #accountGate{display:none!important}

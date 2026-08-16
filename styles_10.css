@@ -1,0 +1,142 @@
+
+.currencyWallet{display:flex;align-items:center;gap:8px;margin-left:auto;padding:5px 8px;border:1px solid #72552d;border-radius:9px;background:#15130f;white-space:nowrap}
+.walletCurrency{display:inline-flex;align-items:center;gap:3px;color:#f2d69b;font-weight:800;font-size:14px}
+.walletCurrency img{width:25px;height:25px;object-fit:contain}
+.walletCurrency.premium{color:#79cfff}
+.walletDivider{height:27px;width:1px;background:#665238}
+@media(max-width:760px){.currencyWallet{gap:5px;padding:3px 5px}.walletCurrency{font-size:12px}.walletCurrency img{width:21px;height:21px}.walletDivider{height:22px}}
+
+/* v8.40 Account / Supabase shell */
+.accountGate{position:fixed;inset:0;z-index:1200000;display:none;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 20%,rgba(109,26,26,.20),transparent 38%),linear-gradient(rgba(4,4,5,.94),rgba(2,2,3,.98));backdrop-filter:blur(5px)}
+.accountGate.open{display:flex}.accountCard{width:min(430px,90vw);padding:24px;border:1px solid #79592f;border-radius:16px;background:linear-gradient(180deg,#19130e,#0b0806);box-shadow:0 18px 60px #000;color:#ead9b5}.accountBrand{text-align:center;margin-bottom:16px}.accountWolf{font-size:48px}.accountBrand h1{margin:0;font:900 30px Georgia,serif;letter-spacing:3px;color:#e8c276}.accountBrand p{margin:3px 0 8px;color:#bcae91;font:12px system-ui;letter-spacing:1px;text-transform:uppercase}#accountBackendBadge{display:inline-block;padding:4px 7px;border:1px solid #7d633c;border-radius:999px;color:#d9b36a;background:#2b2115;font:700 9px system-ui;letter-spacing:.6px}.accountTabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 0}.accountTabs button,.accountForm button{border:1px solid #665036;border-radius:8px;background:#1e1710;color:#d9c6a2;padding:10px;font-weight:800}.accountTabs button.active{border-color:#d2a658;color:#ffe4a4;background:#392914}.accountForm{display:none}.accountForm.active{display:block}.accountForm label{display:block;margin:9px 0 4px;font:700 11px system-ui;color:#d6c29a}.accountForm input{width:100%;box-sizing:border-box;border:1px solid #564736;border-radius:8px;background:#0d0b09;color:#f0e7d7;padding:11px 12px;outline:none}.accountForm input:focus{border-color:#bd9049;box-shadow:0 0 0 2px rgba(189,144,73,.15)}.accountPrimary{width:100%;margin-top:14px!important;background:linear-gradient(#6a4c22,#3a2916)!important;border-color:#b98a45!important;color:#ffe1a0!important}.accountStatus{margin-top:12px;padding:9px 10px;border-radius:8px;background:#100d0a;color:#b8ad9a;font:11px/1.35 system-ui}.accountBar{position:fixed;right:12px;top:12px;z-index:850000;display:flex;align-items:center;gap:8px;padding:7px 9px;border:1px solid #6c5434;border-radius:9px;background:rgba(15,11,8,.92);color:#e0cfab;font:700 10px system-ui;box-shadow:0 3px 12px #0008}.accountBar button{border:1px solid #684d31;border-radius:7px;background:#21170f;color:#e7d2aa;padding:5px 7px;font:700 9px system-ui}@media(max-width:650px){.accountCard{padding:18px}.accountBrand h1{font-size:26px}.accountBar{right:6px;top:6px}}
+
+/* v8.41 Global Chat UI */
+#globalChatToggle{
+ position:fixed;left:12px;bottom:12px;z-index:900100;
+ border:1px solid #7b5d34;border-radius:9px;padding:9px 12px;
+ background:linear-gradient(#21170f,#120d09);color:#efd7a7;
+ font:800 11px system-ui;box-shadow:0 3px 12px #0009;cursor:pointer
+}
+#globalChatToggle.hasUnread{box-shadow:0 0 0 2px #b87b32,0 3px 12px #0009;color:#ffe4a0}
+#globalChatPanel{
+ position:fixed;left:12px;bottom:52px;z-index:900101;
+ width:min(390px,92vw);height:min(430px,58vh);
+ display:none;grid-template-rows:auto 1fr auto auto;
+ border:1px solid #735532;border-radius:12px;overflow:hidden;
+ background:linear-gradient(180deg,rgba(20,15,11,.98),rgba(8,7,6,.98));
+ color:#e5d6b6;box-shadow:0 12px 34px #000c;
+}
+#globalChatPanel.open{display:grid}
+#globalChatPanel.minimized{height:auto;grid-template-rows:auto}
+#globalChatPanel.minimized .chatMessages,
+#globalChatPanel.minimized .chatComposer,
+#globalChatPanel.minimized .chatFooter{display:none}
+.chatHeader{
+ display:flex;justify-content:space-between;align-items:center;
+ padding:9px 10px;border-bottom:1px solid #4e3c27;background:#18110c
+}
+.chatHeader b{display:block;font:800 11px system-ui;color:#e7bc68;letter-spacing:.5px}
+.chatHeader small{display:block;margin-top:2px;font:9px system-ui;color:#958a77}
+.chatHeaderBtns{display:flex;gap:4px}
+.chatHeaderBtns button{
+ width:27px;height:25px;border:1px solid #55422b;border-radius:6px;
+ background:#21170f;color:#d7c29b;font-weight:900;cursor:pointer
+}
+.chatMessages{
+ overflow:auto;padding:9px 10px;scrollbar-width:thin;overscroll-behavior:contain;
+ background:
+ radial-gradient(circle at 50% 0%,rgba(102,65,28,.10),transparent 36%),
+ rgba(3,3,3,.28)
+}
+.chatLine{margin:0 0 7px;font:12px/1.35 system-ui;word-break:break-word}
+.chatLine .time{color:#776f64;font-size:9px;margin-right:5px}
+.chatLine .user{font-weight:800;color:#d8ac5e;margin-right:5px}
+.chatLine.system{color:#9fb597;font-style:italic}
+.chatLine.system .user{color:#7fa47c}
+.chatLine.self .user{color:#f0c979}
+.chatComposer{display:grid;grid-template-columns:1fr auto;gap:6px;padding:8px;border-top:1px solid #4a3925;background:#100c09}
+.chatComposer input{
+ min-width:0;border:1px solid #4f402f;border-radius:7px;background:#080706;color:#eee0c3;
+ padding:9px 10px;outline:none;font:12px system-ui
+}
+.chatComposer input:focus{border-color:#a67a3f}
+.chatComposer input:disabled{opacity:.55}
+.chatComposer button{
+ border:1px solid #826039;border-radius:7px;background:#3a2816;color:#f0d39b;
+ padding:0 12px;font:800 10px system-ui;cursor:pointer
+}
+.chatComposer button:disabled{opacity:.45;cursor:not-allowed}
+.chatFooter{
+ display:flex;justify-content:space-between;gap:8px;padding:6px 9px;border-top:1px solid #33281c;
+ color:#837b70;background:#0b0907;font:9px system-ui
+}
+@media(max-width:650px){
+ #globalChatToggle{left:6px;bottom:6px;padding:8px 10px}
+ #globalChatPanel{left:6px;bottom:46px;width:calc(100vw - 12px);height:min(390px,56vh)}
+}
+
+/* v8.42 Dire Boar */
+.goblin.direBoar{width:142px;height:116px;z-index:52}
+.goblin.direBoar img{
+ width:138px!important;height:102px!important;object-fit:contain!important;
+ position:absolute!important;left:50%!important;bottom:0!important;
+ transform:translateX(-50%);max-width:none!important;max-height:none!important;
+ filter:drop-shadow(0 8px 4px rgba(0,0,0,.6))
+}
+.goblin.direBoar .goblinLabel{top:-24px;white-space:nowrap;color:#f2d6a1}
+.goblin.direBoar .goblinLabel small{color:#e0b45d}
+.goblin.direBoar .ghp{top:-8px;width:112px;left:15px}
+
+/* v8.46 Tusks on the Trail */
+.boarQuestNpc{z-index:58;cursor:pointer}
+.boarQuestNpc .questMark{
+ position:absolute;left:50%;top:-34px;transform:translateX(-50%);
+ width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
+ background:#d7a53a;color:#21150a;border:2px solid #f2d889;
+ font:900 16px/1 system-ui;box-shadow:0 2px 7px #000a
+}
+
+/* v8.64 Kael Ashfang visibility fix */
+.boarQuestNpc{width:110px!important;height:126px!important;display:block!important;visibility:visible!important;opacity:1!important;z-index:90!important}
+.boarQuestNpc>img{width:96px!important;height:108px!important;object-fit:contain!important;display:block!important;position:absolute!important;left:7px!important;bottom:18px!important}
+.boarQuestNpc>span{position:absolute!important;left:50%!important;bottom:-8px!important;transform:translateX(-50%)!important;white-space:nowrap!important;background:#17120d!important;color:#f2d889!important;border:1px solid #8d692f!important;border-radius:10px!important;padding:2px 7px!important;font-weight:800!important}
+/* v8.66 Kael size adjustment */
+.boarQuestNpc{width:150px!important;height:170px!important}
+.boarQuestNpc>img{width:132px!important;height:148px!important;left:9px!important;bottom:20px!important}
+.boarQuestNpc>span{bottom:-10px!important;font-size:12px!important}
+.boarQuestNpc .questMark{top:-40px!important;width:26px!important;height:26px!important;font-size:18px!important}
+
+/* v8.67 Kael true size + interact fix */
+.boarQuestNpc{
+  width:180px!important;
+  height:190px!important;
+  z-index:120!important;
+  overflow:visible!important;
+  pointer-events:auto!important;
+}
+.boarQuestNpc > img{
+  width:170px!important;
+  height:170px!important;
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  position:absolute!important;
+  left:5px!important;
+  bottom:15px!important;
+  transform:none!important;
+  image-rendering:auto!important;
+  filter:none!important;
+}
+.boarQuestNpc > span{
+  bottom:-4px!important;
+  font-size:14px!important;
+  padding:3px 9px!important;
+  z-index:5!important;
+}
+.boarQuestNpc .questMark{
+  top:-26px!important;
+  width:30px!important;
+  height:30px!important;
+  font-size:20px!important;
+  z-index:6!important;
+}

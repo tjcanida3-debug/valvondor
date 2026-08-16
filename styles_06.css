@@ -1,0 +1,83 @@
+
+/* === v7.59 TRUE PHONE SKILLS === */
+@media (max-width:760px){
+  #panel.skillsPanel{
+    inset:0!important;width:100%!important;height:100%!important;
+    max-width:none!important;overflow:hidden!important;
+  }
+  .skillsScreen{
+    height:100dvh!important;
+    grid-template-rows:56px 128px minmax(0,1fr) 46px!important;
+    overflow:hidden!important;
+  }
+  .skillsHeader{
+    grid-template-columns:42px minmax(0,1fr) auto 36px!important;
+    gap:6px!important;padding:4px 7px!important;
+  }
+  .skillsCrest{height:42px!important;max-width:42px!important}
+  .skillsTitle h2{font-size:17px!important;letter-spacing:1px!important}
+  .skillsTitle p{display:none!important}
+  .skillsTotal{gap:4px!important}
+  .totalBadge img{width:42px!important;height:42px!important}
+  .totalText{font-size:9px!important}.totalText b{font-size:15px!important}
+  .levelNumber{font-size:14px!important}
+  .skillsClose{width:32px!important;height:32px!important;font-size:17px!important}
+
+  .skillCards{
+    grid-template-columns:repeat(6,minmax(78px,1fr))!important;
+    gap:5px!important;padding:6px!important;
+    overflow-x:auto!important;overflow-y:hidden!important;
+    scroll-snap-type:x proximity;
+  }
+  .skillCard{min-width:78px!important;padding:3px!important;border-radius:8px!important;scroll-snap-align:start}
+  .skillCard img{height:70px!important}
+  .skillMeta strong{font-size:10px!important}
+  .skillMeta span{font-size:8px!important}
+  .miniXp{height:5px!important;margin-top:2px!important}
+
+  .skillsBody{
+    display:block!important;min-height:0!important;
+    overflow-y:auto!important;overflow-x:hidden!important;
+  }
+  .skillDetail{
+    border-right:0!important;border-bottom:2px solid #765a30!important;
+    padding:8px!important;overflow:visible!important;
+  }
+  .skillDetailTop{
+    grid-template-columns:72px minmax(0,1fr)!important;gap:7px!important;
+  }
+  .selectedLevelShield img{width:68px!important;height:68px!important}
+  .detailName{font-size:18px!important}
+  .detailDesc{font-size:10px!important;line-height:1.25!important}
+  .bigXp{height:11px!important;margin:7px 0 3px!important}
+  .xpLine{font-size:9px!important}
+  .skillStats{
+    grid-template-columns:repeat(3,1fr)!important;gap:4px!important;margin-top:7px!important;
+  }
+  .skillStat{padding:5px 3px!important;border-radius:6px!important}
+  .skillStat b{font-size:14px!important}.skillStat span{font-size:8px!important}
+  .nextUnlock{margin-top:7px!important;padding:6px!important;font-size:11px!important}
+  .nextUnlock small{font-size:8px!important}
+
+  .unlockPanel{padding:8px!important;overflow:visible!important}
+  .unlockHeader{margin-bottom:6px!important}
+  .unlockHeader h3{font-size:16px!important}
+  .unlockHeader span{font-size:9px!important}
+  .unlockGrid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;
+  }
+  .unlockCard{min-height:122px!important;padding:4px!important;border-radius:7px!important}
+  .unlockCard img{height:78px!important}
+  .unlockCard .status{font-size:8px!important;padding:2px 4px!important}
+  .unlockCard h4{font-size:11px!important}
+  .unlockCard p{font-size:8px!important}
+
+  .skillsFooter{
+    overflow-x:auto!important;justify-content:flex-start!important;
+    gap:4px!important;padding:4px!important;
+  }
+  .skillsFooter button{
+    flex:0 0 auto!important;padding:6px 9px!important;
+    font-size:9px!important;white-space:nowrap!important;
+  }
+}

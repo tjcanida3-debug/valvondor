@@ -1,0 +1,1618 @@
+
+:root{--gold:#e0bd72;--panel:#101820eb;--line:#927440}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#152418;color:#fff;font-family:Arial,sans-serif}
+#view{position:relative;width:100%;height:100%;overflow:hidden}
+#world{position:absolute;width:3600px;height:2100px;background:url("../assets/embedded/asset_0117_6e33e0b8e120310d.png") left top/3600px 2100px no-repeat;transform-origin:0 0}
+.obj{position:absolute;user-select:none;-webkit-user-drag:none;filter:drop-shadow(0 8px 6px #0008)}
+.building{z-index:20}.tree{z-index:18}.prop{z-index:17}
+.npc{position:absolute;z-index:35;width:54px;text-align:center}
+.npc img{height:78px;max-width:54px;object-fit:contain;filter:drop-shadow(0 6px 4px #000)}
+.npc span{display:block;margin-top:-4px;padding:2px 5px;border-radius:8px;background:#101820dd;border:1px solid #b99b61;font-size:10px;font-weight:bold}
+
+/* LPC uses 64x64 frames in four directional rows. Frames are scaled to 96px. */
+#playerWrap{position:absolute;width:128px;height:128px;z-index:55;pointer-events:none;transform:scale(1.12);transform-origin:50% 78%}
+#player{
+ position:absolute;left:16px;top:16px;
+ width:96px;height:96px;
+ background-repeat:no-repeat;
+ background-position:0 0;
+ background-size:1248px 384px;
+ image-rendering:pixelated;
+ transform-origin:50% 74%;
+ filter:drop-shadow(0 3px 0 #000d) drop-shadow(0 9px 6px #000b);
+}
+#weaponLayer{
+ position:absolute;left:16px;top:16px;width:96px;height:96px;
+ background-repeat:no-repeat;background-position:0 0;background-size:1248px 384px;
+ image-rendering:pixelated;z-index:5;pointer-events:none;display:none;
+ filter:drop-shadow(0 2px 1px #0009);
+}
+#playerWrap.hasBakedWeapon #weaponLayer{display:block}
+#name{
+ position:absolute;left:50%;top:13px;transform:translateX(-50%);
+ background:#101820dd;border:1px solid var(--gold);padding:2px 6px;
+ border-radius:8px;font-size:11px;font-weight:bold;white-space:nowrap;z-index:2
+}
+#heroRing{position:absolute;left:34px;top:94px;width:60px;height:24px;border-radius:50%;border:3px solid #46a9ff;box-shadow:0 0 7px #7bc7ff,0 0 14px #236fcbbb,inset 0 0 5px #d9f2ff99;background:#2586d51f;z-index:-2;animation:heroPulse 1.6s ease-in-out infinite}
+#shadow{position:absolute;left:37px;top:99px;width:54px;height:17px;border-radius:50%;background:#0009;filter:blur(1px);z-index:-1}
+#equipmentVisual{position:absolute;inset:0;z-index:4;pointer-events:none;filter:drop-shadow(0 2px 1px #000)}
+.equipVisual{position:absolute;display:none;line-height:1;transform-origin:18% 84%;font-family:"Segoe UI Emoji",sans-serif;will-change:transform,left,top}
+/* Gear is anchored at the character's hands instead of floating beside the body. */
+#visualWeapon{left:65px;top:55px;width:29px;height:29px;object-fit:contain;image-rendering:pixelated;transform:rotate(-18deg)}
+#visualShield{left:31px;top:65px;font-size:25px;transform:rotate(-7deg)}
+#visualTool{left:73px;top:53px;width:35px;height:35px;object-fit:contain;transform:rotate(-17deg);image-rendering:auto}
+#visualArmor{left:49px;top:47px;width:30px;height:36px;border:3px solid transparent;border-radius:45% 45% 35% 35%;opacity:.78;mix-blend-mode:screen}
+#playerWrap.showWeapon #visualWeapon,#playerWrap.showShield #visualShield,#playerWrap.showTool #visualTool,#playerWrap.showArmor #visualArmor{display:block}
+#playerWrap.toolActive #visualWeapon{display:none}
+#playerWrap:not(.toolActive) #visualTool{display:none!important}
+.equippedSummary{margin-top:9px;padding:7px;border:1px solid #80653b;border-radius:7px;background:#111920;font-size:11px;color:#ddd}
+.paperDoll{position:relative;height:150px;margin:0 0 10px;border:1px solid #80653b;border-radius:10px;background:radial-gradient(circle at 50% 60%,#314452,#101820 68%);overflow:hidden}
+.paperDoll:after{content:"LIVE GEAR PREVIEW";position:absolute;left:50%;bottom:5px;transform:translateX(-50%);font-size:9px;font-weight:900;color:#d7bd82;letter-spacing:.8px;white-space:nowrap}
+.paperHero{position:absolute;left:50%;top:1px;width:128px;height:128px;transform:translateX(-50%) scale(.95);background-repeat:no-repeat;background-position:0 0;background-size:1664px 512px;filter:drop-shadow(0 8px 5px #000b)}
+.paperGear{position:absolute;inset:0;pointer-events:none;font-family:"Segoe UI Emoji",sans-serif}
+.paperWeapon,.paperShield,.paperTool{position:absolute;line-height:1;filter:drop-shadow(0 2px 1px #000)}
+.paperWeapon{left:57%;top:49px;width:29px;height:29px;object-fit:contain;image-rendering:pixelated;transform-origin:18% 84%;transform:rotate(-25deg)}
+.paperShield{left:31%;top:61px;font-size:26px;transform:rotate(-7deg)}
+.paperTool{left:56%;top:51px;width:36px;height:36px;object-fit:contain;transform:rotate(-17deg)}
+@keyframes creatorIdleLpc{from{background-position:0 -384px}to{background-position:-384px -384px}}
+@keyframes heroPulse{0%,100%{opacity:.72;transform:scale(.96)}50%{opacity:1;transform:scale(1.06)}}
+
+#hud,#quest,#title,#menu,#panel,#toast,#pad,#interact,#attack,#hint,#combatHelp{position:absolute;z-index:100}
+#hud{left:10px;top:10px;width:255px;background:var(--panel);border:2px solid var(--line);border-radius:10px;padding:10px}
+#hud b{font:700 18px Georgia;color:#f5dfac}.bar{height:11px;background:#222;border:1px solid #000;border-radius:6px;overflow:hidden;margin-top:6px}.hp{height:100%;width:100%;background:#d43c32;transition:width .2s}.xp{height:100%;width:12%;background:#3989c9}
+#title{left:50%;top:9px;transform:translateX(-50%);background:linear-gradient(#243b50,#111c27);border:2px solid var(--line);border-radius:9px;padding:8px 25px;text-align:center}
+#title strong{display:block;font:700 25px Georgia;color:#f2ce81;letter-spacing:2px}
+#quest{left:10px;top:92px;width:255px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px;font-size:13px}#quest b{color:#f2ce81}
+#menu{right:10px;top:110px;display:flex;flex-direction:column;gap:7px}
+.btn{color:#fff;background:linear-gradient(#294158,#142331);border:2px solid var(--line);border-radius:9px;padding:9px 12px;font-weight:bold;box-shadow:0 4px 10px #000;cursor:pointer}
+#panel{right:100px;top:120px;width:320px;max-height:65vh;overflow:auto;display:none;background:#101820f4;border:2px solid var(--line);border-radius:10px;padding:13px}
+#panel h2{margin:0 0 10px;color:#f2ce81;font-family:Georgia}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.slot{aspect-ratio:1;display:grid;place-items:center;background:#25313b;border:1px solid var(--line);border-radius:7px;font-size:25px}
+#toast{left:50%;bottom:100px;transform:translateX(-50%);opacity:0;pointer-events:none;background:#080d11ef;border:2px solid var(--gold);border-radius:9px;padding:10px 16px;max-width:75%;text-align:center;transition:.2s}#toast.show{opacity:1}
+#pad{left:18px;bottom:18px;width:150px;height:150px;touch-action:none}.pad{position:absolute;width:54px;height:54px;border-radius:50%;color:#fff;background:#101820df;border:2px solid #b89552;font-size:25px;touch-action:none;user-select:none}#up{left:48px}#down{left:48px;bottom:0}#left{left:0;top:48px}#right{right:0;top:48px}
+#attack{right:20px;bottom:24px;width:94px;height:94px;border-radius:50%;background:linear-gradient(#6d2430,#321118)}
+#interact{right:125px;bottom:42px;width:76px;height:76px;border-radius:50%;font-size:11px}
+#hint{right:17px;bottom:130px;background:#000b;padding:6px 8px;border-radius:7px;font-size:11px}
+#combatHelp{left:50%;bottom:14px;transform:translateX(-50%);background:#000b;padding:6px 10px;border-radius:7px;font-size:11px}
+#chopBox{position:absolute;z-index:140;left:50%;bottom:115px;transform:translateX(-50%);width:min(330px,78vw);display:none;background:#0b1218ef;border:2px solid #c79a4b;border-radius:10px;padding:9px 11px;text-align:center;box-shadow:0 6px 18px #0009}
+#chopBox b{color:#f4d487;font-family:Georgia}
+#chopTrack{height:13px;margin-top:7px;background:#211a10;border:1px solid #000;border-radius:8px;overflow:hidden}
+#chopFill{height:100%;width:0;background:linear-gradient(90deg,#8c5a27,#e0bd72);transition:width .08s linear}
+.choppable{cursor:pointer}
+.chopping{animation:treeShake .18s infinite alternate}
+@keyframes treeShake{from{transform:rotate(-1.5deg)}to{transform:rotate(1.5deg)}}
+@media(max-width:760px){
+ #hud,#quest{width:215px}#quest{top:87px}#title strong{font-size:18px}#title{padding:6px 10px}
+ .btn{padding:7px;font-size:12px}#panel{right:63px;width:min(78vw,310px)}
+ #combatHelp{display:none}
+}
+
+.goblin{position:absolute;width:94px;height:108px;z-index:44;text-align:center}
+.goblin img{width:94px;height:94px;object-fit:contain;filter:drop-shadow(0 7px 4px #000)}
+.goblin .gname{font-size:10px;background:#15110ddd;border:1px solid #b08142;border-radius:8px;padding:2px 5px}
+.goblin .ghp{height:6px;background:#281313;border:1px solid #000;border-radius:5px;overflow:hidden;margin:2px 8px}
+.goblin .ghp div{height:100%;background:#d84a35;width:100%}
+.loot{position:absolute;z-index:42;font-size:27px;filter:drop-shadow(0 4px 3px #000);cursor:pointer}
+#forestLabel{position:absolute;left:185px;top:180px;z-index:25;color:#f2ce81;background:#142318e8;border:2px solid #785e35;border-radius:8px;padding:8px 15px;font:700 20px Georgia;transform:rotate(-2deg)}
+
+
+/* General Store - Valvondor Merchant UI v2 */
+#panel.shopPanel{position:fixed;inset:1.8vh 2vw auto 2vw;width:auto!important;max-width:none;height:94vh;z-index:220;background:#090d12;border:2px solid #9d7739;border-radius:10px;padding:0;box-shadow:0 24px 70px #000e,0 0 0 4px #17110a;overflow:hidden;color:#ead8b0}
+.shopScene{height:100%;display:grid;grid-template-rows:74px minmax(0,1fr) 106px;background:radial-gradient(circle at 70% 25%,#24313a55,transparent 36%),linear-gradient(180deg,#111921,#080c11)}
+.shopTop{display:grid;grid-template-columns:minmax(300px,1fr) auto minmax(220px,1fr);align-items:center;gap:14px;padding:10px 18px;border-bottom:2px solid #76572d;background:linear-gradient(180deg,#151d25,#0b1117);box-shadow:0 5px 18px #0009}
+.shopBrand{display:flex;align-items:center;gap:12px;min-width:0}.shopCrest{width:46px;height:46px;border:1px solid #98733b;background:#17212a;border-radius:7px;display:grid;place-items:center;font-size:30px;box-shadow:inset 0 0 15px #000}.shopTitle{font:700 27px Georgia;color:#f1d28b;white-space:nowrap}.shopSubtitle{font-size:12px;color:#b9aa8d;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shopTabs{display:flex;align-self:stretch}.shopTab{min-width:118px;padding:8px 22px;border:1px solid #725629;border-top:0;border-bottom:0;background:linear-gradient(180deg,#1f2a35,#111820);color:#cfc4ae;font:700 18px Georgia;cursor:pointer}.shopTab.active{background:linear-gradient(180deg,#6f2b32,#451c23);color:#ffe09b;box-shadow:inset 0 -3px #c99d51}.shopTab:hover{filter:brightness(1.15)}
+.shopGoldWrap{justify-self:end;display:flex;align-items:center;gap:10px;padding:8px 14px;border:1px solid #86652f;border-radius:7px;background:#19130d}.shopGoldLabel{font:700 12px Georgia;color:#bda16d;letter-spacing:1px}.shopGold{color:#ffd56f;font:700 24px Georgia}.shopClose{position:static!important;background:#3e171b;border:1px solid #9f6843;color:#f7d8b0;border-radius:5px;width:38px;height:38px;font-size:20px;cursor:pointer}.shopClose:hover{background:#66242b}
+.shopMain{min-height:0;display:grid;grid-template-columns:minmax(460px,55%) minmax(350px,45%);gap:0}.shopCatalog{min-width:0;display:grid;grid-template-rows:auto 1fr auto;border-right:2px solid #6f5229;background:#0c1117}.shopCategories{display:flex;gap:7px;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid #3d3427}.shopCategory{padding:8px 13px;border:1px solid #624d2f;border-radius:5px;background:#151c23;color:#dccba7;font-weight:700;cursor:pointer}.shopCategory.active{background:#5a4022;color:#ffdf91;border-color:#b58a45}.shopCategory:hover{filter:brightness(1.18)}
+.shopGrid{padding:12px 14px;display:grid;grid-template-columns:repeat(4,minmax(112px,1fr));gap:9px;overflow:auto;align-content:start}.shopCard{position:relative;min-height:126px;padding:10px 7px 8px;border:1px solid #5f4a2c;border-radius:5px;background:linear-gradient(180deg,#171e25,#10151a);text-align:center;cursor:pointer;box-shadow:inset 0 0 14px #0006}.shopCard:hover{transform:translateY(-1px);border-color:#b38a48}.shopCard.selected{border:2px solid #e2b65e;box-shadow:0 0 14px #b57e2c66,inset 0 0 20px #5d3b16}.shopCardIcon{font-size:43px;line-height:1.2;filter:drop-shadow(0 5px 4px #0008)}.shopCardName{font:700 14px Georgia;color:#f0dfb9;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.shopCardPrice{color:#ffd369;font-weight:800;margin-top:5px}.shopCardOwned{position:absolute;right:6px;top:6px;min-width:20px;padding:2px 5px;border-radius:10px;background:#090c0fcc;border:1px solid #4d4436;color:#ddd;font-size:10px}
+.shopRarity{display:flex;gap:7px;padding:9px 14px;border-top:1px solid #3d3427;overflow:auto}.shopRarity button{padding:6px 10px;border:1px solid #57482f;border-radius:4px;background:#12181e;color:#aeb5b8;font-size:11px}.shopRarity button.active{color:#f1d28b;border-color:#aa8142;background:#352716}
+.shopDetail{min-width:0;background:linear-gradient(90deg,#d8c49b,#ead9b6 42%,#cfb98d);color:#282016;display:grid;grid-template-rows:auto auto 1fr auto;padding:22px 24px;position:relative;overflow:auto}.shopDetail:before{content:'';position:absolute;inset:9px;border:1px solid #8d7142aa;pointer-events:none}.shopDetailTitle{font:700 31px Georgia;color:#24405b;border-bottom:1px solid #9c8254;padding-bottom:8px;position:relative;z-index:1}.shopItemShowcase{display:grid;grid-template-columns:1fr 180px;gap:18px;align-items:center;position:relative;z-index:1}.shopItemText{font-size:14px;line-height:1.5}.shopPreviewIcon{font-size:112px;text-align:center;filter:drop-shadow(0 10px 8px #5f472f88)}.shopStatBox{margin-top:12px;padding:10px;border:1px solid #ab8d59;background:#f0e2c4aa;border-radius:4px}.shopOwnedLine{display:flex;justify-content:space-between;margin-top:10px;padding:8px 10px;background:#bba77f77;border:1px solid #9f8658;font-weight:700}.shopCompare{align-self:end;display:grid;grid-template-columns:1fr 1fr;gap:12px;position:relative;z-index:1}.shopCompareBox{padding:11px;border:1px solid #8b724b;background:#d6c39eaa;border-radius:4px}.shopCompareBox h4{margin:0 0 8px;color:#3d3121;font-family:Georgia}.shopGood{color:#267127;font-weight:800}.shopBad{color:#9a2929;font-weight:800}
+.shopBuyBox{position:relative;z-index:1;margin-top:12px;padding:12px;border:1px solid #7d633c;background:#302719;color:#f1dfb7;border-radius:5px}.shopPriceLine{display:flex;justify-content:space-between;align-items:center;font:700 17px Georgia}.shopQty{display:grid;grid-template-columns:44px 1fr 44px;gap:8px;margin:10px 0}.shopQty button{font-size:22px;border:1px solid #90703c;background:#172534;color:#f4d58a;border-radius:4px;cursor:pointer}.shopQtyValue{display:grid;place-items:center;background:#17120e;border:1px solid #5a492f;color:#fff;font-size:18px}.shopBuyButtons{display:grid;grid-template-columns:1fr 1fr;gap:8px}.shopBuyButtons button{padding:11px;border:1px solid #8b6c36;border-radius:5px;background:linear-gradient(180deg,#315a35,#1e3a23);color:#fff5d4;font:700 15px Georgia;cursor:pointer}.shopBuyButtons button:hover{filter:brightness(1.15)}.shopBuyButtons .wide{grid-column:1/-1;background:linear-gradient(180deg,#294b70,#172f4b)}
+.shopDialogue{display:grid;grid-template-columns:92px 1fr 420px;align-items:center;gap:14px;padding:10px 16px;border-top:2px solid #6f5229;background:linear-gradient(180deg,#111820,#090d12)}.shopPortrait{height:86px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}.shopPortrait img{height:105px;max-width:90px;object-fit:contain;filter:drop-shadow(0 6px 5px #000)}.shopSpeechName{font:700 18px Georgia;color:#f3d38b}.shopSpeechRole{font-size:11px;color:#a8b2ba;margin-bottom:6px}.shopSpeechText{font-size:14px;color:#ddd;line-height:1.45}.shopActions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.shopUtility{padding:10px 6px;border:1px solid #5f4b2f;border-radius:5px;background:#161d24;color:#d9c8a4;cursor:pointer;font-size:12px}.shopUtility:hover{border-color:#b38a48;color:#ffe09b}.shopUtility.leave{background:#352517}
+.shopEmpty{grid-column:1/-1;padding:30px;text-align:center;color:#baa98b}
+@media(max-width:1050px){.shopTop{grid-template-columns:1fr auto}.shopBrand{display:none}.shopGoldWrap{grid-column:2}.shopMain{grid-template-columns:52% 48%}.shopGrid{grid-template-columns:repeat(3,minmax(95px,1fr))}.shopDialogue{grid-template-columns:70px 1fr}.shopActions{display:none}.shopItemShowcase{grid-template-columns:1fr 120px}.shopPreviewIcon{font-size:80px}}
+@media(max-width:760px){#panel.shopPanel{inset:0;width:100vw!important;height:100vh;border-radius:0}.shopScene{grid-template-rows:58px 1fr 74px}.shopTop{padding:6px 8px;gap:6px}.shopTabs .shopTab{min-width:76px;padding:6px 10px;font-size:14px}.shopGoldWrap{padding:5px 8px}.shopGold{font-size:17px}.shopMain{grid-template-columns:48% 52%}.shopCategories{padding:6px;gap:4px}.shopCategory{padding:5px 7px;font-size:10px}.shopGrid{grid-template-columns:repeat(2,minmax(82px,1fr));padding:6px;gap:5px}.shopCard{min-height:94px;padding:5px}.shopCardIcon{font-size:31px}.shopCardName{font-size:11px}.shopDetail{padding:12px 13px}.shopDetailTitle{font-size:21px}.shopItemShowcase{display:block}.shopPreviewIcon{font-size:58px}.shopCompare{display:none}.shopStatBox{font-size:11px}.shopBuyBox{padding:7px}.shopBuyButtons button{padding:8px;font-size:11px}.shopDialogue{grid-template-columns:54px 1fr;padding:5px 8px;gap:6px}.shopPortrait{height:60px}.shopPortrait img{height:72px}.shopSpeechName{font-size:13px}.shopSpeechRole{display:none}.shopSpeechText{font-size:10px}.shopRarity{display:none}}
+#panel.inventoryPanel{width:430px}
+.inventoryTop{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.goldBox{padding:6px 10px;border:1px solid #b18a46;border-radius:8px;background:#2b2115;color:#ffd979;font-weight:bold}
+.invTabs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 12px}
+.invTab{padding:6px 9px;border:1px solid #7f6538;border-radius:7px;background:#202b34;color:#fff;cursor:pointer;font-size:12px}
+.invTab.active{background:#5a4021;color:#ffd979}
+.inventoryLayout{display:grid;grid-template-columns:155px 1fr;gap:12px}
+.equipmentBox{background:#182129;border:1px solid #6f5a37;border-radius:9px;padding:9px}
+.equipmentBox h3,.backpackBox h3{margin:0 0 8px;color:#f2ce81;font-family:Georgia}
+.equipmentGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.equipSlot,.invSlot{position:relative;min-height:64px;border:1px solid #80653b;border-radius:7px;background:#26313a;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;cursor:pointer}
+.equipSlot small,.invSlot small{display:block;font-size:9px;color:#c9c9c9}
+.equipSlot .icon,.invSlot .icon{font-size:26px;line-height:1}
+.invSlot .count{position:absolute;right:4px;bottom:3px;background:#101820dd;border-radius:5px;padding:1px 4px;font-size:10px;font-weight:bold}
+.invSlot.selected{outline:2px solid #ffd979}
+.backpackGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.itemInfo{margin-top:10px;padding:9px;border:1px solid #6f5a37;border-radius:8px;background:#141c23;min-height:74px}
+.itemInfo b{color:#f2ce81}
+.itemActions{display:flex;gap:7px;margin-top:8px}
+.itemActions button{flex:1}
+.statLine{display:flex;justify-content:space-between;font-size:12px;margin:4px 0}
+.lootPopup{position:absolute;z-index:145;background:#0c1217ed;border:1px solid #c99b4c;border-radius:7px;padding:5px 8px;color:#ffe39d;font-size:12px;pointer-events:none;animation:lootFloat 1.2s ease-out forwards}
+@keyframes lootFloat{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-45px)}}
+@media(max-width:760px){
+ #panel.inventoryPanel{width:min(92vw,430px);right:4vw}
+ .inventoryLayout{grid-template-columns:1fr}
+ .equipmentGrid{grid-template-columns:repeat(4,1fr)}
+ .backpackGrid{grid-template-columns:repeat(4,1fr)}
+}
+
+#panel.bankPanel{width:520px}
+.bankHeader{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.bankBalances{display:flex;gap:8px;flex-wrap:wrap}
+.balanceBadge{background:#2c2317;border:1px solid #b38d4a;border-radius:8px;padding:6px 9px;color:#ffdc88;font-weight:bold}
+.bankTabs{display:flex;gap:7px;margin-bottom:10px}
+.bankTab{flex:1;padding:7px;border:1px solid #80643a;border-radius:7px;background:#202b34;color:#fff;cursor:pointer}
+.bankTab.active{background:#5a4021;color:#ffdc88}
+.bankGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bankSection{background:#182129;border:1px solid #6f5a37;border-radius:9px;padding:9px}
+.bankSection h3{margin:0 0 8px;color:#f2ce81;font-family:Georgia}
+.bankItems{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.bankItem{position:relative;min-height:67px;border:1px solid #80653b;border-radius:7px;background:#26313a;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;cursor:pointer}
+.bankItem:hover{outline:2px solid #ffdc88}
+.bankItem .icon{font-size:26px}
+.bankItem small{display:block;font-size:9px;color:#ddd}
+.bankItem .count{position:absolute;right:4px;bottom:3px;background:#101820dd;border-radius:5px;padding:1px 4px;font-size:10px;font-weight:bold}
+.bankControls{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}
+.bankGoldControls{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.bankGoldControls button{flex:1;min-width:110px}
+.bankMessage{margin-top:9px;padding:8px;border:1px solid #6f5a37;border-radius:7px;background:#111920;color:#d8d8d8;font-size:12px}
+@media(max-width:760px){
+ #panel.bankPanel{width:min(94vw,520px);right:3vw}
+ .bankGrid{grid-template-columns:1fr}
+ .bankItems{grid-template-columns:repeat(4,1fr)}
+}
+
+/* Valvondor v0.2 world additions */
+.worldDecor{position:absolute;z-index:16;pointer-events:none;filter:drop-shadow(0 5px 4px #0007)}
+.landmark{position:absolute;z-index:24;cursor:pointer;filter:drop-shadow(0 8px 6px #0009)}
+.landmark:hover{outline:2px solid #f2ce81;border-radius:8px}
+#dailyBadge{position:absolute;left:50%;top:-14px;transform:translateX(-50%);background:#8b1f26;color:#fff;border:2px solid #f2ce81;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;font-weight:bold;animation:pulseBadge 1.2s infinite alternate}
+@keyframes pulseBadge{to{transform:translateX(-50%) scale(1.12);box-shadow:0 0 15px #ffd979}}
+.dailyQuest{border:1px solid #80653b;background:#1b252d;border-radius:8px;padding:9px;margin:8px 0}
+.dailyQuest h3{margin:0 0 5px;color:#f2ce81}.dailyQuest p{margin:4px 0;font-size:12px}.dailyQuest.done{opacity:.6}.dailyQuest button{margin-top:6px;width:100%}
+
+/* v0.3 Living Town */
+#dayTint{position:absolute;inset:0;z-index:80;pointer-events:none;background:rgba(18,28,70,0);mix-blend-mode:multiply;transition:background 2s ease}
+#worldTime{position:absolute;left:10px;top:166px;z-index:101;background:#101820e8;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:12px;color:#f2ce81;box-shadow:0 3px 10px #0007}
+.ambientNpc{position:absolute;z-index:34;width:48px;text-align:center;transition:filter .2s}
+.ambientNpc img{height:70px;max-width:48px;object-fit:contain;filter:drop-shadow(0 5px 4px #0009)}
+.ambientNpc span{display:block;margin-top:-3px;padding:1px 4px;border-radius:7px;background:#101820c9;border:1px solid #8e7445;font-size:9px;font-weight:bold;white-space:nowrap}
+.ambientNpc.walking img{animation:townBob .32s ease-in-out infinite alternate}
+@keyframes townBob{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+.townClutter{position:absolute;z-index:16;pointer-events:none;filter:drop-shadow(0 3px 2px #0005)}
+#townBanner{position:absolute;left:1375px;top:365px;z-index:22;padding:5px 12px;background:#1c2c3bd9;border:2px solid #b08a49;border-radius:8px;color:#f7d98d;font:700 14px Georgia;letter-spacing:1px;transform:rotate(-1deg)}
+@media(max-width:760px){#worldTime{top:155px;font-size:10px;padding:5px 7px}}
+
+
+/* v0.4 Expanded World */
+.zoneLabel{position:absolute;z-index:27;padding:8px 14px;border-radius:9px;background:#101820e8;border:2px solid #9d7c43;color:#f5d992;font:700 18px Georgia;letter-spacing:1px;box-shadow:0 5px 14px #0008;pointer-events:none}
+.zoneMarker{position:absolute;z-index:25;cursor:pointer;filter:drop-shadow(0 8px 5px #0009)}
+.zoneMarker:hover{outline:3px solid #f2ce81;border-radius:10px}
+.zoneSign{position:absolute;z-index:26;background:#442e1c;color:#ffe5a0;border:2px solid #bf8f4c;border-radius:7px;padding:6px 10px;font:700 13px Georgia;box-shadow:0 4px 8px #0008;cursor:pointer}
+.waterSparkle{position:absolute;z-index:14;color:#d9f6ff;font-size:24px;animation:waterBob 1.8s ease-in-out infinite alternate;pointer-events:none}
+@keyframes waterBob{to{transform:translateY(-7px);opacity:.55}}
+.cropRow{position:absolute;z-index:17;font-size:34px;letter-spacing:12px;filter:drop-shadow(0 3px 2px #0006);pointer-events:none}
+#worldCompass{position:absolute;right:12px;top:64px;z-index:102;background:#101820e8;border:1px solid var(--line);border-radius:8px;padding:6px 9px;color:#f2ce81;font-size:11px}
+@media(max-width:760px){#worldCompass{top:52px;font-size:9px}}
+
+
+/* v0.5 Oakhaven Reborn town polish */
+.townProp{position:absolute;z-index:24;filter:drop-shadow(0 5px 4px #0007);pointer-events:none}
+.bench{position:absolute;z-index:24;width:86px;height:24px;border:4px solid #4a2d17;border-radius:5px;background:repeating-linear-gradient(90deg,#9a6030 0 13px,#6c3f20 13px 17px);box-shadow:0 7px 0 #3b2718,0 9px 8px #0007}
+.lamp{position:absolute;z-index:29;width:10px;height:58px;background:#3a2b20;border-radius:4px;box-shadow:0 6px 7px #0008}
+.lamp:before{content:'';position:absolute;left:-10px;top:-18px;width:30px;height:28px;border:3px solid #4e3926;border-radius:7px;background:radial-gradient(circle,#fff3ad 0 22%,#ef9d32 40%,#5a321c 75%);box-shadow:0 0 18px #ffbd51}
+.fence{position:absolute;z-index:22;height:18px;border-top:7px solid #79502b;border-bottom:5px solid #4d301c;background:repeating-linear-gradient(90deg,transparent 0 30px,#6f4727 30px 39px);filter:drop-shadow(0 4px 3px #0007);pointer-events:none}
+.flowerBed{position:absolute;z-index:23;height:42px;border:5px solid #76502b;border-radius:20px;background:radial-gradient(circle at 15% 45%,#f4db4a 0 4px,transparent 5px),radial-gradient(circle at 38% 30%,#e65b78 0 5px,transparent 6px),radial-gradient(circle at 62% 55%,#a779ee 0 5px,transparent 6px),radial-gradient(circle at 83% 35%,#f2f2ea 0 4px,transparent 5px),#315f28;box-shadow:0 5px 6px #0006}
+.districtSign{position:absolute;z-index:30;padding:5px 10px;border:2px solid #815d31;border-radius:6px;background:#2f2116;color:#f6d891;font:700 12px Georgia;letter-spacing:.8px;box-shadow:0 4px 7px #0008;pointer-events:none}
+.marketCrates{position:absolute;z-index:25;font-size:38px;letter-spacing:-8px;filter:drop-shadow(0 5px 3px #0008);pointer-events:none}
+
+
+/* v0.6 world cleanup */
+.fishingPier{position:absolute;z-index:26;width:165px;height:70px;background:repeating-linear-gradient(90deg,#7a4725 0 17px,#9e6335 17px 33px);border:8px solid #4b2b18;border-radius:8px;box-shadow:0 8px 10px #0008;pointer-events:none}
+.fishingPier:after{content:'';position:absolute;right:-28px;top:7px;width:28px;height:48px;background:repeating-linear-gradient(90deg,#7a4725 0 12px,#9e6335 12px 24px);border:6px solid #4b2b18;border-left:0}
+.regionFence{position:absolute;z-index:22;height:16px;border-top:6px solid #76502c;border-bottom:4px solid #4a2d1a;background:repeating-linear-gradient(90deg,transparent 0 26px,#674121 26px 34px);pointer-events:none;filter:drop-shadow(0 4px 3px #0006)}
+.riverBankSign{position:absolute;z-index:28;background:#2f2116;color:#f6d891;border:2px solid #815d31;border-radius:7px;padding:6px 10px;font:700 12px Georgia;box-shadow:0 4px 7px #0008;pointer-events:none}
+
+
+.marketStall{position:absolute;z-index:25;width:92px;height:50px;border:5px solid #6d4526;border-radius:8px;background:repeating-linear-gradient(90deg,#f0d37a 0 18px,#315b84 18px 36px);box-shadow:0 8px 6px #0007}.marketStall:after{content:"";position:absolute;left:8px;right:8px;bottom:-22px;height:24px;border-left:7px solid #5d3b20;border-right:7px solid #5d3b20}.gardenPatch{position:absolute;z-index:22;width:105px;height:55px;border:5px solid #72502c;border-radius:15px;background:repeating-linear-gradient(90deg,#4e7a34 0 14px,#6da847 14px 28px);box-shadow:0 5px 5px #0005}.woodPile{position:absolute;z-index:24;font-size:34px;filter:drop-shadow(0 5px 3px #0008)}.anvilProp{position:absolute;z-index:25;font-size:36px;filter:drop-shadow(0 5px 3px #0008)}.wellProp{position:absolute;z-index:24;width:65px;height:48px;border:6px solid #6f6a5a;border-radius:50%;background:#272d32;box-shadow:0 7px 6px #0007}.wellProp:before{content:"";position:absolute;left:8px;right:8px;top:-33px;height:30px;border-left:6px solid #6b4325;border-right:6px solid #6b4325;border-top:8px solid #7b4d28}.yardFence{position:absolute;z-index:22;height:12px;background:repeating-linear-gradient(90deg,#76502c 0 8px,transparent 8px 26px);border-top:4px solid #5d391e;pointer-events:none}.townTree{position:absolute;z-index:19;image-rendering:pixelated;filter:drop-shadow(0 7px 5px #0007)}
+
+/* v2.2 Brimvault Mine */
+#mineWorld{position:absolute;width:2000px;height:1400px;background:url("../assets/embedded/asset_0118_be7b3e68801dec13.png") left top/2000px 1400px no-repeat;transform-origin:0 0;display:none;overflow:hidden}
+#mineWorld.active{display:block}
+#world.hiddenArea{display:none}
+.mineExit{position:absolute;left:925px;top:1125px;width:160px;height:105px;border:3px solid #b88b45;border-radius:45% 45% 10px 10px;background:#090807dd;box-shadow:0 0 24px #e0a54877 inset,0 7px 10px #000;z-index:30;display:grid;place-items:center;color:#f5dca2;font:bold 14px Georgia;text-align:center;cursor:pointer}
+.mineExit:before{content:"";position:absolute;inset:16px 24px 0;border-radius:50% 50% 5px 5px;background:#000}
+.mineExit span{position:relative;z-index:2;margin-top:48px;background:#17110df2;padding:5px 10px;border-radius:6px;line-height:1.15}.mineExit small{font:700 10px Arial;color:#ffe6a8}.mineExit:hover{outline:3px solid #ffd36b;filter:brightness(1.18)}
+.oreVein{position:absolute;width:92px;height:82px;z-index:26;cursor:pointer;filter:drop-shadow(0 8px 6px #000b);transition:.15s;display:grid;place-items:center}
+.oreVein .rock{font-size:58px;line-height:1}.oreVein .gem{position:absolute;font-size:25px;top:21px;left:35px}.oreVein:hover{transform:scale(1.06)}
+.oreVein.depleted{opacity:.28;filter:grayscale(1);pointer-events:none}
+.oreVein .oreLabel{position:absolute;top:68px;white-space:nowrap;background:#120f0ddd;border:1px solid #8c6b3c;border-radius:6px;padding:2px 6px;font-size:10px}
+.mineProp{position:absolute;z-index:24;image-rendering:pixelated;filter:drop-shadow(0 6px 4px #000a)}
+.mineTitle{position:absolute;left:50%;top:30px;transform:translateX(-50%);z-index:50;background:#111820ed;border:2px solid #ad8446;border-radius:9px;padding:8px 24px;font:700 24px Georgia;color:#f2ce81;letter-spacing:1px;pointer-events:none}
+#mineHud{position:absolute;left:50%;bottom:88px;transform:translateX(-50%);z-index:100;display:none;background:#111820ed;border:2px solid #ad8446;border-radius:9px;padding:8px 14px;color:#f2ce81;font-weight:bold}
+body.mineMode #mineHud{display:block}
+#mineLeaveBtn{position:absolute;right:22px;bottom:138px;z-index:170;display:none;background:linear-gradient(#7b2f2f,#3b1717);border:3px solid #d0a45c;border-radius:12px;color:#fff3cc;padding:12px 16px;font-weight:900;box-shadow:0 5px 12px #000b;cursor:pointer}
+body.mineMode #mineLeaveBtn{display:block}
+#mineLeaveBtn:active{transform:scale(.96)}
+body.mineMode #worldCompass{display:none}
+body.mineMode #worldTime{filter:brightness(.65)}
+@media(max-width:760px){.mineTitle{font-size:17px;padding:6px 12px}.oreVein{transform:scale(.9)}}
+
+
+/* v2.3 Brimvault entrance */
+.mineCaveEntrance{filter:drop-shadow(0 12px 9px #000a);transition:transform .16s,filter .16s;z-index:34}
+.mineCaveEntrance:hover{transform:scale(1.025);filter:drop-shadow(0 0 12px #e2a94d) drop-shadow(0 12px 9px #000a)}
+.mineEntranceHint{position:absolute;z-index:39;background:#111b;border:2px solid #b88a43;border-radius:8px;color:#ffe0a0;padding:6px 12px;font:700 12px Georgia;letter-spacing:1px;pointer-events:none}
+
+
+/* v2.6 Brimvault exterior camp */
+.mineCampDecor{position:absolute;z-index:33;image-rendering:pixelated;filter:drop-shadow(0 7px 5px #0009);pointer-events:none}
+.mineCampLantern{position:absolute;z-index:36;width:52px;height:52px;background:url("../assets/embedded/asset_0119_b28134179648625b.png") center/contain no-repeat;image-rendering:pixelated;filter:drop-shadow(0 0 12px #ffb52e) drop-shadow(0 5px 4px #0009);pointer-events:none}
+.mineCampSign{position:absolute;z-index:37;background:#2b1a0e;border:4px solid #7b4e24;border-radius:8px;color:#f4d18a;padding:6px 12px;font:700 13px Georgia;letter-spacing:1px;box-shadow:0 6px 8px #0009;pointer-events:none}
+.mineCampWarning{position:absolute;z-index:37;background:#17100bdd;border:2px solid #8d6232;border-radius:7px;color:#f0c87a;padding:5px 9px;font:700 11px Georgia;pointer-events:none}
+.mineRailStrip{position:absolute;z-index:31;width:145px;height:30px;background:repeating-linear-gradient(90deg,#52351f 0 9px,transparent 9px 20px);border-top:6px solid #34271d;border-bottom:6px solid #34271d;transform:rotate(0deg);filter:drop-shadow(0 5px 3px #0007);pointer-events:none}
+.mineTimberStack{position:absolute;z-index:32;font-size:34px;filter:drop-shadow(0 6px 4px #0009);pointer-events:none}
+
+/* Bram Coalwright forge */
+#panel.forgePanel{width:520px}
+.forgeHeader{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.forgeTabs{display:flex;gap:7px;margin:8px 0 12px}
+.forgeTab{flex:1;padding:8px;border:1px solid #80643a;border-radius:7px;background:#202b34;color:#fff;cursor:pointer;font-weight:bold}
+.forgeTab.active{background:#633b20;color:#ffd98a}
+.forgeQuest{border:1px solid #9d7136;border-radius:9px;padding:10px;background:#21170f;margin-bottom:10px}
+.forgeQuest h3{margin:0 0 6px;color:#ffd98a;font-family:Georgia}
+.recipeGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.recipeCard{border:1px solid #765b36;border-radius:9px;padding:10px;background:#182129}
+.recipeCard h3{margin:0 0 6px;color:#f2ce81;font-family:Georgia}
+.recipeCard p{font-size:12px;margin:4px 0;color:#ddd}
+.recipeCard button{width:100%;margin-top:7px}
+.recipeCard.locked{opacity:.55}
+.forgeStock{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
+.forgeBadge{background:#2c2317;border:1px solid #b38d4a;border-radius:8px;padding:5px 8px;color:#ffdc88;font-size:12px}
+@media(max-width:760px){#panel.forgePanel{width:min(94vw,520px);right:3vw}.recipeGrid{grid-template-columns:1fr}}
+
+
+/* v2.7 Create-a-Character */
+#characterCreator{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 35%,#263d35 0,#111b18 48%,#070b09 100%);padding:18px}
+#characterCreator.open{display:flex}
+.creatorCard{width:min(720px,96vw);max-height:94vh;overflow:auto;background:linear-gradient(180deg,#1d2b31f5,#0c1418f7);border:3px solid #a88445;border-radius:16px;box-shadow:0 22px 60px #000c;padding:20px}
+.creatorHeader{text-align:center;margin-bottom:15px}.creatorHeader h1{margin:0;color:#f3d58e;font:700 32px Georgia;letter-spacing:2px}.creatorHeader p{margin:5px 0 0;color:#cbd5d0}
+.creatorGrid{display:grid;grid-template-columns:250px 1fr;gap:20px}.creatorPreview{min-height:310px;border:2px solid #80663c;border-radius:13px;background:radial-gradient(circle,#395645 0,#1d3027 50%,#101916 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.creatorPreview:after{content:'';position:absolute;left:28px;right:28px;bottom:45px;height:28px;border-radius:50%;background:#0007}
+#creatorKnight{width:192px;height:192px;background:url("../assets/embedded/asset_0120_5ad5af6c7b599a52.png") 0 -384px/2496px 768px no-repeat;image-rendering:pixelated;position:relative;z-index:2;animation:creatorIdleLpc 1.15s steps(2) infinite}
+@keyframes creatorIdle{to{background-position:-2304px 0}}
+.creatorForm label{display:block;color:#f0d28b;font-weight:bold;margin:4px 0 6px}.creatorForm input{width:100%;border:2px solid #765f38;border-radius:8px;background:#111a1f;color:#fff;padding:10px 11px;font-size:16px;margin-bottom:13px}.creatorForm input[readonly]{color:#d6bd83;background:#0b1114}
+.appearanceChoices{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px}.appearanceChoice{border:2px solid #5f5439;border-radius:9px;background:#1b272d;color:#fff;padding:8px;cursor:pointer;text-align:center}.appearanceChoice.active{border-color:#ffd36d;box-shadow:0 0 0 2px #ffd36d33;background:#4b3b20}.appearanceChoice b{display:block;color:#f3d58e}.heroThumb{width:82px;height:82px;margin:0 auto 4px;background-repeat:no-repeat;background-size:auto 328px;background-position:0 0;image-rendering:pixelated}
+.creatorActions{display:flex;gap:9px}.creatorActions button{flex:1}.creatorNote{font-size:12px;color:#adb9b4;margin:8px 0 0}
+@media(max-width:650px){.creatorGrid{grid-template-columns:1fr}.creatorPreview{min-height:220px}#creatorKnight{width:150px;height:150px;background-size:1950px 600px;background-position:0 -300px;animation:creatorIdleLpcMobile 1.15s steps(2) infinite}@keyframes creatorIdleLpcMobile{from{background-position:0 -300px}to{background-position:-300px -300px}}.creatorHeader h1{font-size:24px}.appearanceChoices{grid-template-columns:repeat(3,1fr)}.heroThumb{width:62px;height:62px;background-size:auto 248px}.appearanceChoice{font-size:11px;padding:5px}}
+
+
+
+/* v3.0 live location map */
+#panel.mapPanel{width:min(720px,88vw);max-height:78vh;overflow:auto}
+.mapShell{background:#0d151bea;border:2px solid #927440;border-radius:12px;padding:10px}
+.mapHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.mapHeader h2{margin:0}.mapAreaBadge{background:#2b2115;border:1px solid #b18a46;border-radius:8px;padding:5px 9px;color:#ffd979;font-weight:bold;font-size:12px}
+.liveMap{position:relative;width:100%;aspect-ratio:12/7;border:3px solid #8b6a3b;border-radius:10px;overflow:hidden;background-color:#315b37;box-shadow:inset 0 0 30px #0008;image-rendering:pixelated}
+.liveMap.townMap{background:url("../assets/embedded/asset_0121_d008252b543972e1.png") left top/100% 100% no-repeat}
+.liveMap.mineMap{background:url("../assets/embedded/asset_0122_2d21bf34bbbe1ba4.png") left top/100% 100% no-repeat}
+.mapShade{position:absolute;inset:0;background:linear-gradient(#ffffff0a,#00000024);pointer-events:none}
+.mapLandmark{position:absolute;transform:translate(-50%,-50%);font-size:19px;filter:drop-shadow(0 2px 2px #000);cursor:default}
+.mapLandmark span{position:absolute;left:50%;top:22px;transform:translateX(-50%);white-space:nowrap;background:#101820df;border:1px solid #977542;border-radius:5px;padding:2px 5px;color:#ffe3a0;font:bold 9px Arial}
+#panel.mapPanel{pointer-events:none}
+#panel.mapPanel .mapClose{pointer-events:auto;cursor:pointer;border:1px solid #b18a46;background:#18232a;color:#ffe09a;border-radius:7px;padding:6px 10px;font-weight:900}
+#panel.mapPanel .mapClose:hover{background:#263640}
+.mapMoveHint{color:#9edcff;font-size:11px;font-weight:700;margin-left:auto}
+.playerMapMarker{position:absolute;left:50%;top:50%;width:34px;height:34px;transform:translate(-50%,-62%);z-index:15;transition:left .08s linear,top .08s linear;filter:drop-shadow(0 3px 2px #000b)}
+.mapHeroBody,.mapHeroWeapon{position:absolute;inset:0;width:32px;height:32px;background-repeat:no-repeat;background-size:416px 128px;image-rendering:pixelated;transform:scale(1.15);transform-origin:50% 75%}
+.mapHeroWeapon{z-index:2}
+.playerMapMarker:before{content:"";position:absolute;left:50%;top:27px;width:22px;height:8px;border-radius:50%;transform:translateX(-50%);background:#1c8bd066;border:2px solid #74d8ff;box-shadow:0 0 8px #4bc5ff;z-index:-1}
+.playerMapMarker:after{content:"YOU";position:absolute;left:50%;top:35px;transform:translateX(-50%);background:#071018e8;border:1px solid #6bd5ff;border-radius:5px;padding:2px 5px;color:#dff7ff;font:900 9px Arial;white-space:nowrap}
+.mapLegend{display:flex;gap:10px;flex-wrap:wrap;margin-top:9px;font-size:11px;color:#e9d6af}.mapLegend b{color:#ffd979}
+.mapCoords{margin-top:8px;text-align:center;color:#d8d8d8;font-size:12px}
+@media(max-width:760px){#panel.mapPanel{right:3vw;width:94vw;top:76px;max-height:72vh;pointer-events:none}.mapMoveHint{display:none}.mapLandmark{font-size:16px}.mapLandmark span{display:none}.playerMapMarker{width:18px;height:18px}}
+
+
+/* v4.2 fishing */
+.fishingSpot{position:absolute;width:54px;height:32px;border:3px solid #77d7ff;border-radius:50%;background:#5dcfff35;box-shadow:0 0 18px #4ad7ffcc inset,0 0 12px #64d8ff88;z-index:24;cursor:pointer;animation:fishRipple 1.8s ease-in-out infinite}
+.fishingSpot:after{content:'🐟';position:absolute;left:15px;top:3px;font-size:17px;filter:drop-shadow(0 2px 2px #0008);opacity:.8}
+.fishingSpot.cooldown{opacity:.35;pointer-events:none;filter:grayscale(.7)}
+@keyframes fishRipple{0%,100%{transform:scale(.92);opacity:.65}50%{transform:scale(1.08);opacity:1}}
+.fishingCast{position:absolute;z-index:85;width:8px;height:8px;border-radius:50%;background:#ef3b3b;border:2px solid #fff;box-shadow:0 0 8px #fff;pointer-events:none}
+.fishingCast:before{content:'';position:absolute;width:90px;height:2px;background:#eee9;right:5px;top:-20px;transform:rotate(-24deg);transform-origin:right center}
+.fishingCatchCard{position:fixed;left:50%;top:22%;transform:translate(-50%,-50%);z-index:5000;background:#101c24ee;border:3px solid #c9943b;border-radius:14px;padding:14px 24px;color:#ffe0a0;font-weight:900;font-size:18px;box-shadow:0 12px 30px #000b;pointer-events:none;animation:catchPop 1.4s forwards}
+@keyframes catchPop{0%{opacity:0;transform:translate(-50%,-30%) scale(.7)}15%,75%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-70%) scale(.9)}}
+
+/* v5.0 Goblin Forest: natural fenced safe road */
+.forestGround{position:absolute;left:0;width:1120px;z-index:4;background:
+ radial-gradient(circle at 20px 20px,#315f34 0 2px,transparent 3px),
+ radial-gradient(circle at 70px 55px,#456f3b 0 2px,transparent 3px),
+ linear-gradient(#244b2c,#315a32);background-size:92px 86px,110px 100px,100% 100%;
+ box-shadow:inset -28px 0 45px #0b2419aa}
+.forestGround.north{top:300px;height:790px}.forestGround.south{top:1280px;height:500px}
+#kingsRoad{position:absolute;left:0;top:1115px;width:1120px;height:165px;z-index:8;
+ background:
+  radial-gradient(circle at 22px 24px,#d4b27a 0 3px,transparent 4px),
+  radial-gradient(circle at 79px 96px,#8e673e 0 2px,transparent 3px),
+  linear-gradient(90deg,#8c6038,#b9874e 10%,#c79c62 50%,#b9874e 90%,#8c6038);
+ background-size:96px 96px,110px 110px,100% 100%;
+ border-top:6px solid #674529;border-bottom:6px solid #674529;
+ box-shadow:inset 0 12px 18px #0002,inset 0 -10px 18px #0002,0 5px 12px #0007}
+.forestFence{position:absolute;left:0;width:1120px;height:38px;z-index:32;
+ background-image:url('../assets/embedded/asset_0123_04d32bf61651f0c6.png');background-repeat:repeat-x;background-size:38px 38px;
+ image-rendering:pixelated;filter:drop-shadow(0 4px 2px #0009)}
+.forestFence.top{top:1080px}.forestFence.bottom{top:1278px}
+.fenceGap{position:absolute;width:86px;height:54px;background:#a97845;z-index:34;border-radius:5px;box-shadow:inset 0 0 0 3px #54361f}
+.fenceGap::before,.fenceGap::after{content:'';position:absolute;top:-9px;width:20px;height:62px;background:#76502b;border:3px solid #39230f;border-radius:5px}
+.fenceGap::before{left:-9px}.fenceGap::after{right:-9px}
+.forestGateLabel{position:absolute;z-index:36;padding:4px 8px;background:#20170fe8;border:2px solid #ad8248;border-radius:7px;color:#ffe2a3;font:700 11px Georgia;white-space:nowrap;transform:translateX(-50%)}
+.roadSign{position:absolute;z-index:36;background:linear-gradient(#875f34,#51361e);border:3px solid #2d1c0e;border-radius:5px;color:#fff2bd;padding:7px 12px;font:700 15px Georgia;box-shadow:0 5px 7px #0008;transform:rotate(-1deg)}
+.roadShield{position:absolute;z-index:35;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#204b72;border:3px solid #d8b55f;box-shadow:0 4px 8px #0009;font-size:20px}
+.goblinCampZone{position:absolute;z-index:6;border:3px dashed #754325;border-radius:28px;background:#5b321c55;box-shadow:inset 0 0 35px #160b0888}
+.goblinTent{position:absolute;z-index:25;width:92px;height:62px;background:linear-gradient(135deg,transparent 0 22%,#78452c 23% 65%,#4e2a1a 66%);clip-path:polygon(50% 0,100% 100%,0 100%);filter:drop-shadow(0 7px 4px #0009)}
+.goblinTent::after{content:'';position:absolute;left:40px;top:28px;width:15px;height:34px;background:#17100c;border-radius:8px 8px 0 0}
+.campfire{position:absolute;z-index:27;width:48px;height:48px;border-radius:50%;background:radial-gradient(circle,#fff3a0 0 10%,#ff9a36 11% 28%,#da3c1f 29% 45%,transparent 46%);filter:drop-shadow(0 0 10px #ff8b3d);animation:firePulse .65s infinite alternate}
+@keyframes firePulse{to{transform:scale(1.08);filter:drop-shadow(0 0 17px #ffb04f)}}
+.safeRoadBadge{position:absolute;left:395px;top:1168px;z-index:20;color:#fff5c8;background:#17351fe8;border:2px solid #d8b55f;border-radius:14px;padding:8px 18px;font:700 16px Georgia;letter-spacing:1px;box-shadow:0 5px 10px #0008}
+.forestTree{position:absolute;z-index:18;image-rendering:pixelated;filter:drop-shadow(0 8px 5px #0009)}
+.forestRock{position:absolute;z-index:19;width:42px;height:28px;border-radius:50% 45% 42% 48%;background:linear-gradient(145deg,#777b6f,#42483f);box-shadow:inset 4px 4px 3px #a5aa9a66,0 5px 4px #0007}
+.forestMushroom{position:absolute;z-index:20;font-size:23px;filter:drop-shadow(0 3px 2px #0008)}
+.forestGuard{position:absolute;z-index:40;width:58px;text-align:center;color:#fff;font:700 10px Arial;text-shadow:0 2px 2px #000}
+.forestGuard img{width:52px;display:block;margin:auto;image-rendering:pixelated;filter:drop-shadow(0 5px 3px #0008)}
+.forestWarning{position:absolute;z-index:35;background:#382416e8;border:3px solid #714524;color:#ffd6a1;padding:8px 11px;border-radius:7px;font:700 13px Georgia;box-shadow:0 6px 8px #0009}
+
+
+
+/* v5.6 Westwood Forest build */
+.westwoodCanopy{position:absolute;left:0;top:285px;width:1060px;height:795px;z-index:7;pointer-events:none;
+ background:
+ radial-gradient(ellipse at 13% 18%,#183d27 0 54px,transparent 56px),
+ radial-gradient(ellipse at 31% 11%,#214e2e 0 70px,transparent 72px),
+ radial-gradient(ellipse at 53% 17%,#173a24 0 66px,transparent 68px),
+ radial-gradient(ellipse at 78% 10%,#234f2f 0 72px,transparent 74px),
+ radial-gradient(ellipse at 92% 25%,#183d27 0 64px,transparent 66px),
+ linear-gradient(180deg,#173a24cc,transparent 32%);
+ filter:drop-shadow(0 12px 14px #08180eb8)}
+.westwoodTrail{position:absolute;z-index:9;height:72px;border:8px solid #4c3927;border-radius:999px;
+ background:
+ radial-gradient(circle at 22px 18px,#b48d58 0 3px,transparent 4px),
+ radial-gradient(circle at 68px 42px,#765137 0 2px,transparent 3px),
+ linear-gradient(90deg,#8d633f,#b38352,#8d633f);
+ background-size:84px 68px,98px 72px,100% 100%;
+ box-shadow:inset 0 7px 10px #fff1,inset 0 -8px 10px #0003,0 7px 10px #0007}
+.westwoodTrail.main{left:20px;top:720px;width:920px;transform:rotate(-7deg)}
+.westwoodTrail.branchA{left:300px;top:570px;width:410px;transform:rotate(50deg)}
+.westwoodTrail.branchB{left:440px;top:855px;width:365px;transform:rotate(34deg)}
+.forestClearing{position:absolute;z-index:8;border:10px solid #385034;border-radius:48% 52% 46% 54%;
+ background:
+ radial-gradient(circle at 20px 20px,#4d703d 0 3px,transparent 4px),
+ radial-gradient(circle at 75px 55px,#335d35 0 2px,transparent 3px),
+ #416b3e;background-size:90px 85px,105px 100px;
+ box-shadow:inset 0 0 35px #17301caa,0 8px 14px #0007}
+.forestClearing.goblinClearing{left:25px;top:430px;width:500px;height:510px}
+.forestClearing.grove{left:30px;top:1210px;width:500px;height:400px;border-color:#496337}
+.forestClearing.shrine{left:20px;top:1570px;width:360px;height:330px;border-color:#475b4b;background:#34583e}
+.woodcuttingSign,.westwoodSign{position:absolute;z-index:38;padding:7px 13px;border-radius:7px;
+ background:linear-gradient(#77512e,#432c19);border:3px solid #29190d;color:#ffe6ae;
+ font:700 14px Georgia;box-shadow:0 6px 9px #0009;white-space:nowrap}
+.westwoodSign{left:70px;top:330px;font-size:20px;letter-spacing:2px}
+.woodcuttingSign{left:170px;top:1225px}
+.palisade{position:absolute;z-index:29;height:24px;background:repeating-linear-gradient(90deg,#5c391f 0 14px,#2d1b10 14px 18px);
+ border:3px solid #27170c;box-shadow:0 5px 5px #0008;transform-origin:left center}
+.forestStump{position:absolute;z-index:21;width:45px;height:25px;border-radius:50%;background:#80512e;border:5px solid #422817;box-shadow:0 5px 4px #0008}
+.wolfShrineRing{position:absolute;left:140px;top:1450px;width:270px;height:205px;z-index:16;border:8px dashed #859a84;border-radius:50%;
+ box-shadow:0 0 24px #b7d5a755,inset 0 0 22px #a6c99a44}
+.westwoodChest{position:absolute;left:760px;top:590px;z-index:31;width:60px;height:46px;border-radius:8px 8px 4px 4px;
+ background:linear-gradient(#c38a36 0 44%,#6b421e 45%);border:5px solid #35200f;box-shadow:0 7px 7px #0009}
+.westwoodChest:before{content:'🔒';position:absolute;left:17px;top:10px;font-size:20px}
+.forestFog{position:absolute;left:0;top:300px;width:1070px;height:780px;z-index:33;pointer-events:none;opacity:.16;
+ background:radial-gradient(ellipse at 20% 30%,#d8f0d6 0 80px,transparent 190px),
+ radial-gradient(ellipse at 68% 60%,#d8f0d6 0 60px,transparent 180px);
+ animation:westFog 8s ease-in-out infinite alternate}
+@keyframes westFog{to{transform:translateX(35px);opacity:.23}}
+
+
+/* v6.1 - Westwood now begins beyond the west gate */
+.westwoodDeepZone{
+ position:absolute;left:0;top:250px;width:520px;height:1220px;z-index:6;pointer-events:none;
+ background:
+ radial-gradient(circle at 12% 12%,#102f1d 0 75px,transparent 78px),
+ radial-gradient(circle at 40% 23%,#194528 0 95px,transparent 98px),
+ radial-gradient(circle at 72% 12%,#123822 0 90px,transparent 93px),
+ radial-gradient(circle at 28% 50%,#173f25 0 115px,transparent 118px),
+ radial-gradient(circle at 78% 57%,#0f331f 0 105px,transparent 108px),
+ linear-gradient(90deg,#102d1bcc,#1d4c2caa);
+ box-shadow:inset -35px 0 45px #071b10aa
+}
+.deepForestTrail{
+ position:absolute;left:0;top:1010px;width:565px;height:76px;z-index:10;
+ border-top:8px solid #4b3928;border-bottom:8px solid #4b3928;
+ background:linear-gradient(#8b633f,#b08050,#8b633f);
+ transform:rotate(-3deg);transform-origin:right center;
+ box-shadow:0 8px 10px #0007
+}
+.deepWestwoodLabel{
+ position:absolute;left:80px;top:620px;z-index:35;padding:8px 15px;border-radius:8px;
+ background:#17221dcc;border:3px solid #8d6738;color:#f4d58a;
+ font:700 18px Georgia;letter-spacing:2px;box-shadow:0 6px 12px #0009
+}
+.westwoodGateLabel{
+ position:absolute;left:430px;top:1115px;z-index:36;padding:7px 13px;border-radius:7px;
+ background:linear-gradient(#77512e,#432c19);border:3px solid #29190d;color:#ffe6ae;
+ font:700 14px Georgia;box-shadow:0 6px 9px #0009
+}
+
+
+
+/* v6.3 TRUE WESTWOOD MAP EXPANSION */
+#townWorld{width:4700px!important;height:2100px!important;left:0!important;margin-left:0!important;
+ background-color:#173d27!important;background-position:1100px 0!important;background-repeat:no-repeat!important}
+/* Existing Oakhaven/world objects occupy x=1100..4700. */
+#townWorld>.obj,#townWorld>.npc,#townWorld>.goblin,#townWorld>.shopLabel,
+#townWorld>.buildingLabel,#townWorld>.zoneLabel,#townWorld>.forestWarning,
+#townWorld>.forestRock,#townWorld>.forestMushroom,#townWorld>.forestStump,
+#townWorld>.westwoodChest,#townWorld>.wolfShrineRing,#townWorld>.palisade,
+#townWorld>.forestClearing,#townWorld>.westwoodCanopy,#townWorld>.forestFog,
+#townWorld>.westwoodSign,#townWorld>.woodcuttingSign{margin-left:1100px!important}
+/* Westwood occupies real world coordinates x=0..1100. */
+.trueWestwood{position:absolute;left:0;top:0;width:1100px;height:2100px;z-index:3;
+ background:
+ radial-gradient(circle at 8% 12%,#1b512e 0 95px,transparent 100px),
+ radial-gradient(circle at 32% 7%,#123b23 0 120px,transparent 125px),
+ radial-gradient(circle at 60% 18%,#19492a 0 125px,transparent 130px),
+ radial-gradient(circle at 88% 9%,#10351f 0 110px,transparent 115px),
+ radial-gradient(circle at 18% 46%,#143f25 0 150px,transparent 155px),
+ radial-gradient(circle at 72% 48%,#0e351f 0 165px,transparent 170px),
+ radial-gradient(circle at 35% 83%,#17482a 0 150px,transparent 155px),
+ radial-gradient(circle at 85% 88%,#10351f 0 140px,transparent 145px),
+ linear-gradient(90deg,#0d2c1a,#1d512f);
+ box-shadow:inset -30px 0 45px #06180eaa}
+.trueWestRoad{position:absolute;left:0;top:1190px;width:1210px;height:92px;z-index:12;
+ background:linear-gradient(#7b5437,#b27f50,#7b5437);border-top:9px solid #493522;border-bottom:9px solid #493522;
+ box-shadow:0 8px 12px #0008}
+.trueWestCamp{position:absolute;left:120px;top:420px;width:650px;height:520px;z-index:6;border:10px solid #354d32;
+ border-radius:47%;background:#355f39;box-shadow:inset 0 0 45px #102b18,0 10px 18px #0008}
+.trueWestGrove{position:absolute;left:230px;top:1450px;width:690px;height:470px;z-index:6;border:10px solid #49663e;
+ border-radius:48%;background:#416b3e;box-shadow:inset 0 0 40px #17301caa}
+.trueWestTitle,.trueWestGate{position:absolute;z-index:35;background:#14221bdc;border:3px solid #966d3b;border-radius:8px;
+ color:#f6d88d;font:700 20px Georgia;box-shadow:0 7px 12px #0009;padding:8px 15px}
+.trueWestTitle{left:330px;top:180px;letter-spacing:3px;font-size:26px}
+.trueWestGate{left:960px;top:1125px;font-size:15px}
+
+
+/* v6.4 Separate Westwood map */
+#forestWorld{
+ position:absolute;width:2200px;height:1500px;display:none;overflow:hidden;transform-origin:0 0;
+ background:
+ radial-gradient(circle at 120px 100px,#245a31 0 70px,transparent 74px),
+ radial-gradient(circle at 470px 130px,#183f25 0 90px,transparent 95px),
+ radial-gradient(circle at 810px 90px,#22532f 0 85px,transparent 90px),
+ radial-gradient(circle at 1230px 150px,#173d24 0 110px,transparent 115px),
+ radial-gradient(circle at 1740px 95px,#24572f 0 100px,transparent 105px),
+ radial-gradient(circle at 2060px 180px,#173c24 0 95px,transparent 100px),
+ radial-gradient(circle at 180px 780px,#153a23 0 115px,transparent 120px),
+ radial-gradient(circle at 790px 710px,#224f2e 0 130px,transparent 135px),
+ radial-gradient(circle at 1480px 790px,#143921 0 140px,transparent 145px),
+ radial-gradient(circle at 2050px 850px,#20502d 0 120px,transparent 125px),
+ linear-gradient(#315f38,#204c2c);
+}
+#forestWorld.active{display:block}
+.forestMapTitle{position:absolute;left:770px;top:35px;z-index:45;padding:11px 30px;border:3px solid #a77a36;
+ border-radius:10px;background:#10201bdc;color:#f7d78a;font:700 30px Georgia;letter-spacing:3px;box-shadow:0 8px 18px #000b}
+.forestExit{position:absolute;left:985px;top:1320px;width:230px;height:90px;z-index:48;border:4px solid #ae813b;
+ border-radius:12px;background:linear-gradient(#24392e,#101d18);color:#ffe0a1;display:flex;align-items:center;
+ justify-content:center;text-align:center;font:700 19px Georgia;box-shadow:0 8px 18px #000b;cursor:pointer}
+.forestExit:hover{filter:brightness(1.18)}
+.forestRoad{position:absolute;z-index:8;background:linear-gradient(#825c3b,#b38251,#825c3b);
+ border:8px solid #493623;border-radius:999px;box-shadow:0 8px 12px #0008}
+.forestRoad.main{left:930px;top:1070px;width:340px;height:410px;transform:rotate(0deg)}
+.forestRoad.west{left:280px;top:870px;width:840px;height:92px;transform:rotate(-8deg)}
+.forestRoad.east{left:1100px;top:790px;width:760px;height:92px;transform:rotate(9deg)}
+.forestRoad.north{left:930px;top:320px;width:105px;height:800px}
+.forestClearingMap{position:absolute;z-index:7;border:12px solid #354b31;border-radius:48%;
+ background:#3d6a40;box-shadow:inset 0 0 45px #132d1aaa,0 10px 20px #0008}
+.forestClearingMap.camp{left:170px;top:330px;width:680px;height:580px}
+.forestClearingMap.grove{left:1300px;top:350px;width:650px;height:520px}
+.forestClearingMap.shrine{left:760px;top:130px;width:650px;height:440px}
+.forestAreaLabel{position:absolute;z-index:40;padding:7px 14px;border-radius:7px;background:#17231dcc;
+ border:3px solid #946a38;color:#f7d995;font:700 17px Georgia;box-shadow:0 6px 12px #0009}
+.forestCampFire{position:absolute;z-index:30;width:58px;height:58px;border-radius:50%;
+ background:radial-gradient(circle,#fff4a1 0 10%,#ffad24 11% 26%,#a83b16 27% 43%,transparent 45%);
+ filter:drop-shadow(0 0 14px #ff9a28);animation:campPulse .8s infinite alternate}
+@keyframes campPulse{to{transform:scale(1.08);filter:drop-shadow(0 0 20px #ffb43c)}}
+#forestHud{display:none;position:fixed;left:50%;bottom:86px;transform:translateX(-50%);z-index:211;
+ background:#101923eb;border:2px solid #b7893d;color:#ffe4a0;padding:10px 20px;border-radius:10px;font-weight:800}
+body.forestMode #forestHud{display:block}
+
+
+/* v6.5 WESTWOOD MAP EDITOR */
+#mapEditorBtn{border-color:#5fa56b!important}
+#editorPanel{display:none;position:fixed;right:12px;top:245px;width:285px;max-height:calc(100vh - 270px);overflow:auto;z-index:400;background:#0e1814f2;border:2px solid #b7893d;border-radius:12px;padding:10px;color:#f7e4b3;box-shadow:0 12px 30px #000b}
+body.mapEditing #editorPanel{display:block}body.mapEditing #menu,body.mapEditing #quest,body.mapEditing #pad,body.mapEditing #interact,body.mapEditing #attack{opacity:.25;pointer-events:none}
+.editorHead{display:flex;justify-content:space-between;align-items:center;gap:8px}.editorHead b{font:700 18px Georgia;color:#ffd77d}.editorClose{background:#572b27;color:#fff;border:1px solid #b66;border-radius:7px;padding:5px 8px}
+.editorHelp{font-size:11px;color:#bcd5c0;line-height:1.35;margin:7px 0}.editorTools{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.editorTools button,.editorAction{background:#1d2c25;color:#ffe0a1;border:1px solid #7e6337;border-radius:7px;padding:7px 5px;font-weight:800;cursor:pointer}.editorTools button:hover,.editorAction:hover{filter:brightness(1.2)}.editorTools button.active,.editorAsset.active{background:#76521f!important;color:#fff4bd!important;outline:2px solid #ffd56a}.editorSlider{width:100%;accent-color:#e8b34f}.editorRow{display:grid;grid-template-columns:1fr auto;gap:7px;align-items:center;margin-top:7px;font-size:11px}.editorBrushBadge{margin-top:7px;padding:7px;border-radius:7px;background:#12231b;border:1px solid #5c774f;color:#d9f1cb;font-size:11px}.mapEditing.paintTool #forestWorld{cursor:crosshair}.mapEditing.terrainTool #forestWorld{cursor:crosshair}.mapEditing.eraseTool #forestWorld{cursor:not-allowed}
+.editorAssets{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.editorAsset{min-height:70px;background:#17241e;border:1px solid #5e6f5e;border-radius:8px;padding:4px;color:#e8d8ad;font-size:9px;cursor:pointer}.editorAsset img{display:block;margin:auto;width:46px;height:46px;object-fit:contain;image-rendering:pixelated}.editorSection{margin-top:10px;border-top:1px solid #4d4936;padding-top:8px}.editorSection strong{color:#ffd77d;font-size:12px}
+.editorSelected{outline:4px solid #68d7ff!important;filter:drop-shadow(0 0 8px #68d7ff)!important}.editorEditable{cursor:move!important;pointer-events:auto!important}.editorPlaced{position:absolute;z-index:26;image-rendering:pixelated}.editorTerrain{position:absolute;z-index:5;border-radius:45%;pointer-events:auto}.editorTerrain.dirt{background:#86603f;border:7px solid #59412d}.editorTerrain.grass{background:#47744a;border:7px solid #365b38}.editorTerrain.dark{background:#183e25;border:7px solid #102c1a}.editorRectPreview{position:absolute;z-index:390;pointer-events:none;border:3px dashed #ffe17d;background:#ffe17d33;box-shadow:0 0 0 2px #0007 inset}.editorRectPreview.erase{border-color:#ff6b62;background:#ff3b3033}
+.editorSearch,.editorSelect{width:100%;margin-top:7px;padding:8px;border-radius:7px;border:1px solid #69745f;background:#101a16;color:#fff}.editorAssetCount{font-size:10px;color:#a9c6ad;margin:5px 0}.editorAsset.hidden{display:none}.editorMobThumb{height:46px;display:grid;place-items:center;font-size:30px}
+.editorStatus{font-size:11px;background:#09110e;border:1px solid #465b49;border-radius:6px;padding:6px;margin:7px 0;color:#cfe6d1}.editorDanger{background:#4a2320!important;border-color:#9a4b42!important}.editorFile{display:none}
+@media(max-width:760px){#editorPanel{top:70px;right:4px;width:250px;max-height:calc(100vh - 80px)}.editorAssets{grid-template-columns:repeat(2,1fr)}}
+
+
+
+/* v7.1 GENERAL STORE INTERIOR */
+#shopWorld{position:absolute;width:1000px;height:700px;transform-origin:0 0;display:none;overflow:hidden;
+ background:
+  linear-gradient(#0004,#0000 28%),
+  repeating-linear-gradient(90deg,#9b6a3d 0 48px,#7b4e2d 48px 52px);
+ border:28px solid #443021;box-shadow:inset 0 0 55px #0009}
+#shopWorld.active{display:block}
+.shopWallTop{position:absolute;left:0;top:0;width:100%;height:105px;background:linear-gradient(#3a281d,#5c3b25);border-bottom:12px solid #281c14;z-index:5}
+.shopRug{position:absolute;left:300px;top:420px;width:400px;height:150px;border-radius:18px;background:repeating-linear-gradient(90deg,#792f29 0 30px,#a74b38 30px 60px);border:8px solid #d5ad62;box-shadow:0 8px 18px #0008;z-index:4}
+.shopCounter{position:absolute;left:285px;top:205px;width:430px;height:105px;background:linear-gradient(#a06a3d,#694224);border:9px solid #3e291a;border-radius:12px;box-shadow:0 14px 12px #0008;z-index:28}
+.shopCounter:after{content:'';display:none}
+.shopShelf{position:absolute;width:190px;height:190px;background:#543722;border:8px solid #2e2118;border-radius:8px;z-index:16;box-shadow:0 10px 12px #0009}
+.shopShelf.left{left:55px;top:135px}.shopShelf.right{right:55px;top:135px}
+.shopShelf:before,.shopShelf:after{content:'🍞  🍎  🧪';position:absolute;left:20px;width:140px;text-align:center;font-size:28px;padding:10px 0;border-bottom:7px solid #2e2118}
+.shopShelf:before{top:20px}.shopShelf:after{content:'🪵  🎣  🧺';top:92px;border-bottom:0}
+.shopCrate{position:absolute;z-index:18;width:62px;filter:drop-shadow(0 7px 4px #0008)}
+#shopExit{position:absolute;left:410px;top:615px;width:180px;height:58px;z-index:40;border-radius:10px 10px 0 0;background:#2d2118;border:6px solid #b78b4b;color:#ffe7aa;text-align:center;font:700 15px Georgia;padding-top:9px;cursor:pointer;box-shadow:0 -5px 15px #0008}
+#shopDoor{position:absolute;left:2315px;top:595px;width:190px;height:145px;z-index:75;cursor:pointer;border-radius:16px;background:#ffe28a18;border:2px dashed #ffe28a77}#shopDoor:after{content:'ENTER';position:absolute;left:55px;bottom:8px;padding:4px 10px;border-radius:8px;background:#152018dd;border:1px solid #d9b45f;color:#ffe4a0;font:800 11px Georgia;letter-spacing:1px}
+#shopDoor:hover{background:#ffe28a28}
+.shopNpc{position:absolute;z-index:38;width:70px;text-align:center;cursor:pointer}.shopNpc img{height:92px;max-width:70px;object-fit:contain;filter:drop-shadow(0 6px 4px #000)}.shopNpc span{display:block;margin-top:-4px;padding:3px 6px;border-radius:8px;background:#101820dd;border:1px solid #d2ad64;font-size:11px;font-weight:bold}
+#shopHint{display:none;position:fixed;left:50%;bottom:86px;transform:translateX(-50%);z-index:211;background:#101923eb;border:2px solid #b7893d;color:#ffe4a0;padding:10px 20px;border-radius:10px;font-weight:800}
+body.shopMode #shopHint{display:block}
+
+
+/* v7.6 MARKET PACK GENERAL STORE */
+#shopWorld{background:repeating-linear-gradient(90deg,#a97948 0 54px,#875a34 54px 58px);border-color:#352316}
+.marketBackWall{position:absolute;left:55px;right:55px;top:90px;height:235px;background:linear-gradient(#70482d,#4b301f);border:9px solid #2e1d13;border-radius:10px;z-index:8;box-shadow:inset 0 0 30px #0008}
+.marketDecor,.marketGoods,.marketFloorProp{position:absolute;z-index:18;object-fit:contain;filter:drop-shadow(0 7px 5px #0008)}
+.marketCounter{position:absolute;left:230px;top:245px;width:540px;height:125px;background:linear-gradient(#8c572f,#59351f);border:9px solid #2e1d13;border-radius:12px;z-index:16;box-shadow:0 12px 15px #0009}
+.marketGoods{z-index:20}.shopNpc{z-index:38!important}.shopRug{top:435px!important;height:125px!important}
+#shopExit{left:420px;top:585px;width:160px;height:92px;padding:0;background:transparent;border:0;box-shadow:none;overflow:visible}
+#shopExit img{position:absolute;left:35px;top:0;width:90px;height:90px;object-fit:contain;filter:drop-shadow(0 6px 5px #0009)}
+#shopExit span{position:absolute;left:5px;right:5px;bottom:-2px;background:#17120fdd;border:2px solid #b78b4b;border-radius:8px;padding:5px;color:#ffe7aa}
+
+
+/* v7.9 Merchant UI fit-and-polish overrides */
+#panel.shopPanel{inset:1.2vh 1.6vw auto 1.6vw;height:96vh}
+.shopScene{grid-template-rows:66px minmax(0,1fr) 86px}
+.shopTop{padding:7px 14px;gap:10px}
+.shopCrest{width:40px;height:40px;font-size:25px}
+.shopTitle{font-size:24px}.shopSubtitle{font-size:11px}
+.shopTab{min-width:108px;padding:7px 18px;font-size:17px}
+.shopGoldWrap{padding:6px 11px}.shopGold{font-size:21px}.shopClose{width:34px;height:34px;font-size:18px}
+.shopMain{grid-template-columns:minmax(500px,56%) minmax(410px,44%);overflow:hidden}
+.shopCatalog{grid-template-rows:auto minmax(0,1fr) auto}
+.shopCategories{padding:8px 10px;gap:5px}.shopCategory{padding:6px 10px;font-size:12px}
+.shopGrid{padding:9px 10px;gap:7px;grid-template-columns:repeat(4,minmax(105px,1fr))}
+.shopCard{min-height:112px;padding:7px 6px}.shopCardIcon{font-size:38px}.shopCardName{font-size:13px}.shopCardPrice{margin-top:3px}
+.shopRarity{padding:6px 10px;gap:5px}.shopRarity button{padding:4px 8px;font-size:10px}
+.shopDetail{padding:14px 17px;grid-template-rows:auto auto auto auto;gap:7px;overflow:hidden;align-content:start}
+.shopDetail:before{inset:7px}
+.shopDetailTitle{font-size:27px;padding-bottom:5px}
+.shopItemShowcase{grid-template-columns:minmax(0,1fr) 135px;gap:10px;align-items:center}
+.shopItemText{font-size:13px;line-height:1.3}.shopItemText p{margin:4px 0 7px}
+.shopPreviewIcon{font-size:82px}
+.shopStatBox{margin-top:5px;padding:7px;line-height:1.3}.shopOwnedLine{margin-top:6px;padding:6px 8px}
+.shopCompare{align-self:auto;gap:7px}.shopCompareBox{padding:7px;font-size:12px}.shopCompareBox h4{margin:0 0 4px;font-size:13px}
+.shopBuyBox{margin-top:0;padding:8px 10px}.shopPriceLine{font-size:15px}
+.shopQty{grid-template-columns:38px 1fr 38px;gap:6px;margin:6px 0}.shopQty button{font-size:19px}.shopQtyValue{font-size:16px}
+.shopBuyButtons{gap:6px}.shopBuyButtons button{padding:8px;font-size:13px}
+.shopDialogue{grid-template-columns:72px 1fr 370px;gap:10px;padding:6px 12px}
+.shopPortrait{height:72px}.shopPortrait img{height:88px;max-width:72px}
+.shopSpeechName{font-size:16px}.shopSpeechRole{margin-bottom:3px}.shopSpeechText{font-size:12px;line-height:1.3}
+.shopActions{gap:6px}.shopUtility{padding:7px 5px;font-size:10px}
+@media(max-width:1200px){
+ #panel.shopPanel{inset:.5vh .8vw auto .8vw;height:98vh}
+ .shopScene{grid-template-rows:60px minmax(0,1fr) 76px}
+ .shopBrand{display:flex}.shopTitle{font-size:20px}.shopSubtitle{display:none}.shopCrest{width:34px;height:34px;font-size:22px}
+ .shopMain{grid-template-columns:55% 45%}.shopGrid{grid-template-columns:repeat(3,minmax(92px,1fr))}
+ .shopDialogue{grid-template-columns:58px 1fr 300px}.shopPortrait{height:62px}.shopPortrait img{height:76px}.shopActions{display:grid}
+ .shopItemShowcase{grid-template-columns:minmax(0,1fr) 105px}.shopPreviewIcon{font-size:66px}
+}
+@media(max-width:820px){
+ #panel.shopPanel{inset:0;width:100vw!important;height:100vh;border-radius:0}
+ .shopScene{grid-template-rows:54px minmax(0,1fr) 62px}
+ .shopTop{padding:4px 6px}.shopBrand{display:none}.shopTabs .shopTab{min-width:72px;padding:5px 8px;font-size:13px}
+ .shopGoldWrap{padding:4px 6px}.shopGold{font-size:16px}.shopClose{width:30px;height:30px}
+ .shopMain{grid-template-columns:47% 53%}.shopCategories{padding:4px;gap:3px}.shopCategory{padding:4px 5px;font-size:9px}
+ .shopGrid{grid-template-columns:repeat(2,minmax(72px,1fr));padding:4px;gap:4px}.shopCard{min-height:84px;padding:4px}.shopCardIcon{font-size:28px}.shopCardName{font-size:10px}.shopCardPrice{font-size:10px}
+ .shopRarity{display:none}.shopDetail{padding:8px 9px;gap:4px}.shopDetailTitle{font-size:19px}.shopItemShowcase{grid-template-columns:minmax(0,1fr) 68px;gap:5px}.shopPreviewIcon{font-size:48px}.shopItemText{font-size:10px}.shopStatBox{font-size:9px;padding:4px}.shopOwnedLine{font-size:10px;padding:4px}.shopCompare{display:none}.shopBuyBox{padding:5px}.shopPriceLine{font-size:12px}.shopQty{grid-template-columns:30px 1fr 30px;margin:4px 0}.shopBuyButtons button{padding:6px 3px;font-size:9px}
+ .shopDialogue{grid-template-columns:42px 1fr;padding:3px 6px;gap:5px}.shopPortrait{height:48px}.shopPortrait img{height:58px}.shopSpeechName{font-size:11px}.shopSpeechRole{display:none}.shopSpeechText{font-size:9px}.shopActions{display:none}
+}
+
+/* v7.11 Valvondor Skills Interface */
+#panel.skillsPanel{position:fixed;inset:0!important;width:100vw!important;height:100vh!important;max-height:none!important;overflow:hidden!important;padding:0!important;border:0!important;border-radius:0!important;background:radial-gradient(circle at 50% 0,#19304a 0,#0a111b 45%,#05080d 100%)!important;z-index:230;color:#f4e6c3}
+.skillsScreen{height:100%;display:grid;grid-template-rows:92px 220px 1fr 64px;background:linear-gradient(#07101add,#07101add),radial-gradient(circle at 50% 0,#203c5e,#070b10 60%);font-family:Georgia,serif}
+.skillsHeader{display:grid;grid-template-columns:110px 1fr auto 48px;align-items:center;gap:14px;padding:10px 18px;border-bottom:2px solid #9e7738;background:linear-gradient(180deg,#17263b,#09111d);box-shadow:0 4px 18px #000b}
+.skillsCrest{height:76px;max-width:104px;object-fit:contain;filter:drop-shadow(0 4px 5px #000)}
+.skillsTitle h2{margin:0;color:#f5d78a;font-size:28px;letter-spacing:2px;text-shadow:0 2px 4px #000}.skillsTitle p{margin:3px 0 0;color:#aabbd0;font:14px Arial}
+.skillsTotal{display:flex;gap:12px;align-items:center}.totalBadge,.selectedLevelShield{position:relative;display:grid;place-items:center}.totalBadge img{width:78px;height:78px;object-fit:contain}.selectedLevelShield img{width:105px;height:105px;object-fit:contain}.levelNumber{position:absolute;color:#fff5c3;font:bold 23px Georgia;text-shadow:0 2px 4px #000;top:48%;left:50%;transform:translate(-50%,-50%)}.totalText{font:bold 16px Georgia;color:#f5d78a;text-align:center}.totalText b{display:block;font-size:27px;color:white}
+.skillsClose{border:1px solid #b98f45;background:#241a13;color:#ffe7a3;border-radius:8px;font-size:22px;width:42px;height:42px;cursor:pointer}
+.skillCards{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:10px;padding:12px 18px;background:#0b141fcc;border-bottom:1px solid #6d542d;overflow:hidden}
+.skillCard{position:relative;border:2px solid #6d552c;background:linear-gradient(#152333,#0b131e);border-radius:12px;padding:6px;cursor:pointer;min-width:0;transition:.16s transform,.16s border-color}.skillCard:hover{transform:translateY(-3px);border-color:#e4bd62}.skillCard.active{border-color:#f4d371;box-shadow:0 0 0 2px #5e431c,0 0 20px #d8a63f66}.skillCard img{display:block;width:100%;height:128px;object-fit:contain}.skillMeta{text-align:center;margin-top:-2px}.skillMeta strong{display:block;color:#f2d485;font-size:14px}.skillMeta span{font:11px Arial;color:#cad5df}.miniXp{height:8px;background:#07101a;border:1px solid #6e5631;border-radius:8px;overflow:hidden;margin-top:5px}.miniXp i{display:block;height:100%;background:linear-gradient(90deg,#2c7bc5,#74d0ff);width:0}
+.skillsBody{display:grid;grid-template-columns:31% 69%;min-height:0}.skillDetail{padding:18px;border-right:2px solid #765a30;background:linear-gradient(135deg,#111c29,#0a1018);overflow:auto}.skillDetailTop{display:grid;grid-template-columns:118px 1fr;gap:15px;align-items:center}.detailName{font-size:27px;color:#f1d17c;margin:0}.detailDesc{font:14px Arial;color:#c8d1da;line-height:1.45}.bigXp{height:18px;background:#050a10;border:2px solid #8b6b35;border-radius:11px;overflow:hidden;margin:12px 0 5px}.bigXp i{display:block;height:100%;background:linear-gradient(90deg,#2267a7,#6fcbff);width:0}.xpLine{display:flex;justify-content:space-between;font:12px Arial;color:#c9d3dc}.skillStats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:15px}.skillStat{border:1px solid #6b542f;background:#182330;border-radius:9px;padding:9px;text-align:center}.skillStat b{display:block;color:#f2d485;font-size:18px}.skillStat span{font:11px Arial;color:#aeb9c5}.nextUnlock{margin-top:14px;border:1px solid #8b6b35;background:#221b12;border-radius:9px;padding:10px;color:#f5dda0}.nextUnlock small{display:block;color:#c2b18d;font:11px Arial;margin-top:3px}
+.unlockPanel{padding:16px 18px;overflow:auto;background:linear-gradient(#0b131d,#080d13)}.unlockHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.unlockHeader h3{margin:0;color:#f3d588;font-size:21px}.unlockHeader span{font:12px Arial;color:#9eabba}.unlockGrid{display:grid;grid-template-columns:repeat(3,minmax(150px,1fr));gap:12px}.unlockCard{position:relative;border:2px solid #66502c;background:#131d28;border-radius:11px;padding:7px;min-height:180px;overflow:hidden}.unlockCard.unlocked{border-color:#8fb574}.unlockCard.locked{filter:grayscale(.75);opacity:.72}.unlockCard img{width:100%;height:135px;object-fit:contain}.unlockCard .status{position:absolute;right:7px;top:7px;padding:3px 6px;border-radius:12px;background:#081019dd;border:1px solid #8b6b35;font:11px Arial}.unlockCard h4{margin:3px 0 0;text-align:center;color:#f1d17c;font-size:14px}.unlockCard p{margin:3px 0 0;text-align:center;font:11px Arial;color:#b7c2cd}
+.skillsFooter{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 12px;border-top:2px solid #84652f;background:#0a111b}.skillsFooter button{padding:8px 14px;border:1px solid #72592f;border-radius:8px;background:#172431;color:#e7dcc1;font-weight:bold}.skillsFooter button.active{background:#5a4021;color:#ffdf8a}
+@media(max-width:900px){.skillsScreen{grid-template-rows:72px 170px 1fr 54px}.skillsHeader{grid-template-columns:75px 1fr auto 40px;padding:5px 8px}.skillsCrest{height:60px}.skillsTitle h2{font-size:21px}.skillsTitle p{display:none}.totalBadge img{width:56px;height:56px}.totalText{font-size:11px}.totalText b{font-size:19px}.skillCards{gap:5px;padding:7px}.skillCard{padding:3px}.skillCard img{height:100px}.skillMeta strong{font-size:11px}.skillMeta span{font-size:9px}.skillsBody{grid-template-columns:38% 62%}.skillDetail{padding:10px}.skillDetailTop{grid-template-columns:86px 1fr;gap:8px}.selectedLevelShield img{width:82px;height:82px}.detailName{font-size:19px}.detailDesc{font-size:11px}.unlockPanel{padding:10px}.unlockGrid{grid-template-columns:repeat(2,minmax(110px,1fr));gap:7px}.unlockCard{min-height:140px;padding:4px}.unlockCard img{height:100px}.skillStats{grid-template-columns:1fr}.skillsFooter{overflow-x:auto;justify-content:flex-start}.skillsFooter button{white-space:nowrap;padding:6px 10px;font-size:11px}}
+
+/* === v7.12 VALVONDOR INVENTORY === */
+#panel.inventoryPanel{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;max-height:none!important;border:0!important;border-radius:0!important;padding:0!important;background:#080d12!important;overflow:hidden!important;z-index:250!important}
+.inventoryScene{height:100%;display:grid;grid-template-rows:92px 1fr 62px;background:radial-gradient(circle at 50% 35%,#182631 0,#0b1219 46%,#05080c 100%);color:#e8dfcf;font-family:Georgia,serif}
+.inventoryHeaderNew{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:10px 24px;border-bottom:2px solid #80602d;background:linear-gradient(180deg,#17232d,#0c1218);box-shadow:0 5px 20px #0008}
+.invBrand{display:flex;align-items:center;gap:13px}.invBrandMark{width:58px;height:58px;border:2px solid #a27b3c;border-radius:50%;display:grid;place-items:center;font-size:34px;background:#101b24}.invBrand h2{margin:0;color:#f2d28d;font-size:27px;letter-spacing:2px}.invBrand small{color:#8196a5}.invTitleNew{font-size:30px;color:#e7c47b;letter-spacing:5px}.invWallet{justify-self:end;display:flex;align-items:center;gap:12px}.invGoldNew{padding:10px 16px;border:1px solid #8b6a36;border-radius:7px;background:#17130e;color:#ffd66d;font-size:20px;font-weight:800}.invCloseNew{width:42px;height:42px;border:1px solid #9c573e;border-radius:6px;background:#3a1719;color:#f0c6a3;font-size:21px;cursor:pointer}
+.invBodyNew{min-height:0;display:grid;grid-template-columns:30% 45% 25%;gap:10px;padding:12px 16px}.invPane{min-width:0;min-height:0;border:1px solid #70552f;background:linear-gradient(180deg,#131c24,#0b1117);box-shadow:inset 0 0 24px #0008;overflow:hidden}.invPaneTitle{padding:9px 13px;border-bottom:1px solid #6c512d;background:#17222c;color:#e9c77f;font-size:19px;font-weight:800}
+.invEquipmentBody{height:calc(100% - 43px);display:grid;grid-template-rows:minmax(210px,1fr) auto auto;padding:10px}.invCharacterStage{position:relative;border:1px solid #594a35;background:radial-gradient(circle,#263947,#101820 65%);display:grid;place-items:center;overflow:hidden}.invCharacterStage .paperDoll{transform:scale(1.65);transform-origin:center}.invEquipGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:9px}.invEquipSlot,.invGridSlot{position:relative;border:2px solid #725b37;border-radius:7px;background:linear-gradient(145deg,#26343e,#121a21);box-shadow:inset 0 0 12px #000;cursor:pointer}.invEquipSlot{min-height:68px;display:grid;place-items:center;text-align:center}.invEquipSlot:hover,.invGridSlot:hover{border-color:#d0a557}.invEquipSlot .icon{font-size:26px}.invEquipSlot small{display:block;color:#bfb5a4;font-size:9px}.invStatsNew{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:9px}.invStatNew{padding:7px;text-align:center;border:1px solid #51432f;background:#0d141a}.invStatNew b{display:block;color:#f2ce81;font-size:18px}.invStatNew span{font-size:10px;color:#8797a2}
+.invBackpackPane{display:grid;grid-template-rows:auto auto 1fr auto}.invFiltersNew{display:flex;gap:5px;padding:8px;overflow-x:auto;border-bottom:1px solid #403626}.invFilterNew{white-space:nowrap;padding:7px 10px;border:1px solid #665032;border-radius:5px;background:#121a21;color:#b9b2a6;cursor:pointer;font:700 11px Georgia}.invFilterNew.active{border-color:#d2a653;background:#49351c;color:#ffe09a}.invGridNew{padding:10px;display:grid;grid-template-columns:repeat(5,minmax(60px,1fr));gap:7px;overflow:auto;align-content:start}.invGridSlot{aspect-ratio:1;display:grid;place-items:center;text-align:center;padding:4px}.invGridSlot.selected{border-color:#f1c45f;box-shadow:0 0 12px #c7943d88,inset 0 0 15px #000}.invGridSlot .icon{font-size:29px}.invGridSlot small{display:block;font-size:9px;color:#c8c2b6;line-height:1.1}.invGridSlot .count{position:absolute;right:4px;bottom:3px;padding:1px 4px;border-radius:5px;background:#05080ddd;color:#fff;font-size:10px}.invCapacity{margin:0 10px 10px;padding:8px 12px;border:1px solid #5d4a30;background:#111820;display:flex;justify-content:space-between;color:#b8ad9b}.invCapacity b{color:#f2cd7d}
+.invDetailPane{display:grid;grid-template-rows:auto 190px 1fr auto}.invPreviewNew{margin:12px;border:1px solid #655035;background:radial-gradient(circle,#273844,#10171d 70%);display:grid;place-items:center;font-size:88px;box-shadow:inset 0 0 24px #000}.invDetailText{padding:0 14px;overflow:auto}.invDetailText h3{color:#f0ce86;font-size:24px;margin:3px 0 7px}.invDetailText p{color:#b7b4ad;line-height:1.45}.invDetailRow{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #302b24;font-size:12px}.invActionsNew{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:12px}.invAction{padding:11px;border:1px solid #9a793e;border-radius:5px;color:#fff4d3;font:800 13px Georgia;cursor:pointer}.invAction.equip{background:linear-gradient(#3d7044,#23462a)}.invAction.use{background:linear-gradient(#356991,#21445f)}.invAction.drop{background:linear-gradient(#873d3d,#572525)}.invAction.full{grid-column:1/-1}
+.invFooterNew{display:flex;justify-content:center;gap:8px;align-items:center;border-top:2px solid #72542c;background:#0b1117}.invFooterNew button{min-width:110px;padding:9px 14px;border:1px solid #5d4a31;border-radius:5px;background:#151e25;color:#c8bdab;font:700 12px Georgia;cursor:pointer}.invFooterNew button.active{background:#4d361c;border-color:#c89b4b;color:#ffe09a}
+@media(max-width:900px){.inventoryScene{grid-template-rows:70px 1fr 52px}.invBodyNew{grid-template-columns:31% 44% 25%;padding:7px;gap:6px}.invBrand small{display:none}.invBrand h2{font-size:17px}.invBrandMark{width:42px;height:42px;font-size:25px}.invTitleNew{font-size:20px}.invGridNew{grid-template-columns:repeat(4,minmax(50px,1fr));padding:6px;gap:5px}.invEquipGrid{grid-template-columns:repeat(3,1fr)}.invDetailPane{grid-template-rows:auto 125px 1fr auto}.invPreviewNew{font-size:58px;margin:7px}.invFooterNew button{min-width:80px;padding:7px;font-size:10px}}
+
+
+/* === v7.13 SIX WOLF HERO CREATOR === */
+.creatorCard{width:min(1080px,96vw)}
+.creatorGrid{grid-template-columns:minmax(280px,36%) 1fr}
+.creatorPreview{min-height:500px;background:radial-gradient(circle at 50% 35%,#31495b 0,#17242e 48%,#0b1117 100%)}
+#creatorKnight{width:92%;height:440px;background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;image-rendering:auto!important;animation:none!important;filter:drop-shadow(0 16px 12px #000b)}
+.appearanceChoices{grid-template-columns:repeat(3,minmax(135px,1fr));gap:10px}
+.appearanceChoice{padding:8px 6px;min-height:170px;background:linear-gradient(180deg,#1b2730,#10171d);overflow:hidden}
+.appearanceChoice.active{border-color:#ffd36d;box-shadow:0 0 0 2px #ffd36d44,0 0 18px #d19b3b55}
+.heroThumb{width:100%;height:118px;background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;image-rendering:auto!important}
+.appearanceChoice b{font-size:12px;margin-top:4px}.appearanceChoice span.heroRole{display:block;color:#92a7b5;font-size:10px;margin-top:2px}
+.creatorNote{border:1px solid #55462d;border-radius:7px;padding:8px;background:#10171c}
+.invCharacterPortrait{width:92%;height:92%;object-fit:contain;filter:drop-shadow(0 14px 10px #000b)}
+@media(max-width:760px){.creatorCard{padding:10px}.creatorGrid{grid-template-columns:38% 62%;gap:9px}.creatorPreview{min-height:330px}#creatorKnight{height:300px}.appearanceChoices{grid-template-columns:repeat(2,minmax(95px,1fr));gap:6px}.appearanceChoice{min-height:125px;padding:4px}.heroThumb{height:82px}.appearanceChoice b{font-size:10px}.appearanceChoice span.heroRole{font-size:8px}.creatorHeader h1{font-size:20px}}
+
+
+/* === v7.14 CHARACTER DISPLAY FIXES === */
+.appearanceChoice{
+  display:grid!important;
+  grid-template-rows:110px auto auto!important;
+  align-items:center!important;
+  justify-items:center!important;
+}
+.heroThumb{
+  display:block!important;
+  width:100%!important;
+  height:108px!important;
+  background-size:contain!important;
+  background-position:center bottom!important;
+  background-repeat:no-repeat!important;
+  opacity:1!important;
+  visibility:visible!important;
+}
+#creatorKnight{
+  width:100%!important;
+  height:100%!important;
+  min-height:430px!important;
+  background-size:contain!important;
+  background-position:center bottom!important;
+  background-repeat:no-repeat!important;
+}
+.invCharacterStage{
+  padding:14px!important;
+}
+.invCharacterPortrait{
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+  transform:scale(.84)!important;
+  transform-origin:center bottom!important;
+}
+@media(max-width:760px){
+  .appearanceChoice{grid-template-rows:78px auto auto!important}
+  .heroThumb{height:76px!important}
+  #creatorKnight{min-height:300px!important}
+  .invCharacterPortrait{transform:scale(.78)!important}
+}
+
+
+/* === v7.15 FULL CHARACTER FIT === */
+.invCharacterStage{
+  padding:18px 24px!important;
+}
+.invCharacterPortrait{
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  transform:scale(.66)!important;
+  transform-origin:center center!important;
+}
+@media(max-width:900px){
+  .invCharacterPortrait{transform:scale(.61)!important}
+}
+
+
+/* === v7.16 INVENTORY PREVIEW CONTAINER FIX === */
+.invEquipmentBody{
+  grid-template-rows:minmax(0,1fr) auto auto!important;
+  overflow:hidden!important;
+}
+.invCharacterStage{
+  min-height:0!important;
+  height:100%!important;
+  padding:8px!important;
+  overflow:visible!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.invCharacterPortrait{
+  display:block!important;
+  width:auto!important;
+  height:100%!important;
+  max-width:96%!important;
+  max-height:96%!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  transform:none!important;
+}
+@media(max-width:900px){
+  .invCharacterStage{padding:5px!important}
+  .invCharacterPortrait{
+    max-width:94%!important;
+    max-height:94%!important;
+    transform:none!important;
+  }
+}
+
+
+/* === v7.17 WOLF CREST HEADER === */
+.invBrandMark{
+  width:78px!important;
+  height:78px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+.invBrandMark img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  display:block!important;
+  filter:drop-shadow(0 4px 5px #000b)!important;
+}
+@media(max-width:900px){
+  .invBrandMark{width:58px!important;height:58px!important}
+}
+
+
+/* === v7.18 CORRECT VALVONDOR CREST === */
+.invBrandMark{
+  width:64px!important;
+  height:74px!important;
+  align-self:center!important;
+  margin-right:8px!important;
+}
+.invBrandMark img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+}
+@media(max-width:900px){
+  .invBrandMark{width:48px!important;height:56px!important;margin-right:5px!important}
+}
+
+
+/* === v7.19 FISH ITEM ART === */
+.itemArtImg{display:block;object-fit:contain;margin:auto}
+.invItemArt{width:54px;height:46px;filter:drop-shadow(0 3px 3px #0008)}
+.invPreviewNew .invDetailArt{width:78%;height:78%;max-width:260px;max-height:170px;object-fit:contain;filter:drop-shadow(0 7px 6px #0009)}
+.invGridSlot .icon:has(.itemArtImg){font-size:0}
+@media(max-width:900px){.invItemArt{width:42px;height:36px}}
+
+
+/* === v7.20 ORIGINAL SILVERWATER FISHING ART === */
+.riverWaterArt{position:absolute;width:310px;height:440px;object-fit:cover;z-index:2;image-rendering:auto;pointer-events:none}
+.riverShoreArt{position:absolute;width:235px;z-index:19;pointer-events:none;filter:drop-shadow(0 5px 5px #0006)}
+.riverBridgeArt{position:absolute;width:470px;z-index:31;pointer-events:none;filter:drop-shadow(0 8px 6px #0008)}
+.riverDockArt{position:absolute;width:225px!important;z-index:29;pointer-events:none;filter:drop-shadow(0 7px 5px #0008)}
+.riverBoatArt{position:absolute;width:120px;z-index:25;pointer-events:none;filter:drop-shadow(0 5px 4px #0008)}
+.riverDecorArt{position:absolute;z-index:24;pointer-events:none;filter:drop-shadow(0 4px 3px #0007)}
+.fishingSpotArt{
+ width:82px!important;height:82px!important;border:0!important;border-radius:0!important;
+ background:url('../assets/embedded/asset_0124_5dec2361ccd4531f.png') center/contain no-repeat!important;
+ box-shadow:none!important;animation:fishRippleNew 1.65s ease-in-out infinite!important;
+}
+.fishingSpotArt:after{content:''!important}
+@keyframes fishRippleNew{0%,100%{transform:scale(.94);opacity:.78}50%{transform:scale(1.06);opacity:1}}
+
+
+/* === v7.21 SEAMLESS SILVERWATER RIVER === */
+.silverwaterRiver{
+  position:absolute;
+  width:430px;
+  height:2200px;
+  z-index:1;
+  overflow:hidden;
+  pointer-events:none;
+  background:#48782f;
+}
+.silverwaterWater{
+  position:absolute;
+  left:54px;
+  top:-12px;
+  width:322px;
+  height:2230px;
+  background-image:url('../assets/embedded/asset_0125_16a2865096f3482c.png');
+  background-repeat:repeat;
+  background-size:322px 388px;
+  background-position:center top;
+  z-index:2;
+}
+/* Soft overlays hide the hard horizontal seams in the source tile. */
+.silverwaterWater:after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(0,0,0,.10),transparent 9%,transparent 91%,rgba(0,0,0,.10)),
+    linear-gradient(180deg,transparent 0%,rgba(23,126,170,.10) 22%,transparent 44%,rgba(8,91,139,.10) 67%,transparent 100%);
+  mix-blend-mode:soft-light;
+}
+.silverwaterBank{
+  position:absolute;
+  top:0;
+  width:82px;
+  height:2200px;
+  z-index:4;
+  background:
+    radial-gradient(ellipse at center,#7f7d5b 0 18%,transparent 20%) 0 0/42px 34px repeat-y,
+    linear-gradient(90deg,#4d7f32 0 42%,#827957 43% 63%,transparent 64%);
+  filter:drop-shadow(0 2px 2px #0006);
+}
+.silverwaterBankLeft{left:0}
+.silverwaterBankRight{right:0;transform:scaleX(-1)}
+/* Cover the old flat-blue river underneath this replacement. */
+.riverWaterArt{display:none!important}
+
+/* Keep fishing-area props above the new water and banks. */
+.riverShoreArt{z-index:18!important}
+.riverBridgeArt{z-index:31!important}
+.riverDockArt{z-index:29!important}
+.riverBoatArt{z-index:25!important}
+.riverDecorArt{z-index:24!important}
+.fishingSpotArt{z-index:26!important}
+
+
+/* === v7.22 SILVERWATER SEAM FIX === */
+.silverwaterWater{
+  background-image:none!important;
+  overflow:hidden;
+}
+.silverwaterWater::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:-30px;
+  width:100%;
+  height:2300px;
+  background:
+    url('../assets/embedded/asset_0125_16a2865096f3482c.png') center 0/322px 410px no-repeat,
+    url('../assets/embedded/asset_0125_16a2865096f3482c.png') center 380px/322px 410px no-repeat,
+    url('../assets/embedded/asset_0125_16a2865096f3482c.png') center 760px/322px 410px no-repeat,
+    url('../assets/embedded/asset_0125_16a2865096f3482c.png') center 1140px/322px 410px no-repeat,
+    url('../assets/embedded/asset_0125_16a2865096f3482c.png') center 1520px/322px 410px no-repeat,
+    url('../assets/embedded/asset_0125_16a2865096f3482c.png') center 1900px/322px 410px no-repeat,
+    #0879a7;
+  z-index:1;
+}
+/* Blend across each overlap so it reads as one continuous river. */
+.silverwaterWater::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  z-index:2;
+  background:
+    linear-gradient(180deg,
+      transparent 0 15%,
+      rgba(9,117,159,.18) 17%, transparent 19%,
+      transparent 32%, rgba(9,117,159,.18) 34%, transparent 36%,
+      transparent 49%, rgba(9,117,159,.18) 51%, transparent 53%,
+      transparent 66%, rgba(9,117,159,.18) 68%, transparent 70%,
+      transparent 83%, rgba(9,117,159,.18) 85%, transparent 87%);
+  pointer-events:none;
+}
+.silverwaterBank{
+  border:0!important;
+}
+
+
+/* === v7.23 REMOVE LEGACY RIVER STRIP === */
+/* Paint over the obsolete river layer immediately outside Silverwater. */
+.silverwaterRiver::after{
+  content:'';
+  position:absolute;
+  left:376px;
+  top:0;
+  width:54px;
+  height:2200px;
+  background:#48782f;
+  z-index:0;
+  pointer-events:none;
+}
+/* Extend the right bank cleanly to the grass edge. */
+.silverwaterBankRight{
+  right:0!important;
+  width:82px!important;
+}
+/* Any legacy blue river/background elements beneath this district are suppressed
+   where the new Silverwater treatment is present. */
+
+
+/* === v7.24 NATURAL SILVERWATER BANKS === */
+.riverbankDecorLayer{position:absolute;inset:0;z-index:20;pointer-events:none}
+.rbShore{
+  position:absolute;
+  width:245px;
+  height:auto;
+  z-index:20;
+  filter:drop-shadow(0 3px 2px #0005);
+  transform-origin:center;
+}
+.rbLeft{transform:rotate(90deg)}
+.rbRight{transform:rotate(-90deg)}
+.rbDecor{position:absolute;z-index:22;filter:drop-shadow(0 4px 3px #0006)}
+.rbLog{position:absolute;z-index:21;filter:drop-shadow(0 4px 3px #0007)}
+/* Hide the old dotted-looking procedural bank treatment beneath the art. */
+.silverwaterBank{
+  background:linear-gradient(90deg,#4d7f32 0 48%,#687f45 49% 63%,transparent 64%)!important;
+  filter:none!important;
+}
+.silverwaterBankLeft{width:72px!important}
+.silverwaterBankRight{width:72px!important}
+
+
+/* === v7.25 RIVERBANK PLACEMENT FIX === */
+.rbShore{display:none!important}
+.riverbankV725{position:absolute;inset:0;z-index:20;pointer-events:none}
+.rbEdgeDecor{
+  position:absolute;
+  height:auto;
+  z-index:22;
+  pointer-events:none;
+  filter:drop-shadow(0 3px 2px #0006);
+}
+.rbEdgeLog{
+  position:absolute;
+  height:auto;
+  z-index:21;
+  pointer-events:none;
+  filter:drop-shadow(0 3px 2px #0006);
+}
+/* Keep bank base simple; decorations now sit directly on the river edge. */
+.silverwaterBank{
+  background:linear-gradient(90deg,#4d7f32 0 52%,#687f45 53% 66%,transparent 67%)!important;
+}
+
+
+/* v7.27 Wolf Knight animated world sprite */
+.player.wolfKnightWorld{
+  background-image:url('../assets/embedded/asset_0126_098ad758e80ba9ff.png')!important;
+  background-size:contain!important;
+  background-position:center bottom!important;
+  background-repeat:no-repeat!important;
+  image-rendering:auto;
+}
+.player.wolfKnightWorld .head,
+.player.wolfKnightWorld .hair,
+.player.wolfKnightWorld .body,
+.player.wolfKnightWorld .arm,
+.player.wolfKnightWorld .leg,
+.player.wolfKnightWorld .weapon{display:none!important}
+
+
+/* === v7.28 ACTUAL WOLF PLAYER RENDERER === */
+#player{
+  left:20px!important;
+  top:7px!important;
+  width:88px!important;
+  height:112px!important;
+  background-size:contain!important;
+  background-position:center bottom!important;
+  background-repeat:no-repeat!important;
+  image-rendering:auto!important;
+  filter:drop-shadow(0 3px 0 #000b) drop-shadow(0 8px 5px #0009)!important;
+}
+#playerWrap{
+  width:128px!important;
+  height:138px!important;
+  transform:scale(1.05)!important;
+  transform-origin:50% 82%!important;
+}
+#weaponLayer,
+#equipmentVisual{
+  display:none!important;
+}
+
+
+/* === v7.30 GRID AREN SPRITE FIT === */
+#player{
+  width:96px!important;
+  height:118px!important;
+  image-rendering:pixelated!important;
+}
+
+
+/* === v7.33 WESTWOOD LEVEL 15/25 FISHING POND === */
+.westwoodFishingPond{
+ position:absolute;left:1510px;top:105px;width:500px;height:245px;z-index:9;
+ border-radius:45% 48% 42% 46%;
+ background:
+   url('../assets/embedded/asset_0125_16a2865096f3482c.png') center/190px 190px repeat,
+   #14739a;
+ border:12px solid #654a2c;
+ box-shadow:inset 0 0 28px #062c44aa,0 10px 18px #0008;
+ overflow:visible;
+}
+.westwoodFishingPond:before{
+ content:'';position:absolute;inset:-24px;z-index:-1;border-radius:48%;
+ border:16px solid #355f39;box-shadow:0 0 0 8px #243e28;
+}
+.westwoodFishLabel{
+ position:absolute;left:1625px;top:72px;z-index:42;padding:7px 14px;border-radius:8px;
+ background:#14221be8;border:3px solid #966d3b;color:#f6d88d;
+ font:700 17px Georgia;box-shadow:0 6px 12px #0009;text-align:center
+}
+.westwoodFishReq{
+ position:absolute;z-index:42;padding:5px 9px;border-radius:7px;background:#17231de8;
+ border:2px solid #946a38;color:#ffe09a;font:700 13px Georgia;box-shadow:0 5px 9px #0009
+}
+.westwoodPondProp{position:absolute;z-index:24;pointer-events:none;filter:drop-shadow(0 5px 4px #0007)}
+body.forestMode .fishingSpot{display:block}
+
+
+/* === v7.34 WESTWOOD EXPANSION === */
+body.forestMode #forestWorld{width:2400px!important;height:1500px!important;background:#28572f!important;overflow:hidden}
+.ww34{position:absolute;inset:0;z-index:1;pointer-events:none}
+.ww34 .path{position:absolute;background:#98704b;border:5px solid #65492f;box-shadow:inset 0 0 0 4px #b98d61}
+.ww34 .p1{left:1110px;top:790px;width:150px;height:710px;border-radius:70px 70px 0 0}
+.ww34 .p2{left:600px;top:760px;width:650px;height:105px;border-radius:60px;transform:rotate(-18deg)}
+.ww34 .p3{left:1200px;top:760px;width:700px;height:105px;border-radius:60px;transform:rotate(18deg)}
+.ww34 .p4{left:760px;top:430px;width:520px;height:90px;border-radius:55px;transform:rotate(-31deg)}
+.ww34 .p5{left:1160px;top:430px;width:540px;height:90px;border-radius:55px;transform:rotate(30deg)}
+.ww34 .ring{position:absolute;left:840px;top:330px;width:690px;height:610px;border:90px solid #98704b;border-radius:48%;box-shadow:0 0 0 5px #65492f,inset 0 0 0 5px #65492f}
+.ww34 .pond{position:absolute;left:1660px;top:220px;width:500px;height:420px;border-radius:47% 53% 44% 56%;
+ background:url('../assets/embedded/asset_0125_16a2865096f3482c.png') center/150px 150px repeat;border:18px solid #5d5636;
+ box-shadow:0 0 0 14px #315a36,inset 0 0 35px #062a43aa}
+.ww34 .label{position:absolute;padding:7px 13px;background:#15211bea;border:3px solid #946b38;border-radius:8px;
+ color:#f5d88e;font:700 17px Georgia;text-align:center;box-shadow:0 5px 12px #0008}
+.ww34 .label small{display:block;font-size:11px;color:#efc979;margin-top:3px}
+.ww34 .decor{position:absolute;filter:drop-shadow(0 5px 4px #0007)}
+body.forestMode .westwoodFishingPond,body.forestMode .westwoodFishLabel,body.forestMode .westwoodFishReq,body.forestMode .westwoodPondProp{display:none!important}
+
+
+/* v7.35 WESTWOOD ART REBUILD — real terrain/road/forest sprites */
+#forestWorld{background:#274f2e!important;}
+#forestWorld:before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.58;background-image:url('../assets/embedded/asset_0127_317a4f9b64c06d54.png'),url('../assets/embedded/asset_0128_5a48d133d419560f.png'),url('../assets/embedded/asset_0058_8154d98752e14f53.png');background-size:260px 220px,310px 250px,190px 150px;background-position:0 0,130px 95px,60px 40px;background-repeat:repeat;}
+#westwoodV734 .path,#westwoodV734 .ring,.forestRoad,.forestClearingMap{display:none!important}
+.wwRoad{position:absolute;z-index:7;object-fit:contain;filter:drop-shadow(0 5px 3px #0005);image-rendering:auto;pointer-events:none}
+.wwGround{position:absolute;z-index:3;object-fit:contain;opacity:.9;pointer-events:none}
+.wwPropNew{position:absolute;z-index:18;object-fit:contain;filter:drop-shadow(0 7px 5px #0008);pointer-events:none}
+.wwCanopy{z-index:19}.wwSmall{z-index:16}
+#westwoodV734 .pond{z-index:5;box-shadow:0 0 0 10px #41673d,0 10px 20px #0008!important}
+#westwoodV734 .label{z-index:42}
+
+
+/* === v7.36 WESTWOOD LAYOUT CLEANUP === */
+body.forestMode #forestWorld{
+  background:#244d2d!important;
+  background-image:
+    radial-gradient(circle at 18% 20%,rgba(63,103,54,.22),transparent 22%),
+    radial-gradient(circle at 75% 30%,rgba(48,91,48,.18),transparent 24%),
+    radial-gradient(circle at 52% 75%,rgba(30,71,38,.18),transparent 28%)!important;
+}
+
+/* Hide prior experimental full-map terrain overlays and oversized roads. */
+body.forestMode #westwoodV734,
+body.forestMode #westwoodV735,
+body.forestMode .ww34,
+body.forestMode .ww35,
+body.forestMode .westwoodArtRebuild,
+body.forestMode .forestGroundOverlay,
+body.forestMode .forestRoadLayer{
+  display:none!important;
+}
+
+/* Fresh clean visual layer */
+#westwoodV736{position:absolute;inset:0;z-index:1;pointer-events:none}
+#westwoodV736 .road{position:absolute;object-fit:contain;filter:drop-shadow(0 3px 2px #0005)}
+#westwoodV736 .ground{position:absolute;object-fit:contain;opacity:.72}
+#westwoodV736 .prop{position:absolute;object-fit:contain;filter:drop-shadow(0 5px 4px #0007)}
+#westwoodV736 .zoneLabel{
+ position:absolute;padding:7px 12px;border-radius:7px;background:#14201bea;
+ border:2px solid #946b38;color:#f4d58c;font:700 16px Georgia;
+ text-align:center;box-shadow:0 4px 10px #0008;z-index:40
+}
+#westwoodV736 .zoneLabel small{display:block;font-size:11px;color:#efc979;margin-top:2px}
+
+/* Remove old circular zone backplates and duplicate labels. */
+body.forestMode .forestZone,
+body.forestMode .zoneCircle{
+ background:transparent!important;border-color:transparent!important;box-shadow:none!important;
+}
+body.forestMode .westwoodFishLabel,
+body.forestMode .westwoodFishReq{
+ display:none!important;
+}
+
+
+body.forestMode #forestWorld .forestLabel,
+body.forestMode #forestWorld .zoneTitle,
+body.forestMode #forestWorld .oldZoneLabel{
+  display:none!important;
+}
+
+
+/* === v7.38 WESTWOOD STABLE REBUILD === */
+body.forestMode #forestWorld{
+  background:#285632!important;
+  background-image:
+    radial-gradient(circle at 16% 18%,rgba(78,120,61,.20),transparent 22%),
+    radial-gradient(circle at 76% 25%,rgba(49,94,49,.18),transparent 25%),
+    radial-gradient(circle at 48% 78%,rgba(24,68,35,.18),transparent 28%)!important;
+  background-size:auto!important;
+}
+
+/* Hide every experimental visual layer and the original oversized zone shapes. */
+body.forestMode #westwoodV734,
+body.forestMode #westwoodV735,
+body.forestMode #westwoodV736,
+body.forestMode #westwoodV737,
+body.forestMode .ww34,
+body.forestMode .ww35,
+body.forestMode .westwoodArtRebuild,
+body.forestMode .forestGroundOverlay,
+body.forestMode .forestRoadLayer,
+body.forestMode .westwoodTrail,
+body.forestMode .forestClearing,
+body.forestMode .westwoodSign,
+body.forestMode .woodcuttingSign,
+body.forestMode .wolfShrineRing,
+body.forestMode .forestFog{
+  display:none!important;
+}
+
+/* Hide duplicate location labels but keep the main page title/HUD. */
+body.forestMode #forestWorld .zoneLabel,
+body.forestMode #forestWorld .forestLabel,
+body.forestMode #forestWorld .westwoodFishLabel,
+body.forestMode #forestWorld .westwoodFishReq,
+body.forestMode #forestWorld .districtSign,
+body.forestMode #forestWorld .forestWarning{
+  display:none!important;
+}
+
+#westwoodV738{
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+}
+#westwoodV738 .roadBack{
+  fill:none; stroke:#466233; stroke-width:118; stroke-linecap:round; stroke-linejoin:round;
+  filter:drop-shadow(0 5px 4px rgba(0,0,0,.35));
+}
+#westwoodV738 .roadMain{
+  fill:none; stroke:#b18455; stroke-width:82; stroke-linecap:round; stroke-linejoin:round;
+}
+#westwoodV738 .roadHighlight{
+  fill:none; stroke:#cfaa72; stroke-width:6; stroke-linecap:round; stroke-dasharray:10 18; opacity:.35;
+}
+#westwoodV738 .pond{
+  position:absolute; left:1570px; top:220px; width:470px; height:360px;
+  border-radius:47% 53% 45% 55%;
+  background:
+    url('../assets/embedded/asset_0125_16a2865096f3482c.png') center/155px 155px repeat,
+    #176f9d;
+  border:16px solid #55633c;
+  box-shadow:0 0 0 10px #2c452f, inset 0 0 34px rgba(1,28,48,.75), 0 12px 22px rgba(0,0,0,.45);
+  overflow:hidden; z-index:5;
+}
+#westwoodV738 .pond:after{
+  content:""; position:absolute; inset:0; border-radius:inherit;
+  background:radial-gradient(ellipse at 40% 32%,rgba(180,235,255,.18),transparent 45%);
+}
+#westwoodV738 .decor{
+  position:absolute; z-index:8; object-fit:contain; filter:drop-shadow(0 5px 4px rgba(0,0,0,.45));
+}
+#westwoodV738 .label{
+  position:absolute; z-index:30; padding:7px 12px; border-radius:8px;
+  background:#14211bed; border:2px solid #956c39; color:#f5d78e;
+  font:700 16px Georgia; text-align:center; box-shadow:0 5px 10px rgba(0,0,0,.55);
+}
+#westwoodV738 .label small{
+  display:block; margin-top:3px; font:11px Arial; color:#edc979;
+}
+
+/* Move the real, functional fishing spots onto the restored pond. */
+body.forestMode [data-fish-id="westwood-15"]{
+  left:1660px!important; top:430px!important; z-index:35!important; display:block!important;
+}
+body.forestMode [data-fish-id="westwood-25"]{
+  left:1930px!important; top:330px!important; z-index:35!important; display:block!important;
+}
+
+
+/* === v7.39 REAL WESTWOOD ROAD SPRITES === */
+#westwoodV738 svg{display:none!important}
+#westwoodV739Roads{position:absolute;inset:0;z-index:3;pointer-events:none}
+#westwoodV739Roads .realRoad{
+ position:absolute;object-fit:contain;transform-origin:center center;
+ filter:drop-shadow(0 3px 2px rgba(0,0,0,.32));
+}
+
+
+/* === v7.40 FOREST WORLD LOCK FIX === */
+#forestWorld{
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  transform-origin:0 0!important;
+}
+#forestWorld > #westwoodV738,
+#forestWorld > #westwoodV734,
+#forestWorld > #westwoodV735,
+#forestWorld > #westwoodV736,
+#forestWorld > #westwoodV737,
+#forestWorld #westwoodV739Roads{
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  width:2200px!important;
+  height:1500px!important;
+  transform:none!important;
+}
+#westwoodV739Roads .realRoad{
+  position:absolute!important;
+  margin:-2px!important;
+}
+
+
+/* === v7.41 GROUND + ROAD CLEANUP === */
+
+/* Remove the old repeating square ground texture completely. */
+body.forestMode #forestWorld{
+  background-color:#285a34!important;
+  background-image:
+    radial-gradient(circle at 18% 22%,rgba(85,125,67,.18),transparent 24%),
+    radial-gradient(circle at 72% 30%,rgba(48,91,48,.16),transparent 27%),
+    radial-gradient(circle at 48% 76%,rgba(25,69,36,.18),transparent 30%)!important;
+  background-size:auto!important;
+}
+
+/* Keep one label for each area: the labels inside westwoodV738. */
+body.forestMode #forestWorld > .forestMapTitle,
+body.forestMode #forestWorld > .forestAreaLabel,
+body.forestMode #forestWorld > .zoneLabel,
+body.forestMode #forestWorld > .westwoodFishLabel,
+body.forestMode #forestWorld > .westwoodFishReq,
+body.forestMode #forestWorld > .forestWarning,
+body.forestMode #forestWorld > .woodcuttingSign,
+body.forestMode #forestWorld > .westwoodSign{
+  display:none!important;
+}
+
+/* Keep the new PNG roads behind characters and props. */
+#westwoodV739Roads{
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  width:2200px!important;
+  height:1500px!important;
+  z-index:3!important;
+  pointer-events:none!important;
+}
+#westwoodV739Roads .realRoad{
+  position:absolute!important;
+  margin:-2px!important;
+  height:auto!important;
+  object-fit:contain!important;
+  transform:none!important;
+  transform-origin:center!important;
+  filter:drop-shadow(0 3px 2px rgba(0,0,0,.30));
+}
+
+/* Keep the pond and decorations above the roads. */
+#westwoodV738 .pond{z-index:5!important}
+#westwoodV738 .decor{z-index:8!important}
+#westwoodV738 .label{z-index:30!important}
+
+
+/* === v7.42 NATURAL FOREST PASS === */
+
+/* This old pseudo-layer caused the visible square/grid floor. */
+#forestWorld:before{
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  opacity:0!important;
+}
+
+/* Plain forest base with subtle lighting only—no repeating image tiles. */
+body.forestMode #forestWorld{
+  background-color:#2d6038!important;
+  background-image:
+    radial-gradient(ellipse at 18% 22%,rgba(85,126,69,.18),transparent 25%),
+    radial-gradient(ellipse at 72% 30%,rgba(54,98,54,.16),transparent 28%),
+    radial-gradient(ellipse at 48% 76%,rgba(23,69,36,.17),transparent 31%)!important;
+  background-repeat:no-repeat!important;
+  background-size:100% 100%!important;
+}
+
+/* Sparse ground details stay fixed to the world and never tile. */
+#westwoodV742Ground{
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  width:2200px!important;
+  height:1500px!important;
+  z-index:1!important;
+  pointer-events:none!important;
+}
+#westwoodV742Ground img{
+  position:absolute!important;
+  height:auto!important;
+  object-fit:contain!important;
+  opacity:.76!important;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.18));
+}
+
+/* Preserve deliberate rotation on the curved PNG roads. */
+#westwoodV739Roads .realRoad{
+  position:absolute!important;
+  margin:-2px!important;
+  height:auto!important;
+  object-fit:contain!important;
+  transform-origin:center center!important;
+}
+
+/* Remove old duplicate location signs; keep only the labels in westwoodV738. */
+body.forestMode #forestWorld .forestAreaLabel,
+body.forestMode #forestWorld .forestMapTitle,
+body.forestMode #forestWorld .districtSign,
+body.forestMode #forestWorld .forestWarning,
+body.forestMode #forestWorld .woodcuttingSign,
+body.forestMode #forestWorld .westwoodSign,
+body.forestMode #forestWorld > .zoneLabel,
+body.forestMode #forestWorld > .westwoodFishLabel,
+body.forestMode #forestWorld > .westwoodFishReq{
+  display:none!important;
+}
+#westwoodV738 .label{
+  display:block!important;
+}
+
+
+/* === v7.43 FULL MAP EDITOR === */
+body.mapEditing #westwoodV739Roads,
+body.mapEditing #westwoodV742Ground,
+body.mapEditing #westwoodV738{
+  pointer-events:auto!important;
+}
+body.mapEditing #westwoodV739Roads .realRoad,
+body.mapEditing #westwoodV742Ground img,
+body.mapEditing #westwoodV738 .pond,
+body.mapEditing #westwoodV738 .decor,
+body.mapEditing #westwoodV738 .label{
+  pointer-events:auto!important;
+  cursor:move!important;
+}
+body.mapEditing .editorEditable:hover{
+  outline:3px dashed rgba(255,214,91,.9)!important;
+  outline-offset:3px!important;
+}
+body.mapEditing .editorSelected{
+  outline:4px solid #ffe26e!important;
+  outline-offset:4px!important;
+  filter:drop-shadow(0 0 8px rgba(255,226,110,.9))!important;
+}
+
+
+/* === v7.44 ROAD SNAP EDITOR === */
+body.mapEditing #westwoodV739Roads .realRoad{
+  outline-offset:2px!important;
+}
+body.mapEditing #westwoodV739Roads .realRoad.roadSnapTarget{
+  outline:4px solid #7fffd4!important;
+  filter:drop-shadow(0 0 10px rgba(127,255,212,.95))!important;
+}
+#roadSnapPanel{
+  display:none;
+  margin-top:10px;
+  padding:10px;
+  border:1px solid #8d6a35;
+  border-radius:8px;
+  background:#102019;
+}
+body.mapEditing #roadSnapPanel{display:block}
+#roadSnapPanel .snapRow{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+  margin-top:6px;
+}
+#roadSnapPanel button{
+  min-height:38px;
+  border:1px solid #9b7438;
+  border-radius:8px;
+  background:#20342a;
+  color:#f6df9b;
+  font-weight:700;
+}
+
+
+/* === v7.45 CONNECTED ROAD MAP === */
+#westwoodV739Roads{
+  position:absolute!important;
+  inset:0!important;
+  width:2200px!important;
+  height:1500px!important;
+  z-index:3!important;
+  pointer-events:none!important;
+}
+#westwoodV739Roads .realRoad{
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  width:2200px!important;
+  height:1500px!important;
+  margin:0!important;
+  transform:none!important;
+  object-fit:contain!important;
+  filter:none!important;
+}
+body.mapEditing #westwoodV739Roads{
+  pointer-events:auto!important;
+}
+body.mapEditing #westwoodV739Roads .realRoad{
+  pointer-events:auto!important;
+  cursor:move!important;
+}
+
+
+/* === v7.46 CLEAN CONNECTED ROADS === */
+/* v7.46 is the ONLY visible Westwood road layer. */
+#forestWorld .forestRoad,
+#forestWorld > img[src*="road_connected_"],
+#westwoodV734 img[src*="road_connected_"],
+#westwoodV735 img[src*="road_connected_"],
+#westwoodV736 img[src*="road_connected_"],
+#westwoodV737 img[src*="road_connected_"]{
+  display:none!important;
+}
+#westwoodV739Roads{
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
+  width:2200px!important;
+  height:1500px!important;
+  z-index:3!important;
+  pointer-events:none!important;
+}
+#westwoodV739Roads .realRoad{
+  display:block!important;
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  width:2200px!important;
+  height:1500px!important;
+  margin:0!important;
+  padding:0!important;
+  transform:none!important;
+  object-fit:contain!important;
+}
+body.mapEditing #westwoodV739Roads,
+body.mapEditing #westwoodV739Roads .realRoad{
+  pointer-events:auto!important;
+}
+
+
+/* === v7.48 NATURAL CONNECTED ROAD NETWORK === */
+#westwoodV739Roads .realRoad{
+  content:url("../assets/embedded/asset_0070_db3b6c635e890af5.png")!important;
+  left:0!important;
+  top:0!important;
+  width:2200px!important;
+  height:1500px!important;
+  margin:0!important;
+  transform:none!important;
+}
+
+
+/* === v7.49 REFERENCE FOREST REBUILD === */
+body.forestMode #forestWorld{
+ background:#194526 url("../assets/embedded/asset_0129_24e538d1e6f94ed2.png") center/2200px 1500px no-repeat!important;
+}
+#westwoodV739Roads,#westwoodV742Ground{display:none!important}
+/* Hide old random scenery artwork; gameplay objects remain. */
+#forestWorld > .obj.tree,
+#forestWorld > .obj.bush,
+#forestWorld > .obj.rock{display:none!important}
+/* Reference-style UI polish */
+body.forestMode #forestTitle{
+ background:rgba(10,24,27,.94)!important;
+ border:2px solid #9c6e2f!important;
+ box-shadow:0 5px 18px rgba(0,0,0,.55)!important;
+}
+body.forestMode .sideBtn,
+body.forestMode #forestHud,
+body.forestMode #forestQuestBanner{
+ background:rgba(10,24,27,.92)!important;
+ border-color:#a97832!important;
+ box-shadow:0 4px 12px rgba(0,0,0,.42)!important;
+}
+
+
+/* === v7.50 WESTWOOD FISHING POND === */
+body.forestMode #westwoodV738 .pond{
+  display:block!important;
+  left:1650px!important;
+  top:205px!important;
+  width:500px!important;
+  height:390px!important;
+  border-radius:48% 52% 44% 56% / 52% 45% 55% 48%!important;
+  background:
+    radial-gradient(ellipse at 38% 30%,rgba(190,238,255,.18),transparent 36%),
+    url('../assets/embedded/asset_0125_16a2865096f3482c.png') center/150px 150px repeat,
+    #176f9d!important;
+  border:18px solid #6d6540!important;
+  box-shadow:0 0 0 12px #355c38, inset 0 0 38px rgba(1,28,48,.78), 0 12px 22px rgba(0,0,0,.48)!important;
+  overflow:hidden!important;
+  z-index:12!important;
+}
+body.forestMode #westwoodV738 .pond:after{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  border-radius:inherit!important;
+  background:
+    radial-gradient(ellipse at 35% 28%,rgba(205,244,255,.20),transparent 35%),
+    radial-gradient(ellipse at 70% 70%,rgba(4,54,74,.18),transparent 48%)!important;
+}
+body.forestMode #westwoodV738 .decor{display:block!important;z-index:16!important}
+body.forestMode #westwoodV738 [data-editor-id="westwood-decor-1"]{left:1628px!important;top:435px!important;width:105px!important}
+body.forestMode #westwoodV738 [data-editor-id="westwood-decor-2"]{left:2070px!important;top:245px!important;width:96px!important}
+body.forestMode #westwoodV738 [data-editor-id="westwood-decor-3"]{left:1625px!important;top:235px!important;width:96px!important}
+body.forestMode #westwoodV738 [data-editor-id="westwood-decor-4"]{left:2070px!important;top:505px!important;width:108px!important}
+body.forestMode #westwoodV738 [data-editor-id="westwood-decor-5"]{left:1780px!important;top:500px!important;width:145px!important;z-index:18!important}
+body.forestMode #westwoodV738 [data-editor-id="westwood-decor-6"]{left:1950px!important;top:440px!important;width:98px!important;z-index:17!important}
+body.forestMode #westwoodV738 [data-editor-id="westwood-label-3"]{
+  display:block!important;left:1745px!important;top:145px!important;z-index:35!important
+}
+body.forestMode [data-fish-id="westwood-15"]{left:1745px!important;top:405px!important;z-index:35!important;display:block!important}
+body.forestMode [data-fish-id="westwood-25"]{left:1990px!important;top:315px!important;z-index:35!important;display:block!important}
+
+
+/* v8.02 Chieftain Dungeon */
+.chieftainDungeonEntrance{position:absolute;width:220px;height:190px;z-index:28;text-align:center;cursor:pointer;filter:drop-shadow(0 10px 8px #0009)}
+.chieftainDungeonEntrance img{width:220px;height:180px;object-fit:contain;display:block}
+.chieftainDungeonEntrance span{display:inline-block;margin-top:-18px;background:#130f12e8;color:#ffd783;border:2px solid #8f5a32;border-radius:8px;padding:5px 10px;font-weight:900;font-size:13px}
+#chieftainDungeonWorld{position:absolute;width:1200px;height:800px;display:none;overflow:hidden;transform-origin:0 0;background:#191418}
+#chieftainDungeonWorld.active{display:block}
+.dungeonFloor{position:absolute;inset:0;background:
+ radial-gradient(circle at 50% 48%,#3b2b2b 0 180px,#241b1d 181px 360px,#151114 361px),
+ repeating-linear-gradient(45deg,#2d2528 0 44px,#241e21 44px 88px)}
+.dungeonWall{position:absolute;background:#0d0b0d;border:6px solid #4a3a36}
+.dungeonWallTop{left:0;top:0;width:1200px;height:72px}
+.dungeonWallLeft{left:0;top:0;width:72px;height:800px}
+.dungeonWallRight{right:0;top:0;width:72px;height:800px}
+.dungeonTorch{position:absolute;font-size:34px;filter:drop-shadow(0 0 12px #ff7a00)}
+.dungeonTorch.t1{left:190px;top:155px}.dungeonTorch.t2{right:190px;top:155px}
+.dungeonTorch.t3{left:190px;bottom:160px}.dungeonTorch.t4{right:190px;bottom:160px}
+#chieftainArenaSeal{position:absolute;left:380px;top:240px;width:440px;height:260px;border:8px solid #6e2f28;border-radius:50%;display:grid;place-items:center;color:#d9aa7c;font-weight:900;font-size:28px;letter-spacing:3px;box-shadow:0 0 35px #8d251d88,inset 0 0 50px #000}
+#chieftainDungeonExit{position:absolute;left:500px;bottom:35px;width:200px;text-align:center;padding:12px;border:3px solid #a66c3f;border-radius:10px;background:#191115;color:#ffe0a3;font-weight:900;cursor:pointer}

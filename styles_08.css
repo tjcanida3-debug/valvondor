@@ -1,0 +1,17 @@
+
+/* === v7.61 GOBLIN BRUTE === */
+.goblinBrute{width:128px!important;height:145px!important;z-index:46!important}
+.goblinBrute img{width:128px!important;height:128px!important;transform:scale(1.08)!important;filter:drop-shadow(0 9px 5px #000)!important}
+.goblinBrute .gname{font-size:12px!important;font-weight:800!important;color:#ffd29a!important;background:#2a120ddd!important;border-color:#c26442!important;padding:3px 7px!important}
+.goblinBrute .ghp{height:9px!important;margin:1px 7px 3px!important;border:2px solid #120907!important;background:#34100e!important}
+.goblinBrute .ghp div{background:linear-gradient(90deg,#8f1f19,#e25537)!important}
+
+/* v8.35 death screen */
+#deathScreen{position:fixed;inset:0;z-index:1000000;display:none;align-items:center;justify-content:center;background:rgba(5,0,0,.88);backdrop-filter:blur(3px)}
+#deathScreen.show{display:flex}
+#deathScreen .deathCard{width:min(430px,88vw);padding:30px 24px;text-align:center;border:2px solid #7d1e1e;border-radius:16px;background:linear-gradient(#1b0909,#090303);box-shadow:0 0 55px #000,inset 0 0 35px rgba(130,0,0,.22);color:#eee}
+#deathScreen .deathWolf{font-size:54px;filter:grayscale(.45)}
+#deathScreen h1{margin:5px 0 10px;font:900 42px Georgia,serif;letter-spacing:4px;color:#c94242;text-shadow:0 3px 8px #000}
+#deathScreen p{margin:0 0 22px;color:#cbbbbb;font:15px system-ui}
+#deathScreen button{display:block;width:100%;margin:9px 0 0;padding:13px;border-radius:9px;border:1px solid #845e32;background:#21160d;color:#f0d29a;font-weight:800;cursor:pointer}
+#deathScreen #deathOakhavenBtn{border-color:#666;background:#171717;color:#ddd}
