@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Valvondor — Survive · Explore · Conquer</title>
+<meta name="description" content="Valvondor is a 2D fantasy RPG. Explore Oakhaven, battle goblins, gather resources, fish, mine and uncover the world beyond the town walls.">
+<style>
+:root{
+  --bg:#090b09;--panel:#111711;--panel2:#182018;--gold:#d9b36a;--gold2:#f3d99b;
+  --green:#7d9b70;--ink:#f5eedf;--muted:#b8b2a4;--line:#3e4b3d;--shadow:0 18px 55px #000a;
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:
+radial-gradient(circle at 20% 0,#23312455,transparent 35%),
+linear-gradient(#0b0e0b,#080a08 50%,#0c0f0c);color:var(--ink);
+font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+a{color:inherit}.wrap{width:min(1180px,92%);margin:auto}
+.top{position:sticky;top:0;z-index:30;background:#090c09e8;backdrop-filter:blur(14px);
+border-bottom:1px solid #ffffff13}.nav{height:72px;display:flex;align-items:center;gap:28px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-family:Georgia,serif;font-weight:900;letter-spacing:2px}
+.crest{width:44px;height:44px;border:1px solid #b48d50;border-radius:50%;display:grid;place-items:center;
+background:radial-gradient(circle,#233623,#0b100b 70%);box-shadow:0 0 22px #9b7b4233;font-size:25px}
+.brand span{font-size:21px}.links{display:flex;gap:22px;margin-left:auto}.links a{text-decoration:none;color:#d9d4c8;font-size:13px;font-weight:800;letter-spacing:.8px}
+.links a:hover{color:var(--gold2)}.navbtn{padding:10px 15px;border:1px solid #8f7346;border-radius:10px;text-decoration:none;font-weight:900;background:#1b241a}
+.menu{display:none;margin-left:auto;background:none;border:1px solid #465346;color:#fff;border-radius:8px;padding:8px 10px}
+.hero{min-height:690px;position:relative;display:grid;align-items:end;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:
+linear-gradient(90deg,#080a08f5 0%,#080a08c9 38%,#080a0844 67%,#080a08e8 100%),
+linear-gradient(0deg,#090b09 0%,transparent 36%),
+url('assets/asset_029_3254e95384e6.png') center/cover no-repeat;filter:saturate(.82)}
+.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 68% 42%,#e6ad4a1d,transparent 24%)}
+.heroInner{position:relative;z-index:2;padding:100px 0 84px;width:min(690px,100%)}
+.kicker{color:var(--gold);font-size:12px;font-weight:900;letter-spacing:3px;margin-bottom:14px}
+h1{font-family:Georgia,serif;font-size:clamp(55px,9vw,105px);line-height:.86;letter-spacing:3px;margin:0;text-shadow:0 5px 30px #000}
+.tagline{font-family:Georgia,serif;color:var(--gold2);font-weight:900;letter-spacing:5px;margin:18px 0 22px}
+.hero p{font-size:18px;line-height:1.7;color:#d9d4c8;max-width:620px}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 20px;border-radius:10px;text-decoration:none;font-weight:950;letter-spacing:.4px}
+.primary{background:linear-gradient(#93a981,#647c5d);color:#0b100b;box-shadow:0 12px 34px #79936744}
+.secondary{border:1px solid #8c754b;background:#171a14cc;color:#f4e4ba}
+.quick{position:relative;z-index:4;margin-top:-34px}.quickGrid{display:grid;grid-template-columns:repeat(5,1fr);background:#111611;border:1px solid #4c5547;border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+.q{padding:22px 14px;text-align:center;border-right:1px solid #30382f}.q:last-child{border:0}.q b{font-size:28px}.q h3{font-size:13px;margin:7px 0 2px;letter-spacing:1px}.q p{font-size:11px;color:#9fa89a;margin:0}
+.section{padding:86px 0}.eyebrow{color:var(--gold);font-weight:900;letter-spacing:3px;font-size:11px;text-align:center}
+.title{font-family:Georgia,serif;text-align:center;font-size:clamp(34px,5vw,54px);margin:10px 0 14px}
+.lead{max-width:760px;margin:0 auto 35px;text-align:center;color:var(--muted);line-height:1.7}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{position:relative;min-height:330px;border-radius:16px;overflow:hidden;border:1px solid #4d4e40;box-shadow:var(--shadow);background:#111}
+.card img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:.45s transform}.card::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#090b09f8 0%,#090b09a8 35%,transparent 70%)}
+.card:hover img{transform:scale(1.04)}.cardCopy{position:absolute;z-index:2;left:18px;right:18px;bottom:18px}.cardCopy h3{font-family:Georgia,serif;font-size:25px;margin:0 0 5px}.cardCopy p{color:#c8c1b2;font-size:13px;margin:0}.clickable{cursor:pointer}
+.storyBand{padding:80px 0;background:linear-gradient(90deg,#17140e,#0d120d);border-block:1px solid #3b3a2c}
+.storyGrid{display:grid;grid-template-columns:1.1fr .9fr;gap:38px;align-items:center}.storyArt{border-radius:18px;overflow:hidden;border:1px solid #655330;box-shadow:var(--shadow)}.storyArt img{display:block;width:100%}
+.storyText h2{font-family:Georgia,serif;font-size:46px;margin:6px 0 16px}.storyText p{color:#c9c1b1;line-height:1.75}
+.textLink{display:inline-block;color:var(--gold2);font-weight:900;text-decoration:none;border-bottom:1px solid #a27b45;padding-bottom:3px}
+.demo{padding:95px 0}.demoBox{border:1px solid #635333;border-radius:22px;overflow:hidden;display:grid;grid-template-columns:1.05fr .95fr;background:#111711;box-shadow:var(--shadow)}
+.demoArt{min-height:420px;background:linear-gradient(#0004,#0008),url('assets/asset_021_7e5d2165c1f5.jpg') center/cover no-repeat}
+.demoCopy{padding:54px}.demoCopy h2{font-family:Georgia,serif;font-size:44px;margin:6px 0 12px}.demoCopy p{color:#c8c2b5;line-height:1.7}.demoList{display:grid;gap:10px;margin:24px 0}.demoList div{background:#182018;border:1px solid #344133;border-radius:9px;padding:10px 12px;color:#d8d3c8}
+.notice{padding:80px 0;background:#0d100d}.noticeGrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.noticeCard{padding:30px;border-radius:16px;border:1px solid #4f4736;background:linear-gradient(135deg,#1a2019,#121612)}.noticeCard h3{font-family:Georgia,serif;font-size:28px;margin:0 0 10px}.noticeCard p{color:#bcb6aa;line-height:1.7}
+footer{border-top:1px solid #2f352e;padding:35px 0 48px;color:#8e968b;text-align:center;font-size:12px}
+.modal{position:fixed;inset:0;z-index:100;background:#000c;display:none;place-items:center;padding:20px}.modal.open{display:grid}.book{width:min(820px,100%);max-height:88vh;overflow:auto;background:#131710;border:1px solid #7f693c;border-radius:20px;padding:36px;box-shadow:0 40px 90px #000}.close{float:right;background:#252a22;color:#fff;border:1px solid #555;border-radius:50%;width:38px;height:38px;font-size:20px}.chap{display:none}.chap.active{display:block}.chap h3{font-family:Georgia,serif;font-size:36px;margin:6px 0 14px}.chap p{color:#cdc6b6;line-height:1.8}.storyControls{display:flex;justify-content:space-between;gap:10px;margin-top:24px}.storyControls button{background:#232a21;color:#f5e8c5;border:1px solid #715e37;border-radius:9px;padding:10px 15px;font-weight:900}
+@media(max-width:850px){.links{display:none}.menu{display:block}.quickGrid{grid-template-columns:repeat(2,1fr)}.q{border-bottom:1px solid #30382f}.cards{grid-template-columns:1fr 1fr}.storyGrid,.demoBox{grid-template-columns:1fr}.noticeGrid{grid-template-columns:1fr}.hero{min-height:620px}.demoCopy{padding:34px}}
+@media(max-width:560px){.cards{grid-template-columns:1fr}.heroInner{padding-top:80px}.quick{margin-top:-18px}.quickGrid{grid-template-columns:1fr 1fr}.brand span{font-size:17px}.navbtn{display:none}.storyText h2,.demoCopy h2{font-size:36px}.book{padding:24px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap nav">
+<a class="brand" href="#home"><div class="crest">🐺</div><span>VALVONDOR</span></a>
+<nav class="links"><a href="#world">WORLD</a><a href="#story">OAKHAVEN</a><a href="#demo">DEMO</a><a href="#updates">UPDATES</a><a href="https://discord.gg/PEN7QwKRdQ" target="_blank" rel="noopener">DISCORD</a></nav>
+<a class="navbtn" href="login.html">ACCOUNT / PLAY</a><button class="menu" id="menuBtn">☰</button>
+</div></header>
+
+<main id="home">
+<section class="hero"><div class="wrap heroInner">
+<div class="kicker">A WALLYUNHINGED PROJECT</div>
+<h1>VALVONDOR</h1>
+<div class="tagline">SURVIVE · EXPLORE · CONQUER</div>
+<p>Begin in Oakhaven, build your skills, brave the forests, enter Brimvault, and take on the creatures waiting beyond the safety of town.</p>
+<div class="actions"><a class="btn primary" href="login.html">▶ PLAY THE DEMO</a><a class="btn secondary" href="#world">EXPLORE THE WORLD</a></div>
+</div></section>
+
+<section class="quick"><div class="wrap quickGrid">
+<div class="q"><b>⚔️</b><h3>COMBAT</h3><p>Fight enemies & bosses</p></div>
+<div class="q"><b>🪓</b><h3>WOODCUTTING</h3><p>Gather useful timber</p></div>
+<div class="q"><b>⛏️</b><h3>MINING</h3><p>Enter Brimvault</p></div>
+<div class="q"><b>🎣</b><h3>FISHING</h3><p>Find better waters</p></div>
+<div class="q"><b>📜</b><h3>QUESTS</h3><p>Help the people of Oakhaven</p></div>
+</div></section>
+
+<section id="world" class="section"><div class="wrap">
+<div class="eyebrow">STEP BEYOND THE GATE</div><h2 class="title">THE WORLD OF VALVONDOR</h2>
+<p class="lead">Your journey begins in Oakhaven, but the roads lead to mines, forests, dungeons and places still waiting to be discovered.</p>
+<div class="cards">
+<article class="card clickable" id="openStory"><img src="assets/asset_029_3254e95384e6.png" alt="Oakhaven Inn"><div class="cardCopy"><h3>Oakhaven</h3><p>Your first home. Shops, quests, townsfolk and the beginning of your story.</p></div></article>
+<article class="card"><img src="assets/asset_022_7b026f07d0bc.png" alt="Oakhaven hall"><div class="cardCopy"><h3>Town Hall</h3><p>The heart of Oakhaven and the people working to keep it standing.</p></div></article>
+<article class="card"><img src="assets/asset_053_c4add12bbc7f.png" alt="Brimvault Mine"><div class="cardCopy"><h3>Brimvault</h3><p>Descend underground, mine ore and prepare for deeper dangers.</p></div></article>
+<article class="card"><img src="assets/asset_021_7e5d2165c1f5.jpg" alt="Valvondor adventurer"><div class="cardCopy"><h3>Beyond Oakhaven</h3><p>Forests, goblins, dungeons and stronger enemies wait outside town.</p></div></article>
+</div>
+</div></section>
+
+<section id="story" class="storyBand"><div class="wrap storyGrid">
+<div class="storyArt"><img src="assets/asset_026_bdc69960684c.png" alt="Oakhaven General Store"></div>
+<div class="storyText"><div class="eyebrow" style="text-align:left">THE FOUNDING OF A HOME</div>
+<h2>How Oakhaven Became</h2>
+<p>Before the shops, roads and walls, this place was only wilderness. A few settlers stopped running, lit the first fires, discovered the riches beneath Brimvault and slowly turned a lonely clearing into the town adventurers now call home.</p>
+<a href="#" class="textLink" id="readStory">READ OAKHAVEN'S STORY →</a></div>
+</div></section>
+
+<section id="demo" class="demo"><div class="wrap demoBox">
+<div class="demoArt"></div><div class="demoCopy"><div class="eyebrow" style="text-align:left">PLAYABLE NOW</div>
+<h2>Enter the Demo</h2><p>Create your Valvondor account, confirm your email, and enter the browser demo. Your character progress is connected to your account.</p>
+<div class="demoList"><div>✓ Account login powered by Supabase</div><div>✓ Character progression and cloud saves</div><div>✓ Combat, gathering, fishing and exploration</div></div>
+<a class="btn primary" href="login.html">LOGIN / PLAY DEMO</a></div>
+</div></section>
+
+<section id="updates" class="notice"><div class="wrap">
+<div class="eyebrow">FROM THE NOTICE BOARD</div><h2 class="title">WHAT'S HAPPENING IN OAKHAVEN</h2>
+<div class="noticeGrid">
+<div class="noticeCard"><h3>Demo Access</h3><p>The playable Valvondor demo is now connected to account login. Create an account, confirm your email and your adventure can begin.</p><a class="textLink" href="login.html">ENTER VALVONDOR →</a></div>
+<div class="noticeCard"><h3>Join the Pack</h3><p>Follow development, share feedback and keep up with new areas, quests and game updates in the Valvondor community.</p><a class="textLink" href="https://discord.gg/PEN7QwKRdQ" target="_blank" rel="noopener">JOIN DISCORD →</a></div>
+</div></div></section>
+</main>
+<footer><div class="wrap">© 2026 Valvondor · A WallyUnhinged project · Come Join the Pack 🐺</div></footer>
+
+<div class="modal" id="storyModal" aria-hidden="true"><div class="book">
+<button class="close" id="closeStory">×</button><div class="eyebrow" style="text-align:left">THE FOUNDING OF A HOME</div>
+<h2 style="font-family:Georgia,serif;font-size:42px;margin:8px 0 24px">HOW OAKHAVEN BECAME</h2>
+<div class="chap active"><small>CHAPTER I</small><h3>Before Oakhaven</h3><p>Long before anyone called it home, the land was untamed woodland. Travelers passed through, but few stayed. The forest provided shelter, timber and food — if you survived long enough to use them.</p></div>
+<div class="chap"><small>CHAPTER II</small><h3>The First Fires</h3><p>A handful of settlers chose the clearing as a place to stop running. They raised rough shelters, cut the first paths through the trees, and kept a fire burning through the night. That small camp became the beginning of Oakhaven.</p></div>
+<div class="chap"><small>CHAPTER III</small><h3>Brimvault</h3><p>When rich stone and ore were found beneath the nearby hills, everything changed. Miners came. Traders followed. What had been a camp became a village, and Oakhaven finally had something worth protecting.</p></div>
+<div class="chap"><small>CHAPTER IV</small><h3>A Town Takes Shape</h3><p>The blacksmith fired his forge. The general store opened its doors. Homes crowded the growing roads, fences marked safe ground, and Oakhaven became a true town rather than a place travelers simply passed through.</p></div>
+<div class="chap"><small>CHAPTER V</small><h3>Oakhaven Today</h3><p>The town survived hard winters, dangerous forests and goblin attacks from the west. Now it stands as the first safe home for a new generation of adventurers. The town's history is written. Yours is about to begin.</p></div>
+<div class="storyControls"><button id="prevStory">← BACK</button><button id="nextStory">NEXT →</button></div>
+</div></div>
+<script>
+const modal=document.getElementById('storyModal'), chapters=[...document.querySelectorAll('.chap')]; let chapter=0;
+function renderChapter(){chapters.forEach((c,i)=>c.classList.toggle('active',i===chapter));document.getElementById('prevStory').disabled=chapter===0;document.getElementById('nextStory').textContent=chapter===chapters.length-1?'DONE':'NEXT →'}
+function openStory(e){e?.preventDefault();chapter=0;renderChapter();modal.classList.add('open');modal.setAttribute('aria-hidden','false')}
+document.getElementById('openStory').onclick=openStory;document.getElementById('readStory').onclick=openStory;
+document.getElementById('closeStory').onclick=()=>{modal.classList.remove('open');modal.setAttribute('aria-hidden','true')};
+document.getElementById('prevStory').onclick=()=>{if(chapter>0){chapter--;renderChapter()}};
+document.getElementById('nextStory').onclick=()=>{if(chapter<chapters.length-1){chapter++;renderChapter()}else document.getElementById('closeStory').click()};
+modal.addEventListener('click',e=>{if(e.target===modal)document.getElementById('closeStory').click()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))document.getElementById('closeStory').click()});
+document.getElementById('menuBtn').onclick=()=>{document.querySelector('.links').style.display=document.querySelector('.links').style.display==='flex'?'none':'flex'}
+</script>
+</body></html>
