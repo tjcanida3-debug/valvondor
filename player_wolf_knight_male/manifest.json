@@ -1,0 +1,21 @@
+{
+  "character": "Wolf Knight",
+  "gender": "Male",
+  "role": "Guardian",
+  "idle": {
+    "directions": 4,
+    "frames_each": 4
+  },
+  "walk": {
+    "directions": 4,
+    "frames_each": 5
+  },
+  "attack": 5,
+  "hurt": 3,
+  "death": 6,
+  "jump": 4,
+  "dodge": 3,
+  "interact": 2,
+  "rest": 3,
+  "source": "user-sliced panels"
+}
