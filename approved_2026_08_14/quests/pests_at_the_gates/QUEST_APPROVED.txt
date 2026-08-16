@@ -1,0 +1,6 @@
+Pests at the Gates — APPROVED PHONE QA
+Quest giver: Mara Thornfield, Oakhaven Warden
+Objective: Defeat 3 Field Rats and 2 Young Boars
+Reward: 50 Bronze + 25 Combat XP + 2 Small Health Potions
+Status: Full accept -> kill tracking -> turn-in -> reward loop passed phone QA.
+Important: This asset-lock build stores the approved resources; the stable v9.15 gameplay code is intentionally not rewritten here.

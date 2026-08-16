@@ -1,0 +1,13 @@
+{
+  "base_game": "Valvondor PC v9.15 AREN FINAL CLEAN",
+  "purpose": "Full stable game plus approved Aug 14 asset lock; no risky main-code integration performed.",
+  "locked": {
+    "wolf_knight": "approved design + verified directional walk crops with feet",
+    "wolf_archer": "approved mature wolf design + verified directional walk crops",
+    "mara_thornfield": "approved NPC sheet + dialogue portrait",
+    "blacksmith": "approved NPC sheet + hammer/anvil emblem + dialogue portrait",
+    "starter_mobs": "Field Rat + Young Boar assets from v9.16 test",
+    "starter_loot": "rat/boar starter-mob item art from v9.16 test",
+    "quest": "Pests at the Gates approved flow/spec"
+  }
+}
