@@ -5,7 +5,7 @@
 <div id="setupWarning" class="msg hidden">Account backend still needs the Supabase URL and anon key.</div>
 <div id="signedOut"><div class="tabs"><button id="loginTab" class="active">LOGIN</button><button id="signupTab">SIGN UP</button></div>
 <form id="authForm"><label>Email</label><input id="email" type="email" autocomplete="email" required><label>Password</label><input id="password" type="password" minlength="6" autocomplete="current-password" required><button class="primary" id="submitBtn" type="submit">LOGIN</button></form><div id="message" class="msg"></div></div>
-<div id="signedIn" class="hidden"><p>Logged in as <strong id="userEmail"></strong></p><a class="primary" style="display:block;text-align:center;text-decoration:none" href="index.html">▶ PLAY DEMO</a><button id="logoutBtn" class="secondary">LOG OUT</button></div><a class="back" href="index.html">← Back to Valvondor</a></main>
+<div id="signedIn" class="hidden"><p>Logged in as <strong id="userEmail"></strong></p><a class="primary" style="display:block;text-align:center;text-decoration:none" href="demo.html">▶ PLAY DEMO</a><button id="logoutBtn" class="secondary">LOG OUT</button></div><a class="back" href="index.html">← Back to Valvondor</a></main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script>
 <script>
 const configured=window.VALVONDOR_SUPABASE_URL&&!window.VALVONDOR_SUPABASE_URL.startsWith('PASTE_')&&window.VALVONDOR_SUPABASE_ANON_KEY&&!window.VALVONDOR_SUPABASE_ANON_KEY.startsWith('PASTE_');
