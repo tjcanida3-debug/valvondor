@@ -9755,4 +9755,34 @@ console.log('Oakhaven Editor Plus v2 ready');
 })();
 </script>
 
+
+<script id="pinDungeonEntranceToWestwood">
+(function(){
+  function pin(){
+    const ent=document.getElementById('chieftainDungeonEntrance');
+    const forest=document.getElementById('forestWorld');
+    if(!ent||!forest)return;
+
+    // The entrance must live inside the scrolling Westwood world, not the page body.
+    if(ent.parentElement!==forest) forest.appendChild(ent);
+
+    ent.style.position='absolute';
+    ent.style.left='880px';
+    ent.style.top='330px';
+    ent.style.margin='0';
+    ent.style.transformOrigin='center bottom';
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',pin,{once:true});
+  }else{
+    pin();
+  }
+
+  // Re-pin after area changes/editor code in case another script moves it.
+  setTimeout(pin,250);
+  setTimeout(pin,1000);
+})();
+</script>
+
 </body></html>
