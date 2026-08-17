@@ -2470,6 +2470,19 @@ body.forestMode #chieftainDungeonEntrance .dungeonLocator{
 }
 </style>
 
+
+<style id="dungeonBattleEnemyScaleFix">
+#turnBattleOverlay #tbEnemy .tbSprite{
+  overflow:visible!important;
+}
+#turnBattleOverlay #tbEnemyImage{
+  max-width:none!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  transform-origin:center bottom!important;
+}
+</style>
+
 </head>
 <body>
 <div id="cloudSaveGate"><div class="box"><b>🐺 VALVONDOR</b><small>Loading your character...</small></div></div>
@@ -8338,9 +8351,15 @@ function setSafeBattleEnemyPresentation(g){
    if(wide){
      img.style.width='170px';img.style.height='125px';
    }else if(g?.isBoss){
-     img.style.width='210px';img.style.height='210px';
+     img.style.width='360px';img.style.height='360px';
+   }else if(g?.isBrute && g?.isDungeon){
+     img.style.width='285px';img.style.height='285px';
+   }else if(g?.isScout && g?.isDungeon){
+     img.style.width='255px';img.style.height='255px';
+   }else if(g?.isBasic && g?.isDungeon){
+     img.style.width='245px';img.style.height='245px';
    }else if(g?.isBrute){
-     img.style.width='165px';img.style.height='165px';
+     img.style.width='210px';img.style.height='210px';
    }else{
      img.style.width='';img.style.height='';
    }
