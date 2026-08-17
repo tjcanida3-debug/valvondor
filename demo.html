@@ -4855,14 +4855,36 @@ let inventoryFilter='all';
 function addItem(id,amount=1){
   if(!(id in inventoryData)) inventoryData[id]=0;
   inventoryData[id]+=amount;
-  if(document.getElementById('panel').dataset.type==='inventory') renderInventory();
+
+  const p=document.getElementById('panel');
+  if(p?.dataset.type==='inventory') renderInventory();
+  if(p?.dataset.type==='notice' && typeof renderNoticeBoard==='function') renderNoticeBoard();
+
+  // Other item turn-in dialogs should also reflect the new inventory immediately.
+  try{
+    if(typeof updateBoarQuestMarker==='function') updateBoarQuestMarker();
+    const boarDlg=document.getElementById('boarQuestDialog');
+    if(boarDlg?.classList.contains('open') && typeof openBoarQuestDialog==='function') openBoarQuestDialog();
+    if(p?.dataset.type==='forge' && typeof renderForge==='function') renderForge(forgeTab||'quest');
+  }catch(e){console.warn('Quest item refresh',e)}
 }
 function removeItem(id,amount=1){
   if(!(id in inventoryData)) return false;
   if(inventoryData[id]<amount) return false;
   inventoryData[id]-=amount;
   if(inventoryData[id]<=0) inventoryData[id]=0;
-  if(document.getElementById('panel').dataset.type==='inventory') renderInventory();
+
+  const p=document.getElementById('panel');
+  if(p?.dataset.type==='inventory') renderInventory();
+  if(p?.dataset.type==='notice' && typeof renderNoticeBoard==='function') renderNoticeBoard();
+
+  try{
+    if(typeof updateBoarQuestMarker==='function') updateBoarQuestMarker();
+    const boarDlg=document.getElementById('boarQuestDialog');
+    if(boarDlg?.classList.contains('open') && typeof openBoarQuestDialog==='function') openBoarQuestDialog();
+    if(p?.dataset.type==='forge' && typeof renderForge==='function') renderForge(forgeTab||'quest');
+  }catch(e){console.warn('Quest item refresh',e)}
+
   return true;
 }
 function getAttackBonus(){
@@ -9981,6 +10003,29 @@ console.log('Oakhaven Editor Plus v2 ready');
  else pinEntrance();
  setTimeout(pinEntrance,250);
  setTimeout(pinEntrance,1000);
+})();
+</script>
+
+
+<script id="questBoardLiveRefreshFix">
+(function(){
+  let lastSig='';
+  setInterval(()=>{
+    try{
+      const p=document.getElementById('panel');
+      if(!p || p.dataset.type!=='notice' || p.style.display==='none') return;
+      if(typeof inventoryData==='undefined' || typeof renderNoticeBoard!=='function') return;
+      const sig=[
+        inventoryData.oak_log||0,
+        typeof goblinKills!=='undefined'?goblinKills:0,
+        dailyQuestState?.explored?.explore?1:0
+      ].join('|');
+      if(sig!==lastSig){
+        lastSig=sig;
+        renderNoticeBoard();
+      }
+    }catch(e){}
+  },400);
 })();
 </script>
 
