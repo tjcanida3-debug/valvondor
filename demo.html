@@ -2312,6 +2312,108 @@ body.forestMode #chieftainDungeonEntrance span{display:inline-block!important}
 #mapEditorBtn,#editorPanel,#roadSnapPanel,#editorToggle,#devPanel,#devTools,.devOnly,.dev-only,[data-dev-only="true"]{display:none!important;visibility:hidden!important;pointer-events:none!important}
 body.forestMode #chieftainDungeonEntrance{display:block!important;visibility:visible!important;opacity:1!important;z-index:999!important;pointer-events:auto!important}
 </style>
+
+<style id="westwoodDungeonReturnV1">
+/* Permanent Westwood dungeon entrance. Does not depend on an image file. */
+body.forestMode #chieftainDungeonEntrance{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  width:250px!important;
+  height:205px!important;
+  z-index:1200!important;
+  pointer-events:auto!important;
+  cursor:pointer!important;
+  filter:drop-shadow(0 14px 12px #000b)!important;
+}
+body.forestMode #chieftainDungeonEntrance img{
+  display:none!important;
+}
+body.forestMode #chieftainDungeonEntrance:before{
+  content:"";
+  position:absolute;
+  left:15px;top:12px;
+  width:220px;height:160px;
+  border-radius:48% 48% 18% 18% / 58% 58% 20% 20%;
+  background:
+    radial-gradient(ellipse at 50% 64%,#050404 0 37%,transparent 39%),
+    radial-gradient(circle at 25% 30%,#777 0 8px,#4d4d4d 9px 18px,transparent 19px),
+    radial-gradient(circle at 73% 26%,#686868 0 10px,#454545 11px 21px,transparent 22px),
+    linear-gradient(145deg,#5d5c58,#2c2a29 55%,#161414);
+  border:7px solid #191616;
+  box-shadow:
+    inset 0 -18px 26px #000c,
+    inset 0 0 0 5px #51483f,
+    0 10px 0 #201814,
+    0 12px 18px #000b;
+}
+body.forestMode #chieftainDungeonEntrance:after{
+  content:"☠";
+  position:absolute;
+  left:98px;top:38px;
+  width:54px;height:54px;
+  display:grid;place-items:center;
+  font-size:34px;
+  color:#d9b56f;
+  text-shadow:0 3px 4px #000;
+  border:2px solid #7b5632;
+  border-radius:50%;
+  background:#1b1010dd;
+  box-shadow:0 0 15px #9c3a2455;
+}
+body.forestMode #chieftainDungeonEntrance span{
+  position:absolute!important;
+  left:50%!important;
+  bottom:0!important;
+  transform:translateX(-50%)!important;
+  margin:0!important;
+  display:block!important;
+  white-space:nowrap!important;
+  font-size:13px!important;
+  padding:7px 12px!important;
+  z-index:5!important;
+  background:#130d0dee!important;
+  border:2px solid #a46938!important;
+  color:#ffe09b!important;
+  box-shadow:0 4px 10px #000a!important;
+}
+body.forestMode #chieftainDungeonEntrance:hover{
+  transform:scale(1.04);
+  filter:drop-shadow(0 0 16px #d3833e88) drop-shadow(0 14px 12px #000b)!important;
+}
+
+/* Asset-independent dungeon interior fallback. */
+#chieftainDungeonWorld{
+  background:
+    radial-gradient(circle at 50% 45%,#30292a 0 210px,#1c181a 430px,#0b090a 760px)!important;
+}
+#chieftainDungeonWorld .dungeon-floor-grid{
+  background-color:#292929!important;
+  background-image:
+    repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 2px,transparent 2px 72px),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 2px,transparent 2px 88px),
+    linear-gradient(#302d2b,#1f1d1c)!important;
+  background-size:auto!important;
+  box-shadow:0 0 0 22px #121212,0 0 0 30px #3a3733,inset 0 0 100px #000!important;
+}
+#chieftainDungeonWorld.room2 .dungeon-floor-grid{
+  background-image:
+    repeating-linear-gradient(135deg,rgba(90,65,48,.18) 0 3px,transparent 3px 55px),
+    linear-gradient(#302923,#201c19)!important;
+}
+#chieftainDungeonWorld.room3 .dungeon-floor-grid{
+  background-image:
+    radial-gradient(circle at 50% 50%,rgba(104,40,32,.14),transparent 48%),
+    linear-gradient(#272526,#171617)!important;
+}
+#chieftainDungeonWorld.room4 .dungeon-floor-grid{
+  background-image:
+    radial-gradient(circle at 50% 50%,rgba(135,33,24,.22),transparent 42%),
+    linear-gradient(#281b1b,#120d0d)!important;
+  box-shadow:0 0 0 22px #120a09,0 0 0 30px #4a211b,inset 0 0 110px #000!important;
+}
+</style>
+
 </head>
 <body>
 <div id="cloudSaveGate"><div class="box"><b>🐺 VALVONDOR</b><small>Loading your character...</small></div></div>
@@ -2832,9 +2934,9 @@ body.forestMode #chieftainDungeonEntrance{display:block!important;visibility:vis
 <img class="obj prop" src="assets/embedded/asset_0096_c39d3e58f7ad1ebd.png" style="left:1871px;top:315px;width:38px;z-index:21;transform:scaleX(1)"/>
 <img class="obj prop" src="assets/embedded/asset_0095_dd2a3bf34574b7a8.png" style="left:570px;top:1185px;width:38px;z-index:21;transform:scaleX(1)"/>
 <img class="obj prop" src="assets/embedded/asset_0045_944d2e32e9224237.png" style="left:1753px;top:1241px;width:44px;z-index:21;transform:scaleX(-1)"/><img/><span class="gname">Goblin Scout</span></div><img/><span class="gname">Goblin</span></div><img/><span class="gname">Goblin Guard</span><img/><span class="gname">Goblin</span><img/><span class="gname">Goblin Scout</span><img/><span class="gname">Goblin Brute</span>
-<div class="chieftainDungeonEntrance" id="chieftainDungeonEntrance" style="left:285px;top:745px">
+<div class="chieftainDungeonEntrance" id="chieftainDungeonEntrance" style="left:880px;top:330px" title="Goblin Chieftain Dungeon">
 <img alt="Goblin Chieftain Dungeon" src="dungeon/chieftain_dungeon_entrance.png"/>
-<span>ENTER CHIEFTAIN DUNGEON</span>
+<span>☠ ENTER CHIEFTAIN DUNGEON</span>
 </div>
 
 <div id="chieftainDungeonWorld">
@@ -3120,7 +3222,7 @@ const SAFE_SPAWN={x:2900,y:1180},FOREST_SPAWN={x:1100,y:1230},FOREST_RETURN={x:1
 const MAP_VERSION="v72-general-store-door-fix";
 let currentArea="town",townPosition={...SAFE_SPAWN};
 const SHOP_SPAWN={x:500,y:535},SHOP_RETURN={x:2410,y:735};
-const CHIEFTAIN_DUNGEON_SPAWN={x:600,y:650},CHIEFTAIN_DUNGEON_RETURN={x:405,y:835};
+const CHIEFTAIN_DUNGEON_SPAWN={x:600,y:650},CHIEFTAIN_DUNGEON_RETURN={x:1000,y:555};
 function inShopEntranceZone(){return currentArea==='town'&&pos.x>=2260&&pos.x<=2560&&pos.y>=585&&pos.y<=790;}
 const shopCollision=[[0,0,1000,120],[0,0,55,700],[945,0,55,700],[0,680,410,20],[590,680,410,20],[55,135,190,190],[755,135,190,190]]; // Counter is visual only so the player can reach the shopkeeper
 let pos={...SAFE_SPAWN},keys={},facing=1,speed=3.8,quest=0,inventory=['🗝️'],hp=100;
@@ -9635,6 +9737,21 @@ console.log('Oakhaven Editor Plus v2 ready');
      else equipItem(id);
    }catch(err){console.error('Equipment fallback click failed',err);}
  },true);
+})();
+</script>
+
+
+<script id="westwoodDungeonEntranceHint">
+(function(){
+ const ent=document.getElementById('chieftainDungeonEntrance');
+ if(!ent)return;
+ ent.addEventListener('click',()=>{
+   try{
+     if(typeof currentArea!=='undefined' && currentArea==='forest' && typeof switchArea==='function'){
+       switchArea('chieftainDungeon',CHIEFTAIN_DUNGEON_SPAWN);
+     }
+   }catch(e){console.error('Dungeon entrance click',e)}
+ });
 })();
 </script>
 
