@@ -2483,6 +2483,32 @@ body.forestMode #chieftainDungeonEntrance .dungeonLocator{
 }
 </style>
 
+
+<style id="dungeonSpawnExitCleanupV3">
+body.dungeonMode #chieftainDungeonExit{
+  position:fixed!important;
+  left:18px!important;
+  top:205px!important;
+  right:auto!important;
+  bottom:auto!important;
+  width:auto!important;
+  min-width:190px!important;
+  height:auto!important;
+  z-index:10020!important;
+  padding:12px 18px!important;
+  margin:0!important;
+  transform:none!important;
+  background:#160f0fee!important;
+  border:2px solid #b27a35!important;
+  border-radius:10px!important;
+  color:#ffe2a0!important;
+  font-weight:900!important;
+  text-align:center!important;
+  cursor:pointer!important;
+  pointer-events:auto!important;
+}
+</style>
+
 </head>
 <body>
 <div id="cloudSaveGate"><div class="box"><b>🐺 VALVONDOR</b><small>Loading your character...</small></div></div>
@@ -3291,7 +3317,7 @@ const SAFE_SPAWN={x:2900,y:1180},FOREST_SPAWN={x:1100,y:1230},FOREST_RETURN={x:1
 const MAP_VERSION="v72-general-store-door-fix";
 let currentArea="town",townPosition={...SAFE_SPAWN};
 const SHOP_SPAWN={x:500,y:535},SHOP_RETURN={x:2410,y:735};
-const CHIEFTAIN_DUNGEON_SPAWN={x:600,y:650},CHIEFTAIN_DUNGEON_RETURN={x:390,y:1320};
+const CHIEFTAIN_DUNGEON_SPAWN={x:300,y:620},CHIEFTAIN_DUNGEON_RETURN={x:390,y:1320};
 function inShopEntranceZone(){return currentArea==='town'&&pos.x>=2260&&pos.x<=2560&&pos.y>=585&&pos.y<=790;}
 const shopCollision=[[0,0,1000,120],[0,0,55,700],[945,0,55,700],[0,680,410,20],[590,680,410,20],[55,135,190,190],[755,135,190,190]]; // Counter is visual only so the player can reach the shopkeeper
 let pos={...SAFE_SPAWN},keys={},facing=1,speed=3.8,quest=0,inventory=['🗝️'],hp=100;
@@ -4035,6 +4061,13 @@ function switchArea(area,spawn,announce=true){
   if(chieftainDungeonWorld)chieftainDungeonWorld.classList.remove('active');
   document.body.classList.remove('mineMode','forestMode','shopMode','dungeonMode');
 
+  // Fully reset world visibility after leaving the dungeon.
+  townWorld.style.display='';
+  forestWorld.style.display='';
+  shopWorld.style.display='';
+  mineWorld.style.display='';
+  if(chieftainDungeonWorld) chieftainDungeonWorld.style.display='';
+
   if(area==='shop'){
     world=shopWorld;W=1000;H=700;collision=shopCollision.map(r=>[...r]);
     shopWorld.classList.add('active');document.body.classList.add('shopMode');
@@ -4088,7 +4121,10 @@ function switchArea(area,spawn,announce=true){
   }
 
   moveTarget=null;locked=false;mining=false;chopping=false;fishing=false;
-  panel.style.display='none';Object.keys(keys).forEach(k=>keys[k]=false);camera();
+  panel.style.display='none';Object.keys(keys).forEach(k=>keys[k]=false);
+  camera();
+  requestAnimationFrame(()=>camera());
+  setTimeout(()=>camera(),60);
 }
 function nearestOre(max=135){
  if(currentArea!=='mine')return null;let best=null,bd=max;
