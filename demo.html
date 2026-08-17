@@ -1992,7 +1992,7 @@ body.forestMode #westwoodV738 .gcamp754 .t2{right:28px!important;top:72px!import
 #deathScreen h1{margin:5px 0 10px;font:900 42px Georgia,serif;letter-spacing:4px;color:#c94242;text-shadow:0 3px 8px #000}
 #deathScreen p{margin:0 0 22px;color:#cbbbbb;font:15px system-ui}
 #deathScreen button{display:block;width:100%;margin:9px 0 0;padding:13px;border-radius:9px;border:1px solid #845e32;background:#21160d;color:#f0d29a;font-weight:800;cursor:pointer}
-#deathScreen #deathOakhavenBtn{border-color:#666;background:#171717;color:#ddd}
+#deathScreen #deathOakhavenBtn{position:relative;z-index:1000002;pointer-events:auto!important;border-color:#666;background:#171717;color:#ddd}
 </style>
 <style data-from="css/styles_09.css">
 .invMobileQuickAction{display:none}
@@ -4271,27 +4271,48 @@ addEventListener('keydown',e=>{
 addEventListener('keyup',e=>{keys[e.code]=false;keys[e.key]=false});
 
 document.getElementById('deathReviveBtn')?.addEventListener('click',()=>revive());
-document.getElementById('deathOakhavenBtn')?.addEventListener('click',()=>{
- if(typeof window.__battleHardReturnToOakhaven==='function') window.__battleHardReturnToOakhaven();
- else returnToOakhavenAfterDeath();
-});
 
-// v8.82 defensive death-screen input fallback.
-// Pointer/touch is handled directly so an old overlay can never trap this button.
+// Hard recovery button: pointerdown fires before any stale overlay/click handler can swallow input.
 const _deathOakBtn=document.getElementById('deathOakhavenBtn');
 if(_deathOakBtn){
+  let _deathReturning=false;
   const forceOakReturn=(e)=>{
-    if(e){e.preventDefault();e.stopPropagation();}
+    if(e){e.preventDefault();e.stopImmediatePropagation();}
+    if(_deathReturning)return;
+    _deathReturning=true;
+
+    // Hide immediately for visible feedback.
     try{
-      if(typeof window.__battleHardReturnToOakhaven==='function') window.__battleHardReturnToOakhaven();
-      else{
-        if(!dead) dead=true;
+      const ds=document.getElementById('deathScreen');
+      if(ds){
+        ds.classList.remove('show');
+        ds.style.display='none';
+        ds.style.pointerEvents='none';
+        ds.setAttribute('aria-hidden','true');
+      }
+    }catch(_){}
+
+    try{
+      if(typeof window.__battleHardReturnToOakhaven==='function'){
+        window.__battleHardReturnToOakhaven();
+      }else{
+        try{dead=true}catch(_){}
         returnToOakhavenAfterDeath();
       }
-    }catch(err){console.error('death return fallback',err)}
+    }catch(err){
+      console.error('death emergency return',err);
+      // Last-resort reload into a clean saved town state.
+      try{
+        dead=false;locked=false;currentArea='town';pos={...SAFE_SPAWN};
+        save(false);
+        location.reload();
+      }catch(_){}
+    }
+    setTimeout(()=>{_deathReturning=false},500);
   };
-  _deathOakBtn.addEventListener('pointerup',forceOakReturn,true);
-  _deathOakBtn.addEventListener('touchend',forceOakReturn,{capture:true,passive:false});
+  _deathOakBtn.addEventListener('pointerdown',forceOakReturn,true);
+  _deathOakBtn.addEventListener('click',forceOakReturn,true);
+  _deathOakBtn.addEventListener('touchstart',forceOakReturn,{capture:true,passive:false});
 }
 
 addEventListener('blur',()=>{Object.keys(keys).forEach(k=>keys[k]=false)});
@@ -8542,46 +8563,75 @@ function winBattle(){
 }
 
 function battleHardReturnToOakhaven(){
- battleTiming=false;
- cancelAnimationFrame(battleRaf);
- battleActive=false;
- battleBusy=false;
- battleFinished=true;
- battleTarget=null;
- moveTarget=null;
- Object.keys(keys).forEach(k=>keys[k]=false);
-
- const overlay=q('turnBattleOverlay');
- if(overlay){
-   overlay.classList.remove('show');
-   overlay.style.display='none';
-   overlay.style.pointerEvents='none';
- }
-
- try{hideDeathScreen()}catch(e){}
- dead=false;
- locked=false;
- mining=false;
- chopping=false;
- fishing=false;
- hp=Math.max(1,Math.round(playerMaxHP()));
- if(hpBar)hpBar.style.width='100%';
+ // First remove every modal/overlay so the player can never remain trapped.
+ try{
+   const death=document.getElementById('deathScreen');
+   if(death){
+     death.classList.remove('show');
+     death.style.display='none';
+     death.style.pointerEvents='none';
+     death.setAttribute('aria-hidden','true');
+   }
+ }catch(e){}
 
  try{
-   if(currentArea!=='town') switchArea('town',SAFE_SPAWN);
-   else{
-     pos={...SAFE_SPAWN};
-     moveTarget=null;
-     camera();
+   const overlay=document.getElementById('turnBattleOverlay');
+   if(overlay){
+     overlay.classList.remove('show');
+     overlay.style.display='none';
+     overlay.style.pointerEvents='none';
    }
+ }catch(e){}
+
+ // Cancel every battle/action state independently so one bad variable cannot stop recovery.
+ try{battleTiming=false}catch(e){}
+ try{if(typeof battleRaf!=='undefined')cancelAnimationFrame(battleRaf)}catch(e){}
+ try{battleActive=false}catch(e){}
+ try{battleBusy=false}catch(e){}
+ try{battleFinished=true}catch(e){}
+ try{battleTarget=null}catch(e){}
+ try{moveTarget=null}catch(e){}
+ try{Object.keys(keys).forEach(k=>keys[k]=false)}catch(e){}
+ try{dead=false}catch(e){}
+ try{locked=false}catch(e){}
+ try{mining=false}catch(e){}
+ try{chopping=false}catch(e){}
+ try{fishing=false}catch(e){}
+ try{if(typeof stopFishing==='function')stopFishing()}catch(e){}
+
+ // Restore HP.
+ try{
+   hp=Math.max(1,Math.round(playerMaxHP()));
+   if(hpBar)hpBar.style.width='100%';
  }catch(e){
-   console.error('v8.84 hard Oakhaven return',e);
-   try{currentArea='town';pos={...SAFE_SPAWN};camera()}catch(_){}
+   try{hp=100;if(hpBar)hpBar.style.width='100%'}catch(_){}
  }
 
- try{setAnimation('idle',true)}catch(e){}
- try{save(false)}catch(e){}
- try{toast('⛲ You awaken at the Oakhaven fountain.')}catch(e){}
+ // Force the actual Oakhaven world visible before moving the player.
+ try{
+   currentArea='town';
+   world=townWorld;
+   W=4700;
+   H=2100;
+   if(typeof townCollision!=='undefined')collision=townCollision.map(r=>[...r]);
+   if(townWorld)townWorld.style.display='block';
+   if(forestWorld)forestWorld.classList.remove('active');
+   if(shopWorld)shopWorld.classList.remove('active');
+   if(mineWorld)mineWorld.classList.remove('active');
+   if(typeof chieftainDungeonWorld!=='undefined'&&chieftainDungeonWorld)chieftainDungeonWorld.classList.remove('active');
+   document.body.classList.remove('mineMode','forestMode','shopMode');
+   if(townWorld&&playerWrap)townWorld.appendChild(playerWrap);
+ }catch(e){console.error('death world reset',e)}
+
+ try{pos={...SAFE_SPAWN}}catch(e){try{pos={x:2280,y:1030}}catch(_){}}
+ try{townPosition={...pos}}catch(e){}
+ try{moveTarget=null}catch(e){}
+ try{if(typeof setAnimation==='function')setAnimation('idle',true)}catch(e){}
+ try{if(typeof camera==='function')camera()}catch(e){}
+ try{if(typeof save==='function')save(false)}catch(e){console.error('death save',e)}
+ try{if(typeof toast==='function')toast('⛲ You awaken safely in Oakhaven.')}catch(e){}
+
+ return true;
 }
 window.__battleHardReturnToOakhaven=battleHardReturnToOakhaven;
 
