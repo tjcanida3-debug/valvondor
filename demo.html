@@ -2509,6 +2509,60 @@ body.dungeonMode #chieftainDungeonExit{
 }
 </style>
 
+
+<style id="singleWorldIsolationFix">
+body.forestMode #world,
+body.forestMode #shopWorld,
+body.forestMode #mineWorld,
+body.forestMode #chieftainDungeonWorld{
+  display:none!important;
+}
+body.forestMode #forestWorld{
+  display:block!important;
+}
+
+body.mineMode #world,
+body.mineMode #forestWorld,
+body.mineMode #shopWorld,
+body.mineMode #chieftainDungeonWorld{
+  display:none!important;
+}
+body.mineMode #mineWorld{
+  display:block!important;
+}
+
+body.shopMode #world,
+body.shopMode #forestWorld,
+body.shopMode #mineWorld,
+body.shopMode #chieftainDungeonWorld{
+  display:none!important;
+}
+body.shopMode #shopWorld{
+  display:block!important;
+}
+
+body.dungeonMode #world,
+body.dungeonMode #forestWorld,
+body.dungeonMode #shopWorld,
+body.dungeonMode #mineWorld{
+  display:none!important;
+}
+body.dungeonMode #chieftainDungeonWorld{
+  display:block!important;
+}
+
+/* Town is the default when no sub-area mode class is active. */
+body:not(.forestMode):not(.mineMode):not(.shopMode):not(.dungeonMode) #forestWorld,
+body:not(.forestMode):not(.mineMode):not(.shopMode):not(.dungeonMode) #shopWorld,
+body:not(.forestMode):not(.mineMode):not(.shopMode):not(.dungeonMode) #mineWorld,
+body:not(.forestMode):not(.mineMode):not(.shopMode):not(.dungeonMode) #chieftainDungeonWorld{
+  display:none!important;
+}
+body:not(.forestMode):not(.mineMode):not(.shopMode):not(.dungeonMode) #world{
+  display:block!important;
+}
+</style>
+
 </head>
 <body>
 <div id="cloudSaveGate"><div class="box"><b>🐺 VALVONDOR</b><small>Loading your character...</small></div></div>
@@ -4061,14 +4115,15 @@ function switchArea(area,spawn,announce=true){
   if(chieftainDungeonWorld)chieftainDungeonWorld.classList.remove('active');
   document.body.classList.remove('mineMode','forestMode','shopMode','dungeonMode');
 
-  // Fully reset world visibility after leaving the dungeon.
-  townWorld.style.display='';
-  forestWorld.style.display='';
-  shopWorld.style.display='';
-  mineWorld.style.display='';
-  if(chieftainDungeonWorld) chieftainDungeonWorld.style.display='';
+  // Area isolation: hide every world first, then show ONLY the selected one.
+  townWorld.style.display='none';
+  forestWorld.style.display='none';
+  shopWorld.style.display='none';
+  mineWorld.style.display='none';
+  if(chieftainDungeonWorld) chieftainDungeonWorld.style.display='none';
 
   if(area==='shop'){
+    shopWorld.style.display='block';
     world=shopWorld;W=1000;H=700;collision=shopCollision.map(r=>[...r]);
     shopWorld.classList.add('active');document.body.classList.add('shopMode');
     shopWorld.appendChild(playerWrap);
@@ -4081,6 +4136,7 @@ function switchArea(area,spawn,announce=true){
     document.querySelector('#title small').textContent='Oakhaven Interior · v7.6';
     if(announce)toast('🏪 Entering Oakhaven General Store...');
   }else if(area==='chieftainDungeon'){
+    chieftainDungeonWorld.style.display='block';
     document.body.classList.add('dungeonMode');
     world=chieftainDungeonWorld;W=1200;H=800;collision=[];
     townWorld.style.display='none';
@@ -4094,6 +4150,7 @@ function switchArea(area,spawn,announce=true){
     document.querySelector('#title small').textContent='Westwood Boss Dungeon';
     if(announce)toast("👑 Entering the Goblin Chieftain's Den...");
   }else if(area==='mine'){
+    mineWorld.style.display='block';
     world=mineWorld;W=2000;H=1400;collision=mineCollision.map(r=>[...r]);
     mineWorld.classList.add('active');document.body.classList.add('mineMode');
     document.getElementById('editorPanel')?.classList.remove('open');
@@ -4105,6 +4162,7 @@ function switchArea(area,spawn,announce=true){
     document.querySelector('#title small').textContent="Valvondor v7.49 · Reference Forest Rebuild";
     if(announce)toast('⛏️ Entering Brimvault Mine...');
   }else if(area==='forest'){
+    forestWorld.style.display='block';
     world=forestWorld;W=2200;H=1500;collision=forestCollision.map(r=>[...r]);
     forestWorld.classList.add('active');document.body.classList.add('forestMode');
     forestWorld.appendChild(playerWrap);pos={...(spawn||FOREST_SPAWN)};
