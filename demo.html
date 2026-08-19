@@ -10161,16 +10161,25 @@ window.addEventListener('load',()=>{
      return;
    }
    if(fisherQuestState.status==='accepted' && minnows>=8){
-     inventoryData.minnow=Math.max(0,minnows-8);
-     bronzeCoins=(Number(bronzeCoins)||0)+100;
-     fishingXP=(Number(fishingXP)||0)+100;
-     inventoryData.oakwood_fishing_rod=(inventoryData.oakwood_fishing_rod||0)+1;
-     fisherQuestState.status='complete';
-     try{checkSkillLevelUps()}catch(e){}
-     try{save(false)}catch(e){} try{updateFisherQuestMarker()}catch(e){}
-     refreshKellan(); try{toast('Quest complete! +100 coins, +100 Fishing XP, Oakwood Fishing Rod')}catch(e){}
+     try{
+       if(typeof removeItem==='function') removeItem('minnow',8);
+       else inventoryData.minnow=Math.max(0,minnows-8);
+       if(typeof addItem==='function'){ addItem('gold',100); addItem('oakwood_fishing_rod',1); }
+       else { inventoryData.gold=(inventoryData.gold||0)+100; inventoryData.oakwood_fishing_rod=(inventoryData.oakwood_fishing_rod||0)+1; }
+       if(typeof gainFishingXP==='function') gainFishingXP(100);
+       else fishingXP=(Number(fishingXP)||0)+100;
+       fisherQuestState.status='complete';
+       try{save(false)}catch(e){}
+       try{updateFisherQuestMarker()}catch(e){}
+       refreshKellan();
+       try{toast('Quest complete! +100 coins, +100 Fishing XP, Oakwood Fishing Rod')}catch(e){}
+     }catch(err){
+       console.error('Kellan quest turn-in error',err);
+       try{toast('Quest turn-in error. Please try again.')}catch(e){}
+     }
    }
  });
+ setInterval(()=>{const m=document.getElementById('kellanQuestModal');if(m?.classList.contains('open'))refreshKellan();},300);
  window.openKellanQuest=openKellan;
 })();
 </script>
