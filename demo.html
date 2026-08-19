@@ -2826,7 +2826,7 @@ body:not(.forestMode):not(.mineMode):not(.shopMode):not(.dungeonMode) #world{
 <div class="npc" data-id="banker" data-talk="Welcome to Oakhaven Bank. Your stored items are safe here." style="left:2280px;top:1095px"><img src="assets/embedded/asset_0048_55efd98bc391807b.png"/><span>Banker</span></div>
 <div class="npc" data-talk="Everyone in town meets at the Wolf Fountain." style="left:1530px;top:980px"><img src="assets/embedded/asset_0050_034a60a73aeccea2.png"/><span>Villager</span></div>
 <div class="npc" data-talk="The southern fields will soon be ready for farming." style="left:2650px;top:1550px"><img src="assets/embedded/asset_0051_a01fd0b61aeca902.png"/><span>Farmer</span></div>
-<div class="npc" data-id="fisher" data-talk="Silverwater is full of fish. Take this rod and try the ripples beside the dock." style="left:2860px;top:1080px"><img src="assets/embedded/asset_0048_55efd98bc391807b.png"/><span>Fisher</span></div>
+<div class="npc" data-id="fisher" data-talk="Silverwater has been generous lately. I could use an adventurer who knows how to work a rod." style="left:2860px;top:1080px"><img src="assets/embedded/asset_0048_55efd98bc391807b.png"/><span>Fisher</span></div>
 <div id="playerWrap"><span id="name">wally</span><div id="heroRing"></div><div id="shadow"></div><div id="player"></div><div id="weaponLayer"></div><div id="equipmentVisual"><img alt="Equipped weapon" class="equipVisual" id="visualWeapon" src=""/><span class="equipVisual" id="visualShield">🛡️</span><img alt="" class="equipVisual" id="visualTool" src="assets/embedded/asset_0040_c9a7559462c22d88.png"/><span class="equipVisual" id="visualArmor"></span></div></div>
 </div>
 <div id="forestWorld">
@@ -3383,6 +3383,7 @@ let xpToNext=100;
 let woodcuttingLevel=1,woodcuttingXP=0,woodcuttingNext=100;
 let miningLevel=1,miningXP=0,miningNext=100,mining=false;
 let fishingLevel=1,fishingXP=0,fishingNext=100,fishing=false,fishingTarget=null;
+let fisherQuestState={status:'not_started'}; // A Fisherman's Favor
 let smithQuest={status:'not_started'};
 let forgeTab='quest';
 let chopping=false,chopTimer=null,chopTarget=null;
@@ -4205,6 +4206,7 @@ function mineOre(el){
  requestAnimationFrame(tick);
 }
 
+function hasFishingRod(){return (inventoryData.fishing_rod||0)>0||(inventoryData.oakwood_fishing_rod||0)>0}
 function gainFishingXP(amount){
  fishingXP+=amount;
  while(fishingXP>=fishingNext){fishingXP-=fishingNext;fishingLevel++;fishingNext=Math.floor(fishingNext*1.25);showLevelUpCelebration('Fishing',fishingLevel,'🎣')}
@@ -4254,7 +4256,7 @@ function finishFishingSpot(spot){
 }
 function runFishingAttempt(spot,session){
  if(!fishing||session!==fishingSession||spot.classList.contains('cooldown'))return;
- if(!(inventoryData.fishing_rod>0)){stopFishing('You need a fishing rod.');return}
+ if(!hasFishingRod()){stopFishing('You need a fishing rod.');return}
  const duration=Math.max(1200,2350-(fishingLevel-1)*38),started=performance.now();
  chopBox.querySelector('b').textContent=`🎣 ${spot.dataset.tier?'Westwood Lv. '+spot.dataset.tier:'Fishing Silverwater'} · ${Math.round(fishingCatchChance()*100)}% catch chance`;
  chopFill.style.width='0%';chopText.textContent='0%';
@@ -4297,7 +4299,7 @@ function startFishing(spot){
  if(!spot){toast('Move closer to a fishing ripple.');return}
  const minLevel=Number(spot.dataset.minLevel||1);
  if(fishingLevel<minLevel){toast('🎣 You need Fishing level '+minLevel+' for this spot.');return}
- if(!(inventoryData.fishing_rod>0)){toast('You need a fishing rod. The Silverwater Fisher can give you one.');return}
+ if(!hasFishingRod()){toast('You need a fishing rod. The Silverwater Fisher can give you one.');return}
  fishing=true;locked=true;fishingTarget=spot;fishingAttemptsLeft=8+Math.floor(Math.random()*7);fishingSession++;
  const session=fishingSession;
  moveTarget=null;setAnimation('idle',true);
@@ -4438,6 +4440,32 @@ function nearest(max=120){
  });
  return best
 }
+
+function openFisherQuest(){
+ const minnows=inventoryData.minnow||0;
+ panel.style.display='block';panel.dataset.type='fisherQuest';
+ let body='';
+ if(fisherQuestState.status==='not_started'){
+  body=`<h2>🎣 A Fisherman's Favor</h2><p>The Silverwater Fisher needs fresh bait fish for the dock.</p><p><b>Objective:</b> Catch and bring back 8 Minnows.</p><p><b>Reward:</b> 100 Bronze Coins · 100 Fishing XP · Oakwood Fishing Rod</p><button class="btn" id="fisherQuestAccept">ACCEPT QUEST</button>`;
+ }else if(fisherQuestState.status==='accepted'){
+  const ready=minnows>=8;
+  body=`<h2>🎣 A Fisherman's Favor</h2><p>Bring the Fisher 8 Minnows from Silverwater.</p><p><b>Progress:</b> ${Math.min(8,minnows)}/8 Minnows</p><p><b>Reward:</b> 100 Bronze Coins · 100 Fishing XP · Oakwood Fishing Rod</p><button class="btn" id="fisherQuestTurnIn" ${ready?'':'disabled'}>${ready?'TURN IN QUEST':'KEEP FISHING'}</button>`;
+ }else{
+  body=`<h2>🎣 A Fisherman's Favor</h2><p>Quest complete. The Fisher trusts you with his Oakwood Fishing Rod.</p><p><b>Reward claimed:</b> 100 Bronze Coins · 100 Fishing XP · Oakwood Fishing Rod</p><button class="btn" id="fisherQuestClose">CLOSE</button>`;
+ }
+ panel.innerHTML=body;
+ document.getElementById('fisherQuestAccept')?.addEventListener('click',()=>{
+   fisherQuestState.status='accepted';
+   if(!hasFishingRod())addItem('fishing_rod',1);
+   save(false);toast('🎣 Quest accepted: Catch 8 Minnows. The Fisher lends you a Silverwater Fishing Rod.');openFisherQuest();
+ });
+ document.getElementById('fisherQuestTurnIn')?.addEventListener('click',()=>{
+   if((inventoryData.minnow||0)<8){toast('You still need 8 Minnows.');openFisherQuest();return}
+   removeItem('minnow',8);addItem('gold',100);gainFishingXP(100);addItem('oakwood_fishing_rod',1);
+   fisherQuestState.status='complete';save(false);toast('🎉 A Fisherman’s Favor complete! +100 Bronze · +100 Fishing XP · Oakwood Fishing Rod');openFisherQuest();
+ });
+ document.getElementById('fisherQuestClose')?.addEventListener('click',()=>{panel.style.display='none'});
+}
 function updateQuest(){document.getElementById('questText').textContent=quest===0?'Talk to the Innkeeper — 0/1':quest===1?'Talk to the Blacksmith — 0/1':'Explore Oakhaven — 2/2'}
 function interact(){
  tutorialProgress('interact');
@@ -4453,7 +4481,7 @@ function interact(){
  if(n.dataset.id==='banker'){openBank();return}
  if(n.dataset.id==='merchant'){openShop();return}
  if(n.dataset.id==='boar_hunter'){talkBoarHunter();return}
- if(n.dataset.id==='fisher'){if(!(inventoryData.fishing_rod>0)){addItem('fishing_rod',1);save(false);toast('🎣 The Fisher gives you a Silverwater Fishing Rod. Equip it from your Tool tab.');}else toast('Cast into the glowing ripples beside the dock.');return}
+ if(n.dataset.id==='fisher'){openFisherQuest();return}
  if(n.dataset.id==='innkeeper'&&quest===0){quest=1;addItem('bread',1);addItem('gold',10);updateQuest();save(false);setTimeout(()=>toast('Quest updated: Talk to Bram Coalwright.'),1000);return}
  if(n.dataset.id==='blacksmith'){
    if(quest===1){quest=2;addItem('training_sword',1);updateQuest();save(false);toast('Bram gives you a training sword.');}
@@ -4462,7 +4490,7 @@ function interact(){
 }
 function save(show=true){
   const savedPos=(Number.isFinite(pos.x)&&Number.isFinite(pos.y))?{x:pos.x,y:pos.y}:{...SAFE_SPAWN};
-  localStorage.setItem('oakhaven-goblin-forest-v2',JSON.stringify({pos:savedPos,quest,inventory,hp,inventoryData,equipment,bankData,playerXP,playerLevel,xpToNext,woodcuttingLevel,woodcuttingXP,woodcuttingNext,depletedTrees,dailyQuestState,miningLevel,miningXP,miningNext,fishingLevel,fishingXP,fishingNext,smithQuest,boarQuestState,characterData,tutorialState,currentArea,mapVersion:MAP_VERSION}));
+  localStorage.setItem('oakhaven-goblin-forest-v2',JSON.stringify({pos:savedPos,quest,inventory,hp,inventoryData,equipment,bankData,playerXP,playerLevel,xpToNext,woodcuttingLevel,woodcuttingXP,woodcuttingNext,depletedTrees,dailyQuestState,miningLevel,miningXP,miningNext,fishingLevel,fishingXP,fishingNext,smithQuest,boarQuestState,fisherQuestState,characterData,tutorialState,currentArea,mapVersion:MAP_VERSION}));
   if(show)toast('Game saved at your current location.');
 }
 function load(){
@@ -4485,6 +4513,7 @@ function load(){
       miningLevel=Number(s.miningLevel)||1;miningXP=Number(s.miningXP)||0;miningNext=Number(s.miningNext)||100;
       fishingLevel=Number(s.fishingLevel)||1;fishingXP=Number(s.fishingXP)||0;fishingNext=Number(s.fishingNext)||100;
       if(s.smithQuest&&typeof s.smithQuest==='object')smithQuest={...smithQuest,...s.smithQuest};
+      if(s.fisherQuestState&&typeof s.fisherQuestState==='object')fisherQuestState={...fisherQuestState,...s.fisherQuestState};
       if(s.tutorialState&&typeof s.tutorialState==='object')tutorialState={...tutorialState,...s.tutorialState};
       if(s.characterData&&typeof s.characterData==='object'){characterData={...characterData,...s.characterData};localStorage.setItem(CHARACTER_KEY,JSON.stringify(characterData))}
       if(s.depletedTrees&&typeof s.depletedTrees==='object')Object.assign(depletedTrees,s.depletedTrees);
@@ -4817,6 +4846,7 @@ const ITEM_DB={
   iron_pickaxe:{image:'items/iron_pickaxe.png',name:'Iron Pickaxe',icon:'⛏️',type:'tool',description:'A strong iron pickaxe made for tougher Brimvault ore.',stack:1,equip:'tool',visual:'pickaxe'},
   iron_axe:{image:'items/iron_axe.png',name:'Iron Axe',icon:'🪓',type:'tool',description:'A strong iron axe for higher-level trees.',stack:1,equip:'tool',visual:'axe'},
   fishing_rod:{image:'items/fishing_rod.png',name:'Silverwater Fishing Rod',icon:'🎣',type:'tool',description:'A Silverwater rod used at fishing ripples and Westwood fishing spots.',stack:1,equip:'tool',visual:'fishing_rod'},
+  oakwood_fishing_rod:{image:'items/oakwood_fishing_rod.png',name:'Oakwood Fishing Rod',icon:'🎣',type:'tool',description:'A sturdy Oakwood rod earned by helping the Silverwater Fisher. A proper upgrade for an adventurer who has learned the river.',stack:1,equip:'tool',visual:'fishing_rod',rarity:'Uncommon'},
   minnow:{name:'Minnow',icon:'🐟',image:'assets/embedded/asset_0194_a766c1ac73eba72b.png',type:'food',description:'A tiny Silverwater fish. Fishing level 1. Eat it to restore 4 HP.',heal:4,stack:99},
   trout:{name:'River Trout',icon:'🐟',image:'assets/embedded/asset_0195_c0d1b3b375cdd4ea.png',type:'food',description:'A colorful river trout. Fishing level 5. Restores 8 HP when eaten.',heal:8,stack:99},
   bluegill:{name:'Bluegill',icon:'🐟',image:'assets/embedded/asset_0196_5f3646ce13456c7a.png',type:'food',description:'A bright blue-and-gold lake fish. Fishing level 10. Restores 12 HP.',heal:12,stack:99},
@@ -4845,7 +4875,7 @@ let inventoryData={
   wolfheart_elixir:1,
   copper_ore:0,iron_ore:0,coal_ore:0,silver_ore:0,gold_ore:0,
   copper_bar:0,iron_bar:0,silver_bar:0,gold_bar:0,
-  copper_pickaxe:0,copper_axe:0,copper_sword:0,iron_pickaxe:0,iron_axe:0,iron_sword:0,fishing_rod:0,minnow:0,trout:0,bluegill:0,salmon:0,catfish:0,golden_carp:0,goblin_fang_ring:1
+  copper_pickaxe:0,copper_axe:0,copper_sword:0,iron_pickaxe:0,iron_axe:0,iron_sword:0,fishing_rod:0,oakwood_fishing_rod:0,minnow:0,trout:0,bluegill:0,salmon:0,catfish:0,golden_carp:0,goblin_fang_ring:1
 };
 
 let equipment={weapon:'owner_blade',tool:null,helmet:'owner_crown',chest:'owner_plate',shield:'owner_aegis',boots:'owner_boots',ring:'owner_ring'};
