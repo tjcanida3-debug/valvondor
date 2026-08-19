@@ -10097,4 +10097,81 @@ window.addEventListener('load',()=>{
   setInterval(()=>{try{updateFisherQuestMarker()}catch(e){}},500);
 });
 </script>
+
+<style id="kellanQuestModalStyle">
+#kellanQuestModal{display:none;position:fixed;inset:0;z-index:2147483646;background:#000b;align-items:center;justify-content:center;padding:16px}
+#kellanQuestModal.open{display:flex}
+#kellanQuestCard{width:min(520px,96vw);background:#151b1f;border:2px solid #b48a3c;border-radius:14px;padding:16px;color:#f5ead3;text-align:center}
+#kellanQuestCard img{width:150px;height:105px;object-fit:cover;object-position:top;border-radius:8px;border:1px solid #6e5833}
+#kellanQuestCard h2{margin:8px 0 2px;color:#e7c979} #kellanQuestCard h3{margin:2px 0 10px}
+#kellanQuestCard button{margin:6px;padding:10px 14px}
+</style>
+<div id="kellanQuestModal" aria-hidden="true"><div id="kellanQuestCard">
+
+<h2>KELLAN</h2><h3>A Fisherman's Favor</h3>
+<p id="kellanQuestText"></p><b id="kellanQuestProgress"></b><br>
+<button id="kellanQuestAction" type="button">ACCEPT QUEST</button>
+<button id="kellanQuestClose" type="button">CLOSE</button>
+</div></div>
+
+<script id="kellanQuestGuaranteedInteraction">
+(function(){
+ function rodOwned(){
+   try{return (inventoryData.fishing_rod||0)>0 || (equipment&&equipment.tool==='fishing_rod') || (inventoryData.oakwood_fishing_rod||0)>0}catch(e){return false}
+ }
+ function refreshKellan(){
+   const modal=document.getElementById('kellanQuestModal'), txt=document.getElementById('kellanQuestText'),
+         prog=document.getElementById('kellanQuestProgress'), act=document.getElementById('kellanQuestAction');
+   if(!modal||!txt||!prog||!act)return;
+   const minnows=Number(inventoryData?.minnow||0);
+   const st=fisherQuestState?.status||'not_started';
+   if(st==='not_started'){
+     txt.textContent="Silverwater has been generous lately. Bring me 8 Minnows and I'll reward you with an Oakwood Fishing Rod.";
+     prog.textContent='Minnows: 0 / 8'; act.textContent='ACCEPT QUEST'; act.style.display='';
+   }else if(st==='accepted' && minnows<8){
+     txt.textContent="Keep at it. I need 8 Minnows from Silverwater.";
+     prog.textContent=`Minnows: ${Math.min(8,minnows)} / 8`; act.textContent='QUEST IN PROGRESS'; act.style.display='';
+   }else if(st==='accepted'){
+     txt.textContent="That's a fine catch. Here's what I promised.";
+     prog.textContent='Minnows: 8 / 8'; act.textContent='TURN IN QUEST'; act.style.display='';
+   }else{
+     txt.textContent="You've done good work for Silverwater. Keep that rod close.";
+     prog.textContent='QUEST COMPLETE'; act.style.display='none';
+   }
+ }
+ function openKellan(e){
+   if(e){e.preventDefault();e.stopPropagation();}
+   const m=document.getElementById('kellanQuestModal'); if(!m)return;
+   refreshKellan();m.classList.add('open');m.setAttribute('aria-hidden','false');
+ }
+ document.addEventListener('click',function(e){
+   const npc=e.target.closest?.('.npc[data-id="fisher"]');
+   if(npc)openKellan(e);
+ },true);
+ document.getElementById('kellanQuestClose')?.addEventListener('click',()=>{
+   const m=document.getElementById('kellanQuestModal');m.classList.remove('open');m.setAttribute('aria-hidden','true');
+ });
+ document.getElementById('kellanQuestAction')?.addEventListener('click',()=>{
+   const minnows=Number(inventoryData?.minnow||0);
+   if((fisherQuestState?.status||'not_started')==='not_started'){
+     fisherQuestState.status='accepted';
+     if(!rodOwned()) inventoryData.fishing_rod=(inventoryData.fishing_rod||0)+1;
+     try{save(false)}catch(e){} try{updateFisherQuestMarker()}catch(e){}
+     refreshKellan(); try{toast('Quest accepted: A Fisherman’s Favor')}catch(e){}
+     return;
+   }
+   if(fisherQuestState.status==='accepted' && minnows>=8){
+     inventoryData.minnow=Math.max(0,minnows-8);
+     bronzeCoins=(Number(bronzeCoins)||0)+100;
+     fishingXP=(Number(fishingXP)||0)+100;
+     inventoryData.oakwood_fishing_rod=(inventoryData.oakwood_fishing_rod||0)+1;
+     fisherQuestState.status='complete';
+     try{checkSkillLevelUps()}catch(e){}
+     try{save(false)}catch(e){} try{updateFisherQuestMarker()}catch(e){}
+     refreshKellan(); try{toast('Quest complete! +100 coins, +100 Fishing XP, Oakwood Fishing Rod')}catch(e){}
+   }
+ });
+ window.openKellanQuest=openKellan;
+})();
+</script>
 </body></html>
